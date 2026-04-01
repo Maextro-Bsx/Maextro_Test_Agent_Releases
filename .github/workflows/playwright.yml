@@ -26,3 +26,16 @@ jobs:
 
       - name: Run Tests
         run: npx playwright test tests/Workflow
+
+      # Upload Allure Report
+      - name: Upload All Artifacts
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: test-artifacts
+          path: |
+            reports/
+            screenshots/
+            test-results/
+            logs/
+          if-no-files-found: ignore
