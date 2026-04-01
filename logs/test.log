@@ -1,0 +1,508 @@
+[2026-03-27 13:13:09] [INFO] START: Login to Application
+[2026-03-27 13:13:12] [INFO] END: Login to Application (2736ms)
+[2026-03-27 13:13:12] [INFO] START: Navigate to Create Request Page
+[2026-03-27 13:13:31] [INFO] END: Navigate to Create Request Page (19235ms)
+[2026-03-27 13:13:31] [INFO] START: Select Template
+[2026-03-27 13:13:31] [INFO] END: Select Template (67ms)
+[2026-03-27 13:13:31] [INFO] START: Enter Request Details
+[2026-03-27 13:13:41] [INFO] END: Enter Request Details (9602ms)
+[2026-03-27 13:13:41] [INFO] START: Validate Mandatory and Readonly fields in BP view
+[2026-03-27 13:13:44] [INFO] END: Validate Mandatory and Readonly fields in BP view (3566ms)
+[2026-03-27 13:13:44] [INFO] START: Validate BP fields are auto-populated
+[2026-03-27 13:13:44] [INFO] END: Validate BP fields are auto-populated (1ms)
+[2026-03-27 13:13:44] [INFO] START: Enter data in BP fields, validate Add roles child view and Status complete
+[2026-03-27 13:13:54] [INFO] END: Enter data in BP fields, validate Add roles child view and Status complete (9537ms)
+[2026-03-27 13:13:54] [INFO] START: Validate Mandatory and Readonly fields in Customer company code view
+[2026-03-27 13:13:58] [INFO] END: Validate Mandatory and Readonly fields in Customer company code view (4579ms)
+[2026-03-27 13:13:58] [INFO] START: Validate Customer company code fields are auto-populated
+[2026-03-27 13:13:59] [INFO] END: Validate Customer company code fields are auto-populated (93ms)
+[2026-03-27 13:13:59] [INFO] START: Enter data in Customer company code fields and Status complete
+[2026-03-27 13:14:02] [INFO] END: Enter data in Customer company code fields and Status complete (3126ms)
+[2026-03-27 13:14:02] [INFO] START: Validate Mandatory and Readonly fields in Customer sales view
+[2026-03-27 13:14:06] [INFO] END: Validate Mandatory and Readonly fields in Customer sales view (4658ms)
+[2026-03-27 13:14:06] [INFO] START: Validate Customer sales fields are auto-populated
+[2026-03-27 13:14:06] [INFO] END: Validate Customer sales fields are auto-populated (122ms)
+[2026-03-27 13:14:06] [INFO] START: Enter data in Customer sales fields and Submit request
+[2026-03-27 13:14:07] [INFO] END: Enter data in Customer sales fields and Submit request (342ms)
+[2026-03-27 13:14:14] [INFO] START: Navigate to My Tasklist and search for the created request Task
+[2026-03-27 13:14:28] [INFO] Searching task for request: 38647
+[2026-03-27 13:14:28] [INFO] Search triggered
+[2026-03-27 13:14:31] [INFO] Task search results loaded
+[2026-03-27 13:14:31] [INFO] END: Navigate to My Tasklist and search for the created request Task (17807ms)
+[2026-03-27 13:14:31] [INFO] Attempt 1: Finding executable task
+[2026-03-27 13:14:31] [INFO] Checking Step 100 | UI Present: true
+[2026-03-27 13:14:31] [INFO] Next executable task found: Step 100
+[2026-03-27 13:14:31] [INFO] Executing task: Step 100 - BP Data collection
+[2026-03-27 13:14:31] [INFO] Validating Step: Step 100, Status: Ready to process
+[2026-03-27 13:14:31] [INFO] Clicking task: BP Data collection for request: 38647
+[2026-03-27 13:14:32] [INFO] Task clicked, waiting for view to load
+[2026-03-27 13:14:33] [INFO] START: Status complete BOR1 view
+[2026-03-27 13:14:41] [INFO] END: Status complete BOR1 view (8686ms)
+[2026-03-27 13:14:41] [INFO] START: Validate Mandatory and Readonly fields in Address view
+[2026-03-27 13:14:45] [INFO] END: Validate Mandatory and Readonly fields in Address view (4055ms)
+[2026-03-27 13:14:45] [INFO] START: Validate Address fields are auto-populated and validate conditional rule and cross view field rule
+[2026-03-27 13:14:46] [INFO] END: Validate Address fields are auto-populated and validate conditional rule and cross view field rule (723ms)
+[2026-03-27 13:14:46] [INFO] START: Enter data in Address fields and Complete Task 100
+[2026-03-27 13:14:48] [INFO] END: Enter data in Address fields and Complete Task 100 (1842ms)
+[2026-03-27 13:14:48] [INFO] START: Execute Task: Step 100 - Save
+[2026-03-27 13:14:55] [INFO] END: Execute Task: Step 100 - Save (6661ms)
+[2026-03-27 13:14:55] [INFO] START: Finalize Task: Step 100 - Save
+[2026-03-27 13:14:55] [INFO] Finalizing task: Step 100
+[2026-03-27 13:14:55] [INFO] Refreshing task list...
+[2026-03-27 13:14:55] [INFO] Task list refreshed for request: 38647
+[2026-03-27 13:14:55] [INFO] Marking completed: Step 100
+[2026-03-27 13:14:55] [INFO] END: Finalize Task: Step 100 - Save (384ms)
+[2026-03-27 13:14:55] [INFO] Attempt 1: Finding executable task
+[2026-03-27 13:14:55] [INFO] Checking Step 200 | UI Present: true
+[2026-03-27 13:14:55] [INFO] Next executable task found: Step 200
+[2026-03-27 13:14:55] [INFO] Executing task: Step 200 - Tax Data collection
+[2026-03-27 13:14:55] [INFO] Validating Step: Step 200, Status: Ready to process
+[2026-03-27 13:14:55] [INFO] Clicking task: Tax Data collection for request: 38647
+[2026-03-27 13:14:55] [INFO] Task clicked, waiting for view to load
+[2026-03-27 13:14:55] [INFO] START: Status complete Address View
+[2026-03-27 13:15:03] [INFO] END: Status complete Address View (7552ms)
+[2026-03-27 13:15:03] [INFO] START: Validate Mandatory and Readonly fields in Identification data
+[2026-03-27 13:15:07] [INFO] END: Validate Mandatory and Readonly fields in Identification data (3771ms)
+[2026-03-27 13:15:07] [INFO] START: Validate Identification data fields are auto-populated
+[2026-03-27 13:15:07] [INFO] END: Validate Identification data fields are auto-populated (289ms)
+[2026-03-27 13:15:07] [INFO] START: Enter data in Identification data fields and Status complete
+[2026-03-27 13:15:13] [INFO] END: Enter data in Identification data fields and Status complete (5628ms)
+[2026-03-27 13:15:13] [INFO] START: Validate Mandatory and Readonly fields in Tax Number data
+[2026-03-27 13:15:17] [INFO] END: Validate Mandatory and Readonly fields in Tax Number data (4676ms)
+[2026-03-27 13:15:17] [INFO] START: Validate Tax Number data fields are auto-populated
+[2026-03-27 13:15:17] [INFO] END: Validate Tax Number data fields are auto-populated (142ms)
+[2026-03-27 13:15:17] [INFO] START: Enter data in Tax Number data fields and Status complete
+[2026-03-27 13:15:18] [INFO] END: Enter data in Tax Number data fields and Status complete (441ms)
+[2026-03-27 13:15:18] [INFO] START: Execute Task: Step 200 - Approve
+[2026-03-27 13:15:21] [INFO] END: Execute Task: Step 200 - Approve (3133ms)
+[2026-03-27 13:15:21] [INFO] START: Finalize Task: Step 200 - Approve
+[2026-03-27 13:15:21] [INFO] Finalizing task: Step 200
+[2026-03-27 13:15:21] [INFO] Refreshing task list...
+[2026-03-27 13:15:21] [INFO] Task list refreshed for request: 38647
+[2026-03-27 13:15:21] [INFO] Marking completed: Step 200
+[2026-03-27 13:15:21] [INFO] END: Finalize Task: Step 200 - Approve (510ms)
+[2026-03-27 13:15:21] [INFO] Attempt 1: Finding executable task
+[2026-03-27 13:15:21] [INFO] Checking Step 300 | UI Present: true
+[2026-03-27 13:15:21] [INFO] Next executable task found: Step 300
+[2026-03-27 13:15:21] [INFO] Executing task: Step 300 - Bank Data collection
+[2026-03-27 13:15:21] [INFO] Validating Step: Step 300, Status: Ready to process
+[2026-03-27 13:15:21] [INFO] Clicking task: Bank Data collection for request: 38647
+[2026-03-27 13:15:21] [INFO] Task clicked, waiting for view to load
+[2026-03-27 13:15:25] [INFO] START: Validate Mandatory and Readonly fields in Bank details view
+[2026-03-27 13:15:29] [INFO] END: Validate Mandatory and Readonly fields in Bank details view (3740ms)
+[2026-03-27 13:15:29] [INFO] START: Validate Bank details fields are auto-populated
+[2026-03-27 13:15:29] [INFO] END: Validate Bank details fields are auto-populated (546ms)
+[2026-03-27 13:15:29] [INFO] START: Enter data in Bank details fields and Complete Task 300
+[2026-03-27 13:15:29] [INFO] END: Enter data in Bank details fields and Complete Task 300 (237ms)
+[2026-03-27 13:15:29] [INFO] START: Execute Task: Step 300 - Reject|Reason=Inaccurate Customer Data|Step=Tax Data collection - BC_APPDATA|Comment=Fix data -> Approve
+[2026-03-27 13:15:37] [INFO] Resetting execution from Step 200
+[2026-03-27 13:15:37] [INFO] Updated completed steps: Step 100
+[2026-03-27 13:15:37] [INFO] Re-added Step 200 to task list
+[2026-03-27 13:15:37] [INFO] Validating presence of task: Step 200
+[2026-03-27 13:15:37] [INFO] Refreshing task list...
+[2026-03-27 13:15:38] [INFO] Task list refreshed for request: 38647
+[2026-03-27 13:15:38] [INFO] Task Step 200 is present in MyTasklist
+[2026-03-27 13:15:38] [INFO] END: Execute Task: Step 300 - Reject|Reason=Inaccurate Customer Data|Step=Tax Data collection - BC_APPDATA|Comment=Fix data -> Approve (8314ms)
+[2026-03-27 13:15:38] [INFO] START: Finalize Task: Step 300 - Reject|Reason=Inaccurate Customer Data|Step=Tax Data collection - BC_APPDATA|Comment=Fix data -> Approve
+[2026-03-27 13:15:38] [INFO] Finalizing task: Step 300
+[2026-03-27 13:15:38] [INFO] Refreshing task list...
+[2026-03-27 13:15:38] [INFO] Task list refreshed for request: 38647
+[2026-03-27 13:15:38] [INFO] Marking completed: Step 300
+[2026-03-27 13:15:38] [WARN]  Not removing Step 300 → Reject flow (step will reappear)
+[2026-03-27 13:15:38] [INFO] END: Finalize Task: Step 300 - Reject|Reason=Inaccurate Customer Data|Step=Tax Data collection - BC_APPDATA|Comment=Fix data -> Approve (36ms)
+[2026-03-27 13:15:38] [INFO] Attempt 1: Finding executable task
+[2026-03-27 13:15:38] [INFO] Checking Step 200 | UI Present: false
+[2026-03-27 13:15:38] [INFO] Checking Step 300 | UI Present: false
+[2026-03-27 13:15:38] [INFO] Refreshing task list...
+[2026-03-27 13:15:38] [INFO] Refreshing task list...
+[2026-03-27 13:15:39] [INFO] Task list refreshed for request: 38647
+[2026-03-27 13:15:39] [INFO] Attempt 2: Finding executable task
+[2026-03-27 13:15:39] [INFO] Checking Step 200 | UI Present: true
+[2026-03-27 13:15:39] [INFO] Next executable task found: Step 200
+[2026-03-27 13:15:39] [INFO] Executing task: Step 200 - Tax Data collection
+[2026-03-27 13:15:39] [INFO] Validating Step: Step 200, Status: Ready to process
+[2026-03-27 13:15:39] [INFO] Clicking task: Tax Data collection for request: 38647
+[2026-03-27 13:15:39] [INFO] Task clicked, waiting for view to load
+[2026-03-27 13:15:39] [INFO] START: Status complete Address View
+[2026-03-27 13:15:46] [INFO] END: Status complete Address View (7417ms)
+[2026-03-27 13:15:46] [INFO] START: Validate Mandatory and Readonly fields in Identification data
+[2026-03-27 13:15:49] [INFO] END: Validate Mandatory and Readonly fields in Identification data (2397ms)
+[2026-03-27 13:15:49] [INFO] START: Validate Identification data fields are auto-populated
+[2026-03-27 13:15:49] [INFO] END: Validate Identification data fields are auto-populated (266ms)
+[2026-03-27 13:15:49] [INFO] START: Enter data in Identification data fields and Status complete
+[2026-03-27 13:15:55] [INFO] END: Enter data in Identification data fields and Status complete (5596ms)
+[2026-03-27 13:15:55] [INFO] START: Validate Mandatory and Readonly fields in Tax Number data
+[2026-03-27 13:15:58] [INFO] END: Validate Mandatory and Readonly fields in Tax Number data (3281ms)
+[2026-03-27 13:15:58] [INFO] START: Validate Tax Number data fields are auto-populated
+[2026-03-27 13:15:58] [INFO] END: Validate Tax Number data fields are auto-populated (117ms)
+[2026-03-27 13:15:58] [INFO] START: Enter data in Tax Number data fields and Status complete
+[2026-03-27 13:15:58] [INFO] END: Enter data in Tax Number data fields and Status complete (407ms)
+[2026-03-27 13:15:58] [INFO] START: Execute Task: Step 200 - Approve
+[2026-03-27 13:16:02] [INFO] END: Execute Task: Step 200 - Approve (3194ms)
+[2026-03-27 13:16:02] [INFO] START: Finalize Task: Step 200 - Approve
+[2026-03-27 13:16:02] [INFO] Finalizing task: Step 200
+[2026-03-27 13:16:02] [INFO] Refreshing task list...
+[2026-03-27 13:16:02] [INFO] Task list refreshed for request: 38647
+[2026-03-27 13:16:02] [INFO] Marking completed: Step 200
+[2026-03-27 13:16:02] [INFO] END: Finalize Task: Step 200 - Approve (610ms)
+[2026-03-27 13:16:02] [INFO] Attempt 1: Finding executable task
+[2026-03-27 13:16:02] [INFO] Checking Step 300 | UI Present: true
+[2026-03-27 13:16:02] [INFO] Next executable task found: Step 300
+[2026-03-27 13:16:02] [INFO] Executing task: Step 300 - Bank Data collection
+[2026-03-27 13:16:02] [INFO] Validating Step: Step 300, Status: Ready to process
+[2026-03-27 13:16:02] [INFO] Clicking task: Bank Data collection for request: 38647
+[2026-03-27 13:16:02] [INFO] Task clicked, waiting for view to load
+[2026-03-27 13:16:05] [INFO] START: Validate Mandatory and Readonly fields in Bank details view
+[2026-03-27 13:16:09] [INFO] END: Validate Mandatory and Readonly fields in Bank details view (3761ms)
+[2026-03-27 13:16:09] [INFO] START: Validate Bank details fields are auto-populated
+[2026-03-27 13:16:10] [INFO] END: Validate Bank details fields are auto-populated (563ms)
+[2026-03-27 13:16:10] [INFO] START: Enter data in Bank details fields and Complete Task 300
+[2026-03-27 13:16:10] [INFO] END: Enter data in Bank details fields and Complete Task 300 (237ms)
+[2026-03-27 13:16:10] [INFO] START: Execute Task: Step 300 - Reject|Reason=Inaccurate Customer Data|Step=Tax Data collection - BC_APPDATA|Comment=Fix data -> Approve
+[2026-03-27 13:16:14] [INFO] END: Execute Task: Step 300 - Reject|Reason=Inaccurate Customer Data|Step=Tax Data collection - BC_APPDATA|Comment=Fix data -> Approve (3556ms)
+[2026-03-27 13:16:14] [INFO] START: Finalize Task: Step 300 - Reject|Reason=Inaccurate Customer Data|Step=Tax Data collection - BC_APPDATA|Comment=Fix data -> Approve
+[2026-03-27 13:16:14] [INFO] Finalizing task: Step 300
+[2026-03-27 13:16:14] [INFO] Refreshing task list...
+[2026-03-27 13:16:14] [WARN] No data found in task list
+[2026-03-27 13:16:14] [INFO] All tasks completed → No data visible
+[2026-03-27 13:16:14] [INFO] END: Finalize Task: Step 300 - Reject|Reason=Inaccurate Customer Data|Step=Tax Data collection - BC_APPDATA|Comment=Fix data -> Approve (503ms)
+[2026-03-27 13:16:14] [INFO] START: Validate All Tasks Completed
+[2026-03-27 13:16:14] [INFO] All tasks completed - No data message verified
+[2026-03-27 13:16:14] [INFO] END: Validate All Tasks Completed (3ms)
+[2026-03-27 16:17:05] [INFO] START: Login to Application
+[2026-03-27 16:17:07] [INFO] END: Login to Application (2460ms)
+[2026-03-27 16:17:07] [INFO] START: Navigate to Create Request Page
+[2026-03-27 16:17:25] [INFO] END: Navigate to Create Request Page (17353ms)
+[2026-03-27 16:17:25] [INFO] START: Select Template
+[2026-03-27 16:17:25] [INFO] END: Select Template (69ms)
+[2026-03-27 16:17:25] [INFO] START: Enter Request Details
+[2026-03-27 16:17:34] [INFO] END: Enter Request Details (9600ms)
+[2026-03-27 16:17:34] [INFO] START: Validate Mandatory and Readonly fields in BP view
+[2026-03-27 16:17:34] [INFO] Validating read-only fields: BP No, Account Group in first 2 rows
+[2026-03-27 16:17:35] [INFO] Validated BP No (row 1) is read-only - Class: sapMInputBase sapMInputBaseHeightMargin sapMInput sapMInputBaseHasEndIcons
+[2026-03-27 16:17:35] [INFO] Validated Account Group (row 1) is read-only - Class: sapMInputBase sapMInputBaseHeightMargin sapMInput sapMInputBaseHasEndIcons
+[2026-03-27 16:17:36] [INFO] Validated BP No (row 2) is read-only - Class: sapMInputBase sapMInputBaseHeightMargin sapMInput sapMInputBaseHasEndIcons
+[2026-03-27 16:17:36] [INFO] Validated Account Group (row 2) is read-only - Class: sapMInputBase sapMInputBaseHeightMargin sapMInput sapMInputBaseHasEndIcons
+[2026-03-27 16:17:36] [INFO] Validating mandatory fields: BP Name
+[2026-03-27 16:17:36] [INFO] All specified fields are mandatory
+[2026-03-27 16:17:36] [INFO] Validating mandatory field error messages for fields: BP Name in first 2 rows
+[2026-03-27 16:17:36] [INFO] Fetching 2 rows from table
+[2026-03-27 16:17:36] [INFO] Table is ready
+[2026-03-27 16:17:36] [INFO] Row 1: {"BP Name":""}
+[2026-03-27 16:17:36] [INFO] Row 2: {"BP Name":""}
+[2026-03-27 16:17:36] [INFO] UI Data: [{"BP Name":""},{"BP Name":""}]
+[2026-03-27 16:17:36] [INFO] Expected Errors: Row1 - BP Name, Row2 - BP Name
+[2026-03-27 16:17:36] [INFO] Clicking Status Complete...
+[2026-03-27 16:17:36] [INFO] Status completed
+[2026-03-27 16:17:38] [INFO] Actual Errors: Field NAME1 ( BP Name ) required for view ( BOR1 ) | Row1 - BP Name, Field NAME1 ( BP Name ) required for view ( BOR1 ) | Row2 - BP Name
+[2026-03-27 16:17:38] [INFO] Validated error: Row1 - BP Name
+[2026-03-27 16:17:38] [INFO] Validated error: Row2 - BP Name
+[2026-03-27 16:17:38] [INFO] Expected error count: 2, Actual error count: 2
+[2026-03-27 16:17:38] [INFO] Mandatory field error message validation passed
+[2026-03-27 16:17:38] [INFO] END: Validate Mandatory and Readonly fields in BP view (3554ms)
+[2026-03-27 16:17:38] [INFO] Fetching 2 rows from table
+[2026-03-27 16:17:38] [INFO] Table is ready
+[2026-03-27 16:17:38] [INFO] Row 1: {"BP No":"$1","Account Group":"CUST","BP Name":""}
+[2026-03-27 16:17:38] [INFO] Row 2: {"BP No":"$2","Account Group":"CUST","BP Name":""}
+[2026-03-27 16:17:38] [INFO] START: Validate BP fields are auto-populated
+[2026-03-27 16:17:38] [INFO] Validating rows data
+[2026-03-27 16:17:38] [INFO] Data fetched from UI: [{"BP No":"$1","Account Group":"CUST","BP Name":""},{"BP No":"$2","Account Group":"CUST","BP Name":""}]
+[2026-03-27 16:17:38] [INFO] Data expected: [{"BP No":"$1","Account Group":"CUST"},{"BP No":"$2","Account Group":"CUST"}]
+[2026-03-27 16:17:38] [INFO] Validating Row 1
+[2026-03-27 16:17:38] [INFO] Validated row 1: BP No = "$1"
+[2026-03-27 16:17:38] [INFO] Validated row 1: Account Group = "CUST"
+[2026-03-27 16:17:38] [INFO] Validating Row 2
+[2026-03-27 16:17:38] [INFO] Validated row 2: BP No = "$2"
+[2026-03-27 16:17:38] [INFO] Validated row 2: Account Group = "CUST"
+[2026-03-27 16:17:38] [INFO] END: Validate BP fields are auto-populated (2ms)
+[2026-03-27 16:17:38] [INFO] Capturing field map: BP No → Account Group
+[2026-03-27 16:17:38] [INFO] Fetching 2 rows from table
+[2026-03-27 16:17:38] [INFO] Table is ready
+[2026-03-27 16:17:38] [INFO] Row 1: {"BP No":"$1","Account Group":"CUST"}
+[2026-03-27 16:17:38] [INFO] Row 2: {"BP No":"$2","Account Group":"CUST"}
+[2026-03-27 16:17:38] [INFO] Captured mapping: BP No="$1" → Account Group="CUST" in row 1
+[2026-03-27 16:17:38] [INFO] Captured mapping: BP No="$2" → Account Group="CUST" in row 2
+[2026-03-27 16:17:38] [INFO] START: Enter data in BP fields, validate Add roles child view and Status complete
+[2026-03-27 16:17:38] [INFO] Executing dynamic data entry for 2 rows with action map: {"BP No":"validate","Account Group":"validate","BP Name":"input"}
+[2026-03-27 16:17:38] [INFO] Validating Add Roles: [object Object],[object Object],[object Object],[object Object]
+[2026-03-27 16:17:38] [INFO] Validating field "[object Object]"
+[2026-03-27 16:17:38] [INFO] Selecting row with BP No "$1" and clicking "BP : Add Roles"
+[2026-03-27 16:17:38] [INFO] Fetching 2 rows from table
+[2026-03-27 16:17:38] [INFO] Table is ready
+[2026-03-27 16:17:38] [INFO] Row 1: {"BP No":"$1"}
+[2026-03-27 16:17:38] [INFO] Row 2: {"BP No":"$2"}
+[2026-03-27 16:17:40] [INFO] Validating Add Roles dialog rows against expected data
+[2026-03-27 16:17:40] [INFO] Detected headers in Add Roles table: {"BP No":0,"Name":1,"BP Role":2}
+[2026-03-27 16:17:40] [INFO] Row 1 validated: BP Role = FLCU00
+[2026-03-27 16:17:40] [INFO] Row 1 validated: BP No = $1
+[2026-03-27 16:17:40] [INFO] Row 1 validated: Name = BP Test1
+[2026-03-27 16:17:40] [INFO] Row 2 validated: BP Role = FLCU01
+[2026-03-27 16:17:40] [INFO] Row 2 validated: BP No = $1
+[2026-03-27 16:17:40] [INFO] Row 2 validated: Name = BP Test1
+[2026-03-27 16:17:41] [INFO] Selecting row with BP No "$2" and clicking "BP : Add Roles"
+[2026-03-27 16:17:41] [INFO] Fetching 2 rows from table
+[2026-03-27 16:17:41] [INFO] Table is ready
+[2026-03-27 16:17:41] [INFO] Row 1: {"BP No":"$1"}
+[2026-03-27 16:17:41] [INFO] Row 2: {"BP No":"$2"}
+[2026-03-27 16:17:43] [INFO] Validating Add Roles dialog rows against expected data
+[2026-03-27 16:17:43] [INFO] Detected headers in Add Roles table: {"BP No":0,"Name":1,"BP Role":2}
+[2026-03-27 16:17:43] [INFO] Row 1 validated: BP Role = FLCU00
+[2026-03-27 16:17:43] [INFO] Row 1 validated: BP No = $2
+[2026-03-27 16:17:43] [INFO] Row 1 validated: Name = BP Test2
+[2026-03-27 16:17:43] [INFO] Row 2 validated: BP Role = FLCU01
+[2026-03-27 16:17:43] [INFO] Row 2 validated: BP No = $2
+[2026-03-27 16:17:43] [INFO] Row 2 validated: Name = BP Test2
+[2026-03-27 16:17:44] [INFO] Clicking Status Complete...
+[2026-03-27 16:17:44] [INFO] Status completed
+[2026-03-27 16:17:47] [INFO] END: Enter data in BP fields, validate Add roles child view and Status complete (8906ms)
+[2026-03-27 16:17:47] [INFO] START: Validate Mandatory and Readonly fields in Customer company code view
+[2026-03-27 16:17:47] [INFO] Validating mandatory fields: Company Code
+[2026-03-27 16:17:47] [INFO] All specified fields are mandatory
+[2026-03-27 16:17:47] [INFO] Validating read-only fields: Customer Number, Customer Acct. Grp, Name in first 2 rows
+[2026-03-27 16:17:47] [INFO] Validated Customer Number (row 1) is read-only - Class: sapMInputBase sapMInputBaseHeightMargin sapMInput sapMInputBaseHasEndIcons
+[2026-03-27 16:17:48] [INFO] Validated Customer Acct. Grp (row 1) is read-only - Class: sapMInputBase sapMInputBaseHeightMargin sapMInput sapMInputBaseHasEndIcons
+[2026-03-27 16:17:48] [INFO] Validated Name (row 1) is read-only - Class: sapMInputBase sapMInputBaseHeightMargin sapMInput sapMInputBaseReadonly
+[2026-03-27 16:17:49] [INFO] Validated Customer Number (row 2) is read-only - Class: sapMInputBase sapMInputBaseHeightMargin sapMInput sapMInputBaseHasEndIcons
+[2026-03-27 16:17:50] [INFO] Validated Customer Acct. Grp (row 2) is read-only - Class: sapMInputBase sapMInputBaseHeightMargin sapMInput sapMInputBaseHasEndIcons
+[2026-03-27 16:17:50] [INFO] Validated Name (row 2) is read-only - Class: sapMInputBase sapMInputBaseHeightMargin sapMInput sapMInputBaseReadonly
+[2026-03-27 16:17:50] [INFO] Validating mandatory field error messages for fields: Company Code in first 2 rows
+[2026-03-27 16:17:50] [INFO] Fetching 2 rows from table
+[2026-03-27 16:17:50] [INFO] Table is ready
+[2026-03-27 16:17:50] [INFO] Row 1: {"Company Code":""}
+[2026-03-27 16:17:50] [INFO] Row 2: {"Company Code":""}
+[2026-03-27 16:17:50] [INFO] UI Data: [{"Company Code":""},{"Company Code":""}]
+[2026-03-27 16:17:50] [INFO] Expected Errors: Row1 - Company Code, Row2 - Company Code
+[2026-03-27 16:17:50] [INFO] Clicking Status Complete...
+[2026-03-27 16:17:50] [INFO] Status completed
+[2026-03-27 16:17:51] [INFO] Actual Errors: Field BUKRS ( Company Code ) required for view ( KOR1 ) | Row1 - Company Code, Field BUKRS ( Company Code ) required for view ( KOR1 ) | Row2 - Company Code
+[2026-03-27 16:17:51] [INFO] Validated error: Row1 - Company Code
+[2026-03-27 16:17:51] [INFO] Validated error: Row2 - Company Code
+[2026-03-27 16:17:51] [INFO] Expected error count: 2, Actual error count: 2
+[2026-03-27 16:17:51] [INFO] Mandatory field error message validation passed
+[2026-03-27 16:17:51] [INFO] END: Validate Mandatory and Readonly fields in Customer company code view (4589ms)
+[2026-03-27 16:17:51] [INFO] START: Validate Customer company code fields are auto-populated
+[2026-03-27 16:17:51] [INFO] Fetching 2 rows from table
+[2026-03-27 16:17:51] [INFO] Table is ready
+[2026-03-27 16:17:52] [INFO] Row 1: {"Customer Number":"$1","Customer Acct. Grp":"CUST","Name":"BP Test1","Company Code":""}
+[2026-03-27 16:17:52] [INFO] Row 2: {"Customer Number":"$2","Customer Acct. Grp":"CUST","Name":"BP Test2","Company Code":""}
+[2026-03-27 16:17:52] [INFO] Validating rows data
+[2026-03-27 16:17:52] [INFO] Data fetched from UI: [{"Customer Number":"$1","Customer Acct. Grp":"CUST","Name":"BP Test1","Company Code":""},{"Customer Number":"$2","Customer Acct. Grp":"CUST","Name":"BP Test2","Company Code":""}]
+[2026-03-27 16:17:52] [INFO] Data expected: [{"Customer Number":"$1","Customer Acct. Grp":"CUST","Name":"BP Test1"},{"Customer Number":"$2","Customer Acct. Grp":"CUST","Name":"BP Test2"}]
+[2026-03-27 16:17:52] [INFO] Validating Row 1
+[2026-03-27 16:17:52] [INFO] Validated row 1: Customer Number = "$1"
+[2026-03-27 16:17:52] [INFO] Validated row 1: Customer Acct. Grp = "CUST"
+[2026-03-27 16:17:52] [INFO] Validated row 1: Name = "BP Test1"
+[2026-03-27 16:17:52] [INFO] Validating Row 2
+[2026-03-27 16:17:52] [INFO] Validated row 2: Customer Number = "$2"
+[2026-03-27 16:17:52] [INFO] Validated row 2: Customer Acct. Grp = "CUST"
+[2026-03-27 16:17:52] [INFO] Validated row 2: Name = "BP Test2"
+[2026-03-27 16:17:52] [INFO] END: Validate Customer company code fields are auto-populated (93ms)
+[2026-03-27 16:17:52] [INFO] START: Enter data in Customer company code fields and Status complete
+[2026-03-27 16:17:52] [INFO] Executing dynamic data entry for 2 rows with action map: {"Customer Number":"validate","Customer Acct. Grp":"validate","Name":"validate","Company Code":"input"}
+[2026-03-27 16:17:52] [INFO] Clicking Status Complete...
+[2026-03-27 16:17:52] [INFO] Status completed
+[2026-03-27 16:17:55] [INFO] END: Enter data in Customer company code fields and Status complete (3157ms)
+[2026-03-27 16:17:55] [INFO] START: Validate Mandatory and Readonly fields in Customer sales view
+[2026-03-27 16:17:55] [INFO] Validating mandatory fields: Sales Organization, Distribution Channel, Division
+[2026-03-27 16:17:55] [INFO] All specified fields are mandatory
+[2026-03-27 16:17:55] [INFO] Validating read-only fields: Customer Number, Acct group, Name in first 2 rows
+[2026-03-27 16:17:55] [INFO] Validated Customer Number (row 1) is read-only - Class: sapMInputBase sapMInputBaseHeightMargin sapMInput sapMInputBaseHasEndIcons
+[2026-03-27 16:17:56] [INFO] Validated Acct group (row 1) is read-only - Class: sapMInputBase sapMInputBaseHeightMargin sapMInput sapMInputBaseReadonly
+[2026-03-27 16:17:56] [INFO] Validated Name (row 1) is read-only - Class: sapMInputBase sapMInputBaseHeightMargin sapMInput sapMInputBaseReadonly
+[2026-03-27 16:17:57] [INFO] Validated Customer Number (row 2) is read-only - Class: sapMInputBase sapMInputBaseHeightMargin sapMInput sapMInputBaseHasEndIcons
+[2026-03-27 16:17:57] [INFO] Validated Acct group (row 2) is read-only - Class: sapMInputBase sapMInputBaseHeightMargin sapMInput sapMInputBaseReadonly
+[2026-03-27 16:17:58] [INFO] Validated Name (row 2) is read-only - Class: sapMInputBase sapMInputBaseHeightMargin sapMInput sapMInputBaseReadonly
+[2026-03-27 16:17:58] [INFO] Validating mandatory field error messages for fields: Sales Organization, Distribution Channel, Division in first 2 rows
+[2026-03-27 16:17:58] [INFO] Fetching 2 rows from table
+[2026-03-27 16:17:58] [INFO] Table is ready
+[2026-03-27 16:17:58] [INFO] Row 1: {"Sales Organization":"","Distribution Channel":"","Division":""}
+[2026-03-27 16:17:58] [INFO] Row 2: {"Sales Organization":"","Distribution Channel":"","Division":""}
+[2026-03-27 16:17:58] [INFO] UI Data: [{"Sales Organization":"","Distribution Channel":"","Division":""},{"Sales Organization":"","Distribution Channel":"","Division":""}]
+[2026-03-27 16:17:58] [INFO] Expected Errors: Row1 - Sales Organization, Row1 - Distribution Channel, Row1 - Division, Row2 - Sales Organization, Row2 - Distribution Channel, Row2 - Division
+[2026-03-27 16:17:58] [INFO] Clicking Status Complete...
+[2026-03-27 16:17:58] [INFO] Status completed
+[2026-03-27 16:17:59] [INFO] Actual Errors: Field VKORG ( Sales Organization ) required for view ( KOR2 ) | Row1 - Sales Organization, Field VTWEG ( Distribution Channel ) required for view ( KOR2 ) | Row1 - Distribution Channel, Field SPART ( Division ) required for view ( KOR2 ) | Row1 - Division, Field VKORG ( Sales Organization ) required for view ( KOR2 ) | Row2 - Sales Organization, Field VTWEG ( Distribution Channel ) required for view ( KOR2 ) | Row2 - Distribution Channel, Field SPART ( Division ) required for view ( KOR2 ) | Row2 - Division
+[2026-03-27 16:17:59] [INFO] Validated error: Row1 - Sales Organization
+[2026-03-27 16:17:59] [INFO] Validated error: Row1 - Distribution Channel
+[2026-03-27 16:17:59] [INFO] Validated error: Row1 - Division
+[2026-03-27 16:17:59] [INFO] Validated error: Row2 - Sales Organization
+[2026-03-27 16:17:59] [INFO] Validated error: Row2 - Distribution Channel
+[2026-03-27 16:17:59] [INFO] Validated error: Row2 - Division
+[2026-03-27 16:17:59] [INFO] Expected error count: 6, Actual error count: 6
+[2026-03-27 16:17:59] [INFO] Mandatory field error message validation passed
+[2026-03-27 16:17:59] [INFO] END: Validate Mandatory and Readonly fields in Customer sales view (4662ms)
+[2026-03-27 16:17:59] [INFO] START: Validate Customer sales fields are auto-populated
+[2026-03-27 16:17:59] [INFO] Fetching 2 rows from table
+[2026-03-27 16:17:59] [INFO] Table is ready
+[2026-03-27 16:17:59] [INFO] Row 1: {"Customer Number":"$1","Acct group":"CUST","Name":"BP Test1","Sales Organization":"","Distribution Channel":"","Division":""}
+[2026-03-27 16:18:00] [INFO] Row 2: {"Customer Number":"$2","Acct group":"CUST","Name":"BP Test2","Sales Organization":"","Distribution Channel":"","Division":""}
+[2026-03-27 16:18:00] [INFO] Validating rows data
+[2026-03-27 16:18:00] [INFO] Data fetched from UI: [{"Customer Number":"$1","Acct group":"CUST","Name":"BP Test1","Sales Organization":"","Distribution Channel":"","Division":""},{"Customer Number":"$2","Acct group":"CUST","Name":"BP Test2","Sales Organization":"","Distribution Channel":"","Division":""}]
+[2026-03-27 16:18:00] [INFO] Data expected: [{"Customer Number":"$1","Acct group":"CUST","Name":"BP Test1"},{"Customer Number":"$2","Acct group":"CUST","Name":"BP Test2"}]
+[2026-03-27 16:18:00] [INFO] Validating Row 1
+[2026-03-27 16:18:00] [INFO] Validated row 1: Customer Number = "$1"
+[2026-03-27 16:18:00] [INFO] Validated row 1: Acct group = "CUST"
+[2026-03-27 16:18:00] [INFO] Validated row 1: Name = "BP Test1"
+[2026-03-27 16:18:00] [INFO] Validating Row 2
+[2026-03-27 16:18:00] [INFO] Validated row 2: Customer Number = "$2"
+[2026-03-27 16:18:00] [INFO] Validated row 2: Acct group = "CUST"
+[2026-03-27 16:18:00] [INFO] Validated row 2: Name = "BP Test2"
+[2026-03-27 16:18:00] [INFO] END: Validate Customer sales fields are auto-populated (139ms)
+[2026-03-27 16:18:00] [INFO] START: Enter data in Customer sales fields and Submit request
+[2026-03-27 16:18:00] [INFO] Executing dynamic data entry for 2 rows with action map: {"Customer Number":"validate","Acct group":"validate","Name":"validate","Sales Organization":"input","Distribution Channel":"input","Division":"input"}
+[2026-03-27 16:18:00] [INFO] END: Enter data in Customer sales fields and Submit request (379ms)
+[2026-03-27 16:18:00] [INFO] Submitting request and capturing request number...
+[2026-03-27 16:18:00] [INFO] Clicking Status Complete...
+[2026-03-27 16:18:00] [INFO] Status completed
+[2026-03-27 16:18:01] [INFO] Progress reached 100%
+[2026-03-27 16:18:07] [INFO] Request Number: 38648
+[2026-03-27 16:18:07] [INFO] START: Navigate to My Tasklist and search for the created request Task
+[2026-03-27 16:18:21] [INFO] Searching task for request: 38648
+[2026-03-27 16:18:21] [INFO] Search triggered
+[2026-03-27 16:18:25] [INFO] Task search results loaded
+[2026-03-27 16:18:25] [INFO] END: Navigate to My Tasklist and search for the created request Task (17857ms)
+[2026-03-27 16:18:25] [INFO] Attempt 1: Finding executable task
+[2026-03-27 16:18:25] [INFO] Checking Step 100 | UI Present: true
+[2026-03-27 16:18:25] [INFO] Next executable task found: Step 100
+[2026-03-27 16:18:25] [INFO] Executing task: Step 100 - BP Data collection
+[2026-03-27 16:18:25] [INFO] Validating Step: Step 100, Status: Ready to process
+[2026-03-27 16:18:25] [INFO] Clicking task: BP Data collection for request: 38648
+[2026-03-27 16:18:25] [INFO] Task clicked, waiting for view to load
+[2026-03-27 16:18:25] [INFO] START: Status complete BOR1 view
+[2026-03-27 16:18:25] [INFO] Clicking Status Complete...
+[2026-03-27 16:18:28] [INFO] Status completed
+[2026-03-27 16:18:33] [INFO] END: Status complete BOR1 view (8541ms)
+[2026-03-27 16:18:33] [INFO] START: Validate Mandatory and Readonly fields in Address view
+[2026-03-27 16:18:33] [INFO] Validating mandatory fields: Customer Account Grp, Title, Search Term 1, Search Term 2, House Number, Street, Post Code, Region, Country Key, Mobile Number, E-Mail Address
+[2026-03-27 16:18:33] [INFO] All specified fields are mandatory
+[2026-03-27 16:18:33] [INFO] Validating read-only fields: BP No, Name1 in first 2 rows
+[2026-03-27 16:18:34] [INFO] Validated BP No (row 1) is read-only - Class: sapMInputBase sapMInputBaseHeightMargin sapMInput sapMInputBaseReadonly
+[2026-03-27 16:18:35] [INFO] Validated Name1 (row 1) is read-only - Class: sapMInputBase sapMInputBaseHeightMargin sapMInput sapMInputBaseReadonly
+[2026-03-27 16:18:35] [INFO] Validated BP No (row 2) is read-only - Class: sapMInputBase sapMInputBaseHeightMargin sapMInput sapMInputBaseReadonly
+[2026-03-27 16:18:36] [INFO] Validated Name1 (row 2) is read-only - Class: sapMInputBase sapMInputBaseHeightMargin sapMInput sapMInputBaseReadonly
+[2026-03-27 16:18:36] [INFO] Validating mandatory field error messages for fields: Customer Account Grp, Title, Search Term 1, Search Term 2, House Number, Street, Post Code, Region, Country Key, Mobile Number, E-Mail Address in first 2 rows
+[2026-03-27 16:18:36] [INFO] Fetching 2 rows from table
+[2026-03-27 16:18:36] [INFO] Table is ready
+[2026-03-27 16:18:36] [INFO] Row 1: {"Customer Account Grp":"","Title":"","Search Term 1":"","Search Term 2":"","House Number":"","Street":"","Post Code":"","Region":"","Country Key":"","Mobile Number":"","E-Mail Address":""}
+[2026-03-27 16:18:36] [INFO] Row 2: {"Customer Account Grp":"CUST","Title":"","Search Term 1":"","Search Term 2":"","House Number":"","Street":"","Post Code":"","Region":"SHR","Country Key":"GB","Mobile Number":"","E-Mail Address":""}
+[2026-03-27 16:18:36] [INFO] UI Data: [{"Customer Account Grp":"","Title":"","Search Term 1":"","Search Term 2":"","House Number":"","Street":"","Post Code":"","Region":"","Country Key":"","Mobile Number":"","E-Mail Address":""},{"Customer Account Grp":"CUST","Title":"","Search Term 1":"","Search Term 2":"","House Number":"","Street":"","Post Code":"","Region":"SHR","Country Key":"GB","Mobile Number":"","E-Mail Address":""}]
+[2026-03-27 16:18:36] [INFO] Expected Errors: Row1 - Customer Account Grp, Row1 - Title, Row1 - Search Term 1, Row1 - Search Term 2, Row1 - House Number, Row1 - Street, Row1 - Post Code, Row1 - Region, Row1 - Country Key, Row1 - Mobile Number, Row1 - E-Mail Address, Row2 - Title, Row2 - Search Term 1, Row2 - Search Term 2, Row2 - House Number, Row2 - Street, Row2 - Post Code, Row2 - Mobile Number, Row2 - E-Mail Address
+[2026-03-27 16:18:36] [INFO] Clicking Status Complete...
+[2026-03-27 16:18:36] [INFO] Status completed
+[2026-03-27 16:18:37] [INFO] Actual Errors: Field KTOKD ( Customer Account Grp ) required for view ( BP01 ) | Row: 1 - Customer Account Grp, Field TITLE_MEDI ( Title ) required for view ( BP01 ) | Row: 1 - Title, Field SORT1 ( Search Term 1 ) required for view ( BP01 ) | Row: 1 - Search Term 1, Field SORT2 ( Search Term 2 ) required for view ( BP01 ) | Row: 1 - Search Term 2, Field HOUSE_NUM1 ( House Number ) required for view ( BP01 ) | Row: 1 - House Number, Field STREET ( Street ) required for view ( BP01 ) | Row: 1 - Street, Field POST_CODE1 ( Post Code ) required for view ( BP01 ) | Row: 1 - Post Code, Field REGION ( Region ) required for view ( BP01 ) | Row: 1 - Region, Field COUNTRY ( Country Key ) required for view ( BP01 ) | Row: 1 - Country Key, Field TELEPHONE ( Mobile Number ) required for view ( BP01 ) | Row: 1 - Mobile Number, Field SMTP_ADDR ( E-Mail Address ) required for view ( BP01 ) | Row: 1 - E-Mail Address, Field TITLE_MEDI ( Title ) required for view ( BP01 ) | Row: 2 - Title, Field SORT1 ( Search Term 1 ) required for view ( BP01 ) | Row: 2 - Search Term 1, Field SORT2 ( Search Term 2 ) required for view ( BP01 ) | Row: 2 - Search Term 2, Field HOUSE_NUM1 ( House Number ) required for view ( BP01 ) | Row: 2 - House Number, Field STREET ( Street ) required for view ( BP01 ) | Row: 2 - Street, Field POST_CODE1 ( Post Code ) required for view ( BP01 ) | Row: 2 - Post Code, Field TELEPHONE ( Mobile Number ) required for view ( BP01 ) | Row: 2 - Mobile Number, Field SMTP_ADDR ( E-Mail Address ) required for view ( BP01 ) | Row: 2 - E-Mail Address
+[2026-03-27 16:18:37] [INFO] Validated error: Row1 - Customer Account Grp
+[2026-03-27 16:18:37] [INFO] Validated error: Row1 - Title
+[2026-03-27 16:18:37] [INFO] Validated error: Row1 - Search Term 1
+[2026-03-27 16:18:37] [INFO] Validated error: Row1 - Search Term 2
+[2026-03-27 16:18:37] [INFO] Validated error: Row1 - House Number
+[2026-03-27 16:18:37] [INFO] Validated error: Row1 - Street
+[2026-03-27 16:18:37] [INFO] Validated error: Row1 - Post Code
+[2026-03-27 16:18:37] [INFO] Validated error: Row1 - Region
+[2026-03-27 16:18:37] [INFO] Validated error: Row1 - Country Key
+[2026-03-27 16:18:37] [INFO] Validated error: Row1 - Mobile Number
+[2026-03-27 16:18:37] [INFO] Validated error: Row1 - E-Mail Address
+[2026-03-27 16:18:37] [INFO] Validated error: Row2 - Title
+[2026-03-27 16:18:37] [INFO] Validated error: Row2 - Search Term 1
+[2026-03-27 16:18:37] [INFO] Validated error: Row2 - Search Term 2
+[2026-03-27 16:18:37] [INFO] Validated error: Row2 - House Number
+[2026-03-27 16:18:37] [INFO] Validated error: Row2 - Street
+[2026-03-27 16:18:37] [INFO] Validated error: Row2 - Post Code
+[2026-03-27 16:18:37] [INFO] Validated error: Row2 - Mobile Number
+[2026-03-27 16:18:37] [INFO] Validated error: Row2 - E-Mail Address
+[2026-03-27 16:18:37] [INFO] Expected error count: 19, Actual error count: 19
+[2026-03-27 16:18:37] [INFO] Mandatory field error message validation passed
+[2026-03-27 16:18:37] [INFO] END: Validate Mandatory and Readonly fields in Address view (4037ms)
+[2026-03-27 16:18:37] [INFO] START: Validate Address fields are auto-populated and validate conditional rule and cross view field rule
+[2026-03-27 16:18:37] [INFO] Fetching 2 rows from table
+[2026-03-27 16:18:37] [INFO] Table is ready
+[2026-03-27 16:18:38] [INFO] Row 1: {"BP No":"$1","Customer Account Grp":"","Title":"","Name1":"BP Test1","Name 2":"","Search Term 1":"","Search Term 2":"","House Number":"","Street":"","City":"","Post Code":"","Region":"","Country Key":"","Telephone Number":"","Mobile Number":"","Fax Number":"","E-Mail Address":""}
+[2026-03-27 16:18:38] [INFO] Row 2: {"BP No":"$2","Customer Account Grp":"CUST","Title":"","Name1":"BP Test2","Name 2":"","Search Term 1":"","Search Term 2":"","House Number":"","Street":"","City":"","Post Code":"","Region":"SHR","Country Key":"GB","Telephone Number":"","Mobile Number":"","Fax Number":"","E-Mail Address":""}
+[2026-03-27 16:18:38] [INFO] Validating rows data
+[2026-03-27 16:18:38] [INFO] Data fetched from UI: [{"BP No":"$1","Customer Account Grp":"","Title":"","Name1":"BP Test1","Name 2":"","Search Term 1":"","Search Term 2":"","House Number":"","Street":"","City":"","Post Code":"","Region":"","Country Key":"","Telephone Number":"","Mobile Number":"","Fax Number":"","E-Mail Address":""},{"BP No":"$2","Customer Account Grp":"CUST","Title":"","Name1":"BP Test2","Name 2":"","Search Term 1":"","Search Term 2":"","House Number":"","Street":"","City":"","Post Code":"","Region":"SHR","Country Key":"GB","Telephone Number":"","Mobile Number":"","Fax Number":"","E-Mail Address":""}]
+[2026-03-27 16:18:38] [INFO] Data expected: [{"BP No":"$1","Name1":"BP Test1","Country Key":"No Value","Region":"No Value","Customer Account Grp":"No Value"},{"BP No":"$2","Name1":"BP Test2","Country Key":"GB","Region":"SHR","Customer Account Grp":"CUST"}]
+[2026-03-27 16:18:38] [INFO] Validating Row 1
+[2026-03-27 16:18:38] [INFO] Validated row 1: BP No = "$1"
+[2026-03-27 16:18:38] [INFO] Validated row 1: Name1 = "BP Test1"
+[2026-03-27 16:18:38] [INFO] Validated row 1: Country Key = ""
+[2026-03-27 16:18:38] [INFO] Validated row 1: Region = ""
+[2026-03-27 16:18:38] [INFO] Validated row 1: Customer Account Grp = ""
+[2026-03-27 16:18:38] [INFO] Validating Row 2
+[2026-03-27 16:18:38] [INFO] Validated row 2: BP No = "$2"
+[2026-03-27 16:18:38] [INFO] Validated row 2: Name1 = "BP Test2"
+[2026-03-27 16:18:38] [INFO] Validated row 2: Country Key = "GB"
+[2026-03-27 16:18:38] [INFO] Validated row 2: Region = "SHR"
+[2026-03-27 16:18:38] [INFO] Validated row 2: Customer Account Grp = "CUST"
+[2026-03-27 16:18:38] [INFO] Validating conditional field rules with conditions {"Region":"SHR"} and expected fields {"Country Key":"GB"}
+[2026-03-27 16:18:38] [INFO] Rule Passed: {"Region":"SHR"} → Country Key="GB"
+[2026-03-27 16:18:38] [INFO] Validating field "Customer Account Grp" with conditions {"Name1":"BP Test2"} using mapping on key "BP No"
+[2026-03-27 16:18:38] [INFO] Fetching 2 rows from table
+[2026-03-27 16:18:38] [INFO] Table is ready
+[2026-03-27 16:18:38] [INFO] Row 1: {"BP No":"$1","Customer Account Grp":"","Name1":"BP Test1"}
+[2026-03-27 16:18:38] [INFO] Row 2: {"BP No":"$2","Customer Account Grp":"CUST","Name1":"BP Test2"}
+[2026-03-27 16:18:38] [INFO] Cross-view validated: {"Name1":"BP Test2"} → $2 → Customer Account Grp="CUST"
+[2026-03-27 16:18:38] [INFO] END: Validate Address fields are auto-populated and validate conditional rule and cross view field rule (767ms)
+[2026-03-27 16:18:38] [INFO] START: Enter data in Address fields and Complete Task 100
+[2026-03-27 16:18:38] [INFO] Executing dynamic data entry for 2 rows with action map: {"BP No":"validate","Customer Account Grp":"input","Title":"input","Name1":"validate","Name 2":"input","Search Term 1":"input","Search Term 2":"input","House Number":"input","Street":"input","City":"input","Post Code":"input","Region":"input","Country Key":"input","Telephone Number":"input","Mobile Number":"input","Fax Number":"input","E-Mail Address":"input"}
+[2026-03-27 16:18:40] [INFO] END: Enter data in Address fields and Complete Task 100 (1919ms)
+[2026-03-27 16:18:40] [INFO] START: Execute Task: Step 100 - Save
+[2026-03-27 16:18:40] [INFO] Clicking Status Complete...
+[2026-03-27 16:18:40] [INFO] Status completed
+[2026-03-27 16:18:46] [INFO] Progress reached 100%
+[2026-03-27 16:18:46] [INFO] Completing task Save workflow
+[2026-03-27 16:18:47] [INFO] Task completed and navigated back to Task List
+[2026-03-27 16:18:47] [INFO] END: Execute Task: Step 100 - Save (7173ms)
+[2026-03-27 16:18:47] [INFO] START: Finalize Task: Step 100 - Save
+[2026-03-27 16:18:47] [INFO] Finalizing task: Step 100
+[2026-03-27 16:18:47] [INFO] Refreshing task list...
+[2026-03-27 16:18:48] [INFO] Task list refreshed for request: 38648
+[2026-03-27 16:18:48] [INFO] Marking completed: Step 100
+[2026-03-27 16:18:48] [INFO] END: Finalize Task: Step 100 - Save (380ms)
+[2026-03-27 16:18:48] [INFO] Attempt 1: Finding executable task
+[2026-03-27 16:18:48] [INFO] Checking Step 200 | UI Present: true
+[2026-03-27 16:18:48] [INFO] Next executable task found: Step 200
+[2026-03-27 16:18:48] [INFO] Executing task: Step 200 - Tax Data collection
+[2026-03-27 16:18:48] [INFO] Validating Step: Step 200, Status: Ready to process
+[2026-03-27 16:18:48] [INFO] Clicking task: Tax Data collection for request: 38648
+[2026-03-27 16:18:48] [INFO] Task clicked, waiting for view to load
+[2026-03-27 16:18:48] [INFO] START: Status complete Address View
+[2026-03-27 16:18:48] [INFO] Clicking Status Complete...
+[2026-03-27 16:18:50] [INFO] Status completed
+[2026-03-27 16:18:55] [INFO] END: Status complete Address View (7406ms)
+[2026-03-27 16:18:55] [INFO] START: Validate Mandatory and Readonly fields in Identification data
+[2026-03-27 16:18:55] [INFO] Validating mandatory fields: Identification Type, Identification No, Date of Entry for ID, Valid from Date, Valid to date, Ctry in Which ID val, Region
+[2026-03-27 16:18:55] [INFO] All specified fields are mandatory
+[2026-03-27 16:18:55] [INFO] Validating read-only fields: BP No, Name in first 2 rows
+[2026-03-27 16:18:56] [INFO] Validated BP No (row 1) is read-only - Class: sapMInputBase sapMInputBaseHeightMargin sapMInput sapMInputBaseHasEndIcons
+[2026-03-27 16:18:57] [INFO] Validated Name (row 1) is read-only - Class: sapMInputBase sapMInputBaseHeightMargin sapMInput sapMInputBaseReadonly
+[2026-03-27 16:18:57] [INFO] Validated BP No (row 2) is read-only - Class: sapMInputBase sapMInputBaseHeightMargin sapMInput sapMInputBaseHasEndIcons
+[2026-03-27 16:18:58] [INFO] Validated Name (row 2) is read-only - Class: sapMInputBase sapMInputBaseHeightMargin sapMInput sapMInputBaseReadonly
+[2026-03-27 16:18:58] [INFO] Validating mandatory field error messages for fields: Identification Type, Identification No, Date of Entry for ID, Valid from Date, Valid to date, Ctry in Which ID val, Region in first 2 rows
+[2026-03-27 16:18:58] [INFO] Fetching 2 rows from table
+[2026-03-27 16:18:58] [INFO] Table is ready
+[2026-03-27 16:18:58] [INFO] Row 1: {"Identification Type":"","Identification No":"","Date of Entry for ID":"March 27, 2026","Valid from Date":"March 27, 2026","Valid to date":"December 31, 9999","Ctry in Which ID val":"","Region":""}
+[2026-03-27 16:18:58] [INFO] Row 2: {"Identification Type":"","Identification No":"","Date of Entry for ID":"March 27, 2026","Valid from Date":"March 27, 2026","Valid to date":"December 31, 9999","Ctry in Which ID val":"","Region":""}
+[2026-03-27 16:18:58] [INFO] UI Data: [{"Identification Type":"","Identification No":"","Date of Entry for ID":"March 27, 2026","Valid from Date":"March 27, 2026","Valid to date":"December 31, 9999","Ctry in Which ID val":"","Region":""},{"Identification Type":"","Identification No":"","Date of Entry for ID":"March 27, 2026","Valid from Date":"March 27, 2026","Valid to date":"December 31, 9999","Ctry in Which ID val":"","Region":""}]
+[2026-03-27 16:18:58] [INFO] Expected Errors: Row1 - Identification Type, Row1 - Identification No, Row1 - Ctry in Which ID val, Row1 - Region, Row2 - Identification Type, Row2 - Identification No, Row2 - Ctry in Which ID val, Row2 - Region
+[2026-03-27 16:18:58] [INFO] Clicking Status Complete...
+[2026-03-27 16:18:58] [INFO] Status completed
+[2026-03-27 16:18:59] [INFO] Actual Errors: Field TYPE ( Identification Type ) required for view ( BP10 ) | Row: 1 - Identification Type, Field IDNUMBER ( Identification No ) required for view ( BP10 ) | Row: 1 - Identification No, Field COUNTRY ( Ctry in Which ID val ) required for view ( BP10 ) | Row: 1 - Ctry in Which ID val, Field REGION ( Region ) required for view ( BP10 ) | Row: 1 - Region, Field TYPE ( Identification Type ) required for view ( BP10 ) | Row: 2 - Identification Type, Field IDNUMBER ( Identification No ) required for view ( BP10 ) | Row: 2 - Identification No, Field COUNTRY ( Ctry in Which ID val ) required for view ( BP10 ) | Row: 2 - Ctry in Which ID val, Field REGION ( Region ) required for view ( BP10 ) | Row: 2 - Region
+[2026-03-27 16:18:59] [INFO] Validated error: Row1 - Identification Type
+[2026-03-27 16:18:59] [INFO] Validated error: Row1 - Identification No
+[2026-03-27 16:18:59] [INFO] Validated error: Row1 - Ctry in Which ID val
+[2026-03-27 16:18:59] [INFO] Validated error: Row1 - Region
+[2026-03-27 16:18:59] [INFO] Validated error: Row2 - Identification Type
+[2026-03-27 16:18:59] [INFO] Validated error: Row2 - Identification No
+[2026-03-27 16:18:59] [INFO] Validated error: Row2 - Ctry in Which ID val
+[2026-03-27 16:18:59] [INFO] Validated error: Row2 - Region
+[2026-03-27 16:18:59] [INFO] Expected error count: 8, Actual error count: 8
+[2026-03-27 16:18:59] [INFO] Mandatory field error message validation passed
+[2026-03-27 16:18:59] [INFO] END: Validate Mandatory and Readonly fields in Identification data (3766ms)
+[2026-03-27 16:18:59] [INFO] START: Validate Identification data fields are auto-populated
+[2026-03-27 16:18:59] [INFO] Fetching 2 rows from table
+[2026-03-27 16:18:59] [INFO] Table is ready
+[2026-03-27 16:18:59] [INFO] Row 1: {"BP No":"$1","Name":"BP Test1","Identification Type":"","Identification No":"","Date of Entry for ID":"March 27, 2026","Resp Institute":"","Valid from Date":"March 27, 2026","Valid to date":"December 31, 9999","Ctry in Which ID val":"","Region":""}
+[2026-03-27 16:19:00] [INFO] Row 2: {"BP No":"$2","Name":"BP Test2","Identification Type":"","Identification No":"","Date of Entry for ID":"March 27, 2026","Resp Institute":"","Valid from Date":"March 27, 2026","Valid to date":"December 31, 9999","Ctry in Which ID val":"","Region":""}
+[2026-03-27 16:19:00] [INFO] Validating rows data
+[2026-03-27 16:19:00] [INFO] Data fetched from UI: [{"BP No":"$1","Name":"BP Test1","Identification Type":"","Identification No":"","Date of Entry for ID":"March 27, 2026","Resp Institute":"","Valid from Date":"March 27, 2026","Valid to date":"December 31, 9999","Ctry in Which ID val":"","Region":""},{"BP No":"$2","Name":"BP Test2","Identification Type":"","Identification No":"","Date of Entry for ID":"March 27, 2026","Resp Institute":"","Valid from Date":"March 27, 2026","Valid to date":"December 31, 9999","Ctry in Which ID val":"","Region":""}]
+[2026-03-27 16:19:00] [INFO] Data expected: [{"BP No":"$1","Name":"BP Test1","Date of Entry for ID":"March 27, 2026","Valid from Date":"March 27, 2026","Valid to date":"December 31, 9999"},{"BP No":"$2","Name":"BP Test2","Date of Entry for ID":"March 27, 2026","Valid from Date":"March 27, 2026","Valid to date":"December 31, 9999"},{"Valid from Date":"s"}]
+[2026-03-27 16:19:00] [ERROR] FAILED: Validate Identification data fields are auto-populated
