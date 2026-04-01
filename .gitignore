@@ -144,3 +144,13 @@ dist
 # Vite logs files
 vite.config.js.timestamp-*
 vite.config.ts.timestamp-*
+
+# macOS
+.DS_Store
+
+# Playwright custom outputs (your project)
+reports/
+screenshots/
+
+# Excel temp files
+~$*.xlsx

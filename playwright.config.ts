@@ -10,7 +10,7 @@ export default defineConfig({
 
   forbidOnly: !!process.env.CI,
 
-  retries: process.env.CI ? 2 : 0,
+  retries: process.env.CI ? 1 : 0,
 
   workers: process.env.CI ? 1 : undefined,
 
@@ -22,6 +22,7 @@ export default defineConfig({
   ],
 
   use: {
+    headless: process.env.CI ? true : false,
     screenshot: 'only-on-failure',
     video: 'on',
     trace: 'on-first-retry',
@@ -33,8 +34,7 @@ export default defineConfig({
       use: {
         viewport: null,
         launchOptions: {
-          headless: false,
-          args: ['--start-maximized'],
+          args: process.env.CI ? [] : ['--start-maximized'],
         },
       },
     },
