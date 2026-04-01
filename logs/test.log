@@ -506,3 +506,11 @@
 [2026-03-27 16:19:00] [INFO] Data fetched from UI: [{"BP No":"$1","Name":"BP Test1","Identification Type":"","Identification No":"","Date of Entry for ID":"March 27, 2026","Resp Institute":"","Valid from Date":"March 27, 2026","Valid to date":"December 31, 9999","Ctry in Which ID val":"","Region":""},{"BP No":"$2","Name":"BP Test2","Identification Type":"","Identification No":"","Date of Entry for ID":"March 27, 2026","Resp Institute":"","Valid from Date":"March 27, 2026","Valid to date":"December 31, 9999","Ctry in Which ID val":"","Region":""}]
 [2026-03-27 16:19:00] [INFO] Data expected: [{"BP No":"$1","Name":"BP Test1","Date of Entry for ID":"March 27, 2026","Valid from Date":"March 27, 2026","Valid to date":"December 31, 9999"},{"BP No":"$2","Name":"BP Test2","Date of Entry for ID":"March 27, 2026","Valid from Date":"March 27, 2026","Valid to date":"December 31, 9999"},{"Valid from Date":"s"}]
 [2026-03-27 16:19:00] [ERROR] FAILED: Validate Identification data fields are auto-populated
+[2026-04-01 13:58:44] [INFO] START: Login to Application
+[2026-04-01 13:58:47] [INFO] END: Login to Application (2500ms)
+[2026-04-01 13:58:47] [INFO] START: Navigate to Create Request Page
+[2026-04-01 13:59:04] [INFO] END: Navigate to Create Request Page (17749ms)
+[2026-04-01 13:59:04] [INFO] START: Select Template
+[2026-04-01 13:59:04] [INFO] END: Select Template (60ms)
+[2026-04-01 13:59:04] [INFO] START: Enter Request Details
+[2026-04-01 13:59:15] [INFO] END: Enter Request Details (10618ms)
