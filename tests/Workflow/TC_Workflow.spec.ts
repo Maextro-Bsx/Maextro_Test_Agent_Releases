@@ -24,8 +24,8 @@ test('Business Partner Request Creation - Excel Driven', async ({ page }) => {
   }
   // const excelPath = `test-data/Templates/${templateId}.xlsx`;
   const environment = process.env.ENVIRONMENT;
-  // const excelPath = `uploads/${environment}/${templateId}.xlsx`;
-  const excelPath = `test-data/Templates/DEV/R1.xlsx`;
+  const excelPath = `uploads/${environment}/${templateId}.xlsx`;
+  // const excelPath = `test-data/Templates/DEV/R1.xlsx`;
   logger.info(`Using Template: ${templateId}`);
   logger.info(`Excel Path: ${excelPath}`);
 

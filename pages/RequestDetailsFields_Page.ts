@@ -944,7 +944,7 @@ private async handleApproveFlow(): Promise<void> {
     await this.page.waitForTimeout(1000);
   }
 
-  for (let i = 0; i < 8; i++) {
+  for (let i = 0; i < 15; i++) {
     const isResultVisible = await this.locators.resultTitle.isVisible({ timeout: 2000 }).catch(() => false);
     if (isResultVisible) {
       logger.info(`Result detected`);
@@ -962,7 +962,7 @@ private async handleApproveFlow(): Promise<void> {
       messages.forEach(text => logger.error(text.trim()));
       throw new Error('Approval failed due to Log messages');
     }
-    await this.page.waitForTimeout(2500); // 🔥 longer wait
+    await this.page.waitForTimeout(2500); 
   }
   throw new Error('Approve flow failed after retries');
 }

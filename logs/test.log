@@ -13116,3 +13116,487 @@ Call log:
 [2026-04-15 10:08:27] [INFO] Typed Material Group = L001
 [2026-04-15 10:08:28] [INFO] Clicking Status Complete...
 [2026-04-15 10:08:35] [INFO] Status completed
+[2026-04-16 12:20:16] [INFO] Using Template: R1
+[2026-04-16 12:20:16] [INFO] Excel Path: test-data/Templates/DEV/R1.xlsx
+[2026-04-16 12:20:16] [INFO] Request Details: {"Object":"Material","Template ID":"R1","CR Description":"Test CR","Reason Code":"Create New Material","Org. Division":"BSX RDS DIVISION","Priority":"Low","Expected Completion Date":"","Request Number":"39444"}
+[2026-04-16 12:20:16] [INFO] Steps: [{"stepNo":"0","taskType":"Create Request","views":["BD1","ORG1","ORG2","ORG3","ORG4","BD2","UOM","BTXT","CTXT"],"action":"Save"},{"stepNo":"100","taskType":"Data Collection","views":["BD1","ORG4"],"action":"Skip"},{"stepNo":"200","taskType":"Data Collection","views":["BD1","STAX","SO","SGP","FTE","STXT"],"action":"Skip"},{"stepNo":"300","taskType":"Data Collection","views":["PUR","PTXT","FTI"],"action":"Skip"},{"stepNo":"400","taskType":"Data Collection","views":["MRP","FCST"],"action":"Skip"},{"stepNo":"500","taskType":"Data Collection","views":["QM"],"action":"Skip"},{"stepNo":"600","taskType":"Data Collection","views":["PSG"],"action":"Skip"},{"stepNo":"700","taskType":"Data Collection","views":["ACC"],"action":"Skip"},{"stepNo":"800","taskType":"Data Approval","views":["BD1","BD2","BTXT","CTXT","UOM","SGP","SO","STAX","FTE","STXT","PUR","PTXT","FTI","MRP","FCST","QM","ACC","PSG"],"action":"Reject -> Approve","condition":"400"}]
+[2026-04-16 12:20:16] [INFO] ---------- GENERATED TASKS ----------
+[2026-04-16 12:20:16] [INFO] -----------------------------------
+[2026-04-16 12:20:16] [INFO] START: Login to Application
+[2026-04-16 12:20:19] [INFO] END: Login to Application (2724ms)
+[2026-04-16 12:20:19] [INFO] START: Navigate to Create Request Page
+[2026-04-16 12:20:36] [INFO] END: Navigate to Create Request Page (17443ms)
+[2026-04-16 12:20:36] [INFO] START: Select Template
+[2026-04-16 12:20:36] [INFO] END: Select Template (75ms)
+[2026-04-16 12:20:36] [INFO] START: Enter Request Details and confirm
+[2026-04-16 12:20:47] [INFO] END: Enter Request Details and confirm (11258ms)
+[2026-04-16 12:20:47] [INFO] Executing dynamic data entry for 1 rows}
+[2026-04-16 12:20:47] [INFO] VIEW TYPE DETECTED → TABLE
+[2026-04-16 12:20:47] [INFO] TABLE → Material
+[2026-04-16 12:20:48] [INFO] TABLE INPUT → Material
+[2026-04-16 12:20:48] [INFO] Typed Material = AutoTestMat7
+[2026-04-16 12:20:48] [INFO] TABLE → Material Description
+[2026-04-16 12:20:48] [INFO] TABLE INPUT → Material Description
+[2026-04-16 12:20:48] [INFO] Typed Material Description = AutoTestMat7 Desc
+[2026-04-16 12:20:48] [INFO] TABLE → UOM
+[2026-04-16 12:20:48] [INFO] TABLE INPUT → UOM
+[2026-04-16 12:20:48] [INFO] Typed UOM = EA
+[2026-04-16 12:20:48] [INFO] TABLE → Material Group
+[2026-04-16 12:20:48] [INFO] TABLE INPUT → Material Group
+[2026-04-16 12:20:48] [INFO] Typed Material Group = L001
+[2026-04-16 12:20:49] [INFO] Clicking Status Complete...
+[2026-04-16 12:20:54] [INFO] Status completed
+[2026-04-16 12:20:57] [INFO] Executing dynamic data entry for 1 rows}
+[2026-04-16 12:20:57] [INFO] VIEW TYPE DETECTED → TABLE
+[2026-04-16 12:20:57] [INFO] TABLE → Plant
+[2026-04-16 12:20:57] [WARN] Input failed for Plant
+[2026-04-16 12:20:57] [INFO] TABLE → Storage Location
+[2026-04-16 12:20:57] [WARN] Input failed for Storage Location
+[2026-04-16 12:20:58] [INFO] Clicking Status Complete...
+[2026-04-16 12:20:59] [INFO] Status completed
+[2026-04-16 12:22:32] [INFO] Using Template: R1
+[2026-04-16 12:22:32] [INFO] Excel Path: test-data/Templates/DEV/R1.xlsx
+[2026-04-16 12:22:32] [INFO] Request Details: {"Object":"Material","Template ID":"R1","CR Description":"Test CR","Reason Code":"Create New Material","Org. Division":"BSX RDS DIVISION","Priority":"Low","Expected Completion Date":"","Request Number":"39444"}
+[2026-04-16 12:22:32] [INFO] Steps: [{"stepNo":"0","taskType":"Create Request","views":["BD1","ORG1","ORG2","ORG3","ORG4","BD2","UOM","BTXT","CTXT"],"action":"Save"},{"stepNo":"100","taskType":"Data Collection","views":["BD1","ORG4"],"action":"Skip"},{"stepNo":"200","taskType":"Data Collection","views":["BD1","STAX","SO","SGP","FTE","STXT"],"action":"Skip"},{"stepNo":"300","taskType":"Data Collection","views":["PUR","PTXT","FTI"],"action":"Skip"},{"stepNo":"400","taskType":"Data Collection","views":["MRP","FCST"],"action":"Skip"},{"stepNo":"500","taskType":"Data Collection","views":["QM"],"action":"Skip"},{"stepNo":"600","taskType":"Data Collection","views":["PSG"],"action":"Skip"},{"stepNo":"700","taskType":"Data Collection","views":["ACC"],"action":"Skip"},{"stepNo":"800","taskType":"Data Approval","views":["BD1","BD2","BTXT","CTXT","UOM","SGP","SO","STAX","FTE","STXT","PUR","PTXT","FTI","MRP","FCST","QM","ACC","PSG"],"action":"Reject -> Approve","condition":"400"}]
+[2026-04-16 12:22:32] [INFO] ---------- GENERATED TASKS ----------
+[2026-04-16 12:22:32] [INFO] -----------------------------------
+[2026-04-16 12:22:32] [INFO] START: Login to Application
+[2026-04-16 12:22:35] [INFO] END: Login to Application (2725ms)
+[2026-04-16 12:22:35] [INFO] START: Navigate to Create Request Page
+[2026-04-16 12:22:54] [INFO] END: Navigate to Create Request Page (18704ms)
+[2026-04-16 12:22:54] [INFO] START: Select Template
+[2026-04-16 12:22:54] [INFO] END: Select Template (76ms)
+[2026-04-16 12:22:54] [INFO] START: Enter Request Details and confirm
+[2026-04-16 12:23:03] [INFO] END: Enter Request Details and confirm (9127ms)
+[2026-04-16 12:23:03] [INFO] Executing dynamic data entry for 1 rows}
+[2026-04-16 12:23:03] [INFO] VIEW TYPE DETECTED → TABLE
+[2026-04-16 12:23:03] [INFO] TABLE → Material
+[2026-04-16 12:23:03] [INFO] TABLE INPUT → Material
+[2026-04-16 12:23:03] [INFO] Typed Material = AutoTestMat7
+[2026-04-16 12:23:03] [INFO] TABLE → Material Description
+[2026-04-16 12:23:03] [INFO] TABLE INPUT → Material Description
+[2026-04-16 12:23:03] [INFO] Typed Material Description = AutoTestMat7 Desc
+[2026-04-16 12:23:03] [INFO] TABLE → UOM
+[2026-04-16 12:23:03] [INFO] TABLE INPUT → UOM
+[2026-04-16 12:23:03] [INFO] Typed UOM = EA
+[2026-04-16 12:23:03] [INFO] TABLE → Material Group
+[2026-04-16 12:23:03] [INFO] TABLE INPUT → Material Group
+[2026-04-16 12:23:03] [INFO] Typed Material Group = L001
+[2026-04-16 12:23:04] [INFO] Clicking Status Complete...
+[2026-04-16 12:23:10] [INFO] Status completed
+[2026-04-16 12:23:13] [INFO] Executing dynamic data entry for 1 rows}
+[2026-04-16 12:23:13] [INFO] VIEW TYPE DETECTED → TABLE
+[2026-04-16 12:23:13] [INFO] TABLE → Plant
+[2026-04-16 12:23:13] [WARN] Input failed for Plant
+[2026-04-16 12:23:13] [INFO] TABLE → Storage Location
+[2026-04-16 12:23:13] [WARN] Input failed for Storage Location
+[2026-04-16 12:23:14] [INFO] Clicking Status Complete...
+[2026-04-16 12:23:15] [INFO] Status completed
+[2026-04-16 12:23:17] [INFO] Executing dynamic data entry for 1 rows}
+[2026-04-16 12:23:17] [INFO] VIEW TYPE DETECTED → TABLE
+[2026-04-16 12:23:17] [INFO] TABLE → Sales Organisation
+[2026-04-16 12:23:17] [WARN] Input failed for Sales Organisation
+[2026-04-16 12:23:17] [INFO] TABLE → Distribution Channel
+[2026-04-16 12:23:17] [WARN] Input failed for Distribution Channel
+[2026-04-16 12:23:18] [INFO] Clicking Status Complete...
+[2026-04-16 12:23:19] [INFO] Status completed
+[2026-04-16 12:24:21] [INFO] Using Template: R1
+[2026-04-16 12:24:21] [INFO] Excel Path: test-data/Templates/DEV/R1.xlsx
+[2026-04-16 12:24:21] [INFO] Request Details: {"Object":"Material","Template ID":"R1","CR Description":"Test CR","Reason Code":"Create New Material","Org. Division":"BSX RDS DIVISION","Priority":"Low","Expected Completion Date":"","Request Number":"39444"}
+[2026-04-16 12:24:21] [INFO] Steps: [{"stepNo":"0","taskType":"Create Request","views":["BD1","ORG1","ORG2","ORG3","ORG4","BD2","UOM","BTXT","CTXT"],"action":"Save"},{"stepNo":"100","taskType":"Data Collection","views":["BD1","ORG4"],"action":"Skip"},{"stepNo":"200","taskType":"Data Collection","views":["BD1","STAX","SO","SGP","FTE","STXT"],"action":"Skip"},{"stepNo":"300","taskType":"Data Collection","views":["PUR","PTXT","FTI"],"action":"Skip"},{"stepNo":"400","taskType":"Data Collection","views":["MRP","FCST"],"action":"Skip"},{"stepNo":"500","taskType":"Data Collection","views":["QM"],"action":"Skip"},{"stepNo":"600","taskType":"Data Collection","views":["PSG"],"action":"Skip"},{"stepNo":"700","taskType":"Data Collection","views":["ACC"],"action":"Skip"},{"stepNo":"800","taskType":"Data Approval","views":["BD1","BD2","BTXT","CTXT","UOM","SGP","SO","STAX","FTE","STXT","PUR","PTXT","FTI","MRP","FCST","QM","ACC","PSG"],"action":"Reject -> Approve","condition":"400"}]
+[2026-04-16 12:24:21] [INFO] ---------- GENERATED TASKS ----------
+[2026-04-16 12:24:21] [INFO] -----------------------------------
+[2026-04-16 12:24:21] [INFO] START: Login to Application
+[2026-04-16 12:24:24] [INFO] END: Login to Application (2843ms)
+[2026-04-16 12:24:24] [INFO] START: Navigate to Create Request Page
+[2026-04-16 12:24:43] [INFO] END: Navigate to Create Request Page (19447ms)
+[2026-04-16 12:24:43] [INFO] START: Select Template
+[2026-04-16 12:24:44] [INFO] END: Select Template (69ms)
+[2026-04-16 12:24:44] [INFO] START: Enter Request Details and confirm
+[2026-04-16 12:24:53] [INFO] END: Enter Request Details and confirm (9645ms)
+[2026-04-16 12:24:53] [INFO] Executing dynamic data entry for 1 rows}
+[2026-04-16 12:24:53] [INFO] VIEW TYPE DETECTED → TABLE
+[2026-04-16 12:24:53] [INFO] TABLE → Material
+[2026-04-16 12:24:53] [INFO] TABLE INPUT → Material
+[2026-04-16 12:24:53] [INFO] Typed Material = AutoTestMat7
+[2026-04-16 12:24:53] [INFO] TABLE → Material Description
+[2026-04-16 12:24:53] [INFO] TABLE INPUT → Material Description
+[2026-04-16 12:24:54] [INFO] Typed Material Description = AutoTestMat7 Desc
+[2026-04-16 12:24:54] [INFO] TABLE → UOM
+[2026-04-16 12:24:54] [INFO] TABLE INPUT → UOM
+[2026-04-16 12:24:54] [INFO] Typed UOM = EA
+[2026-04-16 12:24:54] [INFO] TABLE → Material Group
+[2026-04-16 12:24:54] [INFO] TABLE INPUT → Material Group
+[2026-04-16 12:24:54] [INFO] Typed Material Group = L001
+[2026-04-16 12:24:55] [INFO] Clicking Status Complete...
+[2026-04-16 12:24:58] [INFO] Status completed
+[2026-04-16 12:26:21] [INFO] Using Template: R1
+[2026-04-16 12:26:21] [INFO] Excel Path: test-data/Templates/DEV/R1.xlsx
+[2026-04-16 12:26:21] [INFO] Request Details: {"Object":"Material","Template ID":"R1","CR Description":"Test CR","Reason Code":"Create New Material","Org. Division":"BSX RDS DIVISION","Priority":"Low","Expected Completion Date":"","Request Number":"39444"}
+[2026-04-16 12:26:21] [INFO] Steps: [{"stepNo":"0","taskType":"Create Request","views":["BD1","ORG1","ORG2","ORG3","ORG4","BD2","UOM","BTXT","CTXT"],"action":"Save"},{"stepNo":"100","taskType":"Data Collection","views":["BD1","ORG4"],"action":"Skip"},{"stepNo":"200","taskType":"Data Collection","views":["BD1","STAX","SO","SGP","FTE","STXT"],"action":"Skip"},{"stepNo":"300","taskType":"Data Collection","views":["PUR","PTXT","FTI"],"action":"Skip"},{"stepNo":"400","taskType":"Data Collection","views":["MRP","FCST"],"action":"Skip"},{"stepNo":"500","taskType":"Data Collection","views":["QM"],"action":"Skip"},{"stepNo":"600","taskType":"Data Collection","views":["PSG"],"action":"Skip"},{"stepNo":"700","taskType":"Data Collection","views":["ACC"],"action":"Skip"},{"stepNo":"800","taskType":"Data Approval","views":["BD1","BD2","BTXT","CTXT","UOM","SGP","SO","STAX","FTE","STXT","PUR","PTXT","FTI","MRP","FCST","QM","ACC","PSG"],"action":"Reject -> Approve","condition":"400"}]
+[2026-04-16 12:26:21] [INFO] ---------- GENERATED TASKS ----------
+[2026-04-16 12:26:21] [INFO] -----------------------------------
+[2026-04-16 12:26:21] [INFO] START: Login to Application
+[2026-04-16 12:26:23] [INFO] END: Login to Application (2829ms)
+[2026-04-16 12:26:23] [INFO] START: Navigate to Create Request Page
+[2026-04-16 12:26:45] [INFO] END: Navigate to Create Request Page (21123ms)
+[2026-04-16 12:26:45] [INFO] START: Select Template
+[2026-04-16 12:26:45] [INFO] END: Select Template (77ms)
+[2026-04-16 12:26:45] [INFO] START: Enter Request Details and confirm
+[2026-04-16 12:26:54] [INFO] END: Enter Request Details and confirm (9239ms)
+[2026-04-16 12:26:54] [INFO] Executing dynamic data entry for 1 rows}
+[2026-04-16 12:26:54] [INFO] VIEW TYPE DETECTED → TABLE
+[2026-04-16 12:26:54] [INFO] TABLE → Material
+[2026-04-16 12:26:54] [INFO] TABLE INPUT → Material
+[2026-04-16 12:26:54] [INFO] Typed Material = AutoTestMat7
+[2026-04-16 12:26:54] [INFO] TABLE → Material Description
+[2026-04-16 12:26:54] [INFO] TABLE INPUT → Material Description
+[2026-04-16 12:26:54] [INFO] Typed Material Description = AutoTestMat7 Desc
+[2026-04-16 12:26:54] [INFO] TABLE → UOM
+[2026-04-16 12:26:54] [INFO] TABLE INPUT → UOM
+[2026-04-16 12:26:54] [INFO] Typed UOM = EA
+[2026-04-16 12:26:54] [INFO] TABLE → Material Group
+[2026-04-16 12:26:54] [INFO] TABLE INPUT → Material Group
+[2026-04-16 12:26:55] [INFO] Typed Material Group = L001
+[2026-04-16 12:26:56] [INFO] Clicking Status Complete...
+[2026-04-16 12:26:57] [INFO] Status completed
+[2026-04-16 12:36:31] [INFO] Using Template: R1
+[2026-04-16 12:36:31] [INFO] Excel Path: uploads/DEV/R1.xlsx
+[2026-04-16 12:36:31] [INFO] Request Details: {"Object":"Material","Template ID":"R1","CR Description":"Test CR","Reason Code":"Create New Material","Org. Division":"BSX RDS DIVISION","Priority":"Low","Expected Completion Date":"","Request Number":"39444"}
+[2026-04-16 12:36:31] [INFO] Steps: [{"stepNo":"0","taskType":"Create Request","views":["BD1","ORG1","ORG2","ORG3","ORG4","BD2","UOM","BTXT","CTXT"],"action":"Save"},{"stepNo":"100","taskType":"Data Collection","views":["BD1","ORG4"],"action":"Save"},{"stepNo":"200","taskType":"Data Collection","views":["BD1","STAX","SO","SGP","FTE","STXT"],"action":"Save"},{"stepNo":"300","taskType":"Data Collection","views":["PUR","PTXT","FTI"],"action":"Save"},{"stepNo":"400","taskType":"Data Collection","views":["MRP","FCST"],"action":"Save"},{"stepNo":"500","taskType":"Data Collection","views":["QM"],"action":"Save"},{"stepNo":"600","taskType":"Data Collection","views":["PSG"],"action":"Save"},{"stepNo":"700","taskType":"Data Collection","views":["ACC"],"action":"Save"},{"stepNo":"800","taskType":"Data Approval","views":["BD1","BD2","BTXT","CTXT","UOM","SGP","SO","STAX","FTE","STXT","PUR","PTXT","FTI","MRP","FCST","QM","ACC","PSG"],"action":"Approve","condition":"400"}]
+[2026-04-16 12:36:31] [INFO] ---------- GENERATED TASKS ----------
+[2026-04-16 12:36:31] [INFO] -----------------------------------
+[2026-04-16 12:36:31] [INFO] START: Login to Application
+[2026-04-16 12:36:34] [INFO] END: Login to Application (2587ms)
+[2026-04-16 12:36:34] [INFO] START: Navigate to Create Request Page
+[2026-04-16 12:36:52] [INFO] END: Navigate to Create Request Page (18208ms)
+[2026-04-16 12:36:52] [INFO] START: Select Template
+[2026-04-16 12:36:52] [INFO] END: Select Template (88ms)
+[2026-04-16 12:36:52] [INFO] START: Enter Request Details and confirm
+[2026-04-16 12:37:01] [INFO] END: Enter Request Details and confirm (9110ms)
+[2026-04-16 12:37:01] [INFO] Executing dynamic data entry for 1 rows}
+[2026-04-16 12:37:01] [INFO] VIEW TYPE DETECTED → TABLE
+[2026-04-16 12:37:01] [INFO] TABLE → Material
+[2026-04-16 12:37:02] [INFO] TABLE INPUT → Material
+[2026-04-16 12:37:02] [INFO] Typed Material = AutoTestMat8
+[2026-04-16 12:37:02] [INFO] TABLE → Material Description
+[2026-04-16 12:37:02] [INFO] TABLE INPUT → Material Description
+[2026-04-16 12:37:02] [INFO] Typed Material Description = AutoTestMat8 Desc
+[2026-04-16 12:37:02] [INFO] TABLE → UOM
+[2026-04-16 12:37:02] [INFO] TABLE INPUT → UOM
+[2026-04-16 12:37:02] [INFO] Typed UOM = EA
+[2026-04-16 12:37:02] [INFO] TABLE → Material Group
+[2026-04-16 12:37:02] [INFO] TABLE INPUT → Material Group
+[2026-04-16 12:37:02] [INFO] Typed Material Group = L001
+[2026-04-16 12:37:03] [INFO] Clicking Status Complete...
+[2026-04-16 12:37:08] [INFO] Status completed
+[2026-04-16 12:37:11] [INFO] Executing dynamic data entry for 1 rows}
+[2026-04-16 12:37:11] [INFO] VIEW TYPE DETECTED → TABLE
+[2026-04-16 12:37:11] [INFO] TABLE → Plant
+[2026-04-16 12:37:11] [INFO] TABLE INPUT → Plant
+[2026-04-16 12:37:11] [INFO] Typed Plant = 9000
+[2026-04-16 12:37:11] [INFO] TABLE → Storage Location
+[2026-04-16 12:37:11] [INFO] TABLE INPUT → Storage Location
+[2026-04-16 12:37:11] [INFO] Typed Storage Location = 1010
+[2026-04-16 12:37:12] [INFO] Clicking Status Complete...
+[2026-04-16 12:37:13] [INFO] Status completed
+[2026-04-16 12:37:15] [INFO] Executing dynamic data entry for 1 rows}
+[2026-04-16 12:37:15] [INFO] VIEW TYPE DETECTED → TABLE
+[2026-04-16 12:37:15] [INFO] TABLE → Sales Organisation
+[2026-04-16 12:37:15] [INFO] TABLE INPUT → Sales Organisation
+[2026-04-16 12:37:15] [INFO] Typed Sales Organisation = 9000
+[2026-04-16 12:37:15] [INFO] TABLE → Distribution Channel
+[2026-04-16 12:37:15] [INFO] TABLE INPUT → Distribution Channel
+[2026-04-16 12:37:16] [INFO] Typed Distribution Channel = 10
+[2026-04-16 12:37:17] [INFO] Clicking Status Complete...
+[2026-04-16 12:37:18] [INFO] Status completed
+[2026-04-16 12:37:21] [INFO] Clicking Status Complete...
+[2026-04-16 12:37:22] [INFO] Status completed
+[2026-04-16 12:37:25] [INFO] Clicking Status Complete...
+[2026-04-16 12:37:26] [INFO] Status completed
+[2026-04-16 12:37:30] [INFO] Clicking Status Complete...
+[2026-04-16 12:37:31] [INFO] Status completed
+[2026-04-16 12:37:33] [INFO] Executing dynamic data entry for 1 rows}
+[2026-04-16 12:37:33] [INFO] VIEW TYPE DETECTED → TABLE
+[2026-04-16 12:37:33] [INFO] TABLE → Unit of Dimension
+[2026-04-16 12:37:33] [INFO] TABLE INPUT → Unit of Dimension
+[2026-04-16 12:37:33] [INFO] Typed Unit of Dimension = M
+[2026-04-16 12:37:34] [INFO] Clicking Status Complete...
+[2026-04-16 12:37:35] [INFO] Status completed
+[2026-04-16 12:37:39] [INFO] Clicking Status Complete...
+[2026-04-16 12:37:40] [INFO] Status completed
+[2026-04-16 12:37:43] [INFO] Clicking Status Complete...
+[2026-04-16 12:37:44] [INFO] Status completed
+[2026-04-16 12:37:46] [INFO] Submitting request and capturing request number...
+[2026-04-16 12:37:46] [INFO] Progress reached 100%
+[2026-04-16 12:37:49] [INFO] Request Number: 40046
+[2026-04-16 12:37:49] [INFO] START: Navigate to My Tasklist
+[2026-04-16 12:38:02] [INFO] Searching task for request: 40046
+[2026-04-16 12:38:03] [INFO] Search triggered
+[2026-04-16 12:38:06] [INFO] Task search results loaded
+[2026-04-16 12:38:06] [INFO] END: Navigate to My Tasklist (16304ms)
+[2026-04-16 12:38:06] [INFO] Attempt 1: Finding executable task
+[2026-04-16 12:38:06] [INFO] Checking Step 100 | UI Present: true
+[2026-04-16 12:38:06] [INFO] Next executable task found: Step 100
+[2026-04-16 12:38:06] [INFO] Executing task: Step 100 - Data Collection
+[2026-04-16 12:38:06] [INFO] Clicking task: Step 100 for request: 40046
+[2026-04-16 12:38:06] [INFO] Task clicked, waiting for view to load
+[2026-04-16 12:38:09] [INFO] START: Execute Task: Step 100
+[2026-04-16 12:38:10] [INFO] Clicking Status Complete...
+[2026-04-16 12:38:11] [INFO] Status completed
+[2026-04-16 12:38:13] [INFO] Clicking Status Complete...
+[2026-04-16 12:38:14] [INFO] Status completed
+[2026-04-16 12:38:15] [INFO] END: Execute Task: Step 100 (6137ms)
+[2026-04-16 12:38:15] [INFO] Step: Step 100 | Execution: 1 | Action: Save
+[2026-04-16 12:38:15] [INFO] Executing action: Save
+[2026-04-16 12:38:15] [INFO] Progress reached 100%
+[2026-04-16 12:38:15] [INFO] Completing task Save workflow
+[2026-04-16 12:38:17] [INFO] Confirm popup detected → clicking Yes
+[2026-04-16 12:38:18] [INFO] Task completed and navigated back to Task List
+[2026-04-16 12:38:18] [INFO] Finalizing task: Step 100
+[2026-04-16 12:38:18] [INFO] Refreshing task list...
+[2026-04-16 12:38:19] [INFO] Task list refreshed for request: 40046
+[2026-04-16 12:38:19] [INFO] Marking completed: Step 100
+[2026-04-16 12:38:19] [INFO] Attempt 1: Finding executable task
+[2026-04-16 12:38:19] [INFO] Checking Step 200 | UI Present: true
+[2026-04-16 12:38:19] [INFO] Next executable task found: Step 200
+[2026-04-16 12:38:19] [INFO] Executing task: Step 200 - Data Collection
+[2026-04-16 12:38:19] [INFO] Clicking task: Step 200 for request: 40046
+[2026-04-16 12:38:19] [INFO] Task clicked, waiting for view to load
+[2026-04-16 12:38:22] [INFO] START: Execute Task: Step 200
+[2026-04-16 12:38:23] [INFO] Clicking Status Complete...
+[2026-04-16 12:38:24] [INFO] Status completed
+[2026-04-16 12:38:25] [INFO] Executing dynamic data entry for 1 rows}
+[2026-04-16 12:38:25] [INFO] VIEW TYPE DETECTED → TABLE
+[2026-04-16 12:38:25] [INFO] TABLE → Tax Classification
+[2026-04-16 12:38:25] [INFO] TABLE INPUT → Tax Classification
+[2026-04-16 12:38:25] [INFO] Typed Tax Classification = 1
+[2026-04-16 12:38:27] [INFO] Clicking Status Complete...
+[2026-04-16 12:38:28] [INFO] Status completed
+[2026-04-16 12:38:29] [INFO] Executing dynamic data entry for 1 rows}
+[2026-04-16 12:38:29] [INFO] VIEW TYPE DETECTED → FORM
+[2026-04-16 12:38:29] [INFO] FORM → Item Cat. Group
+[2026-04-16 12:38:29] [INFO] FORM INPUT → Item Cat. Group
+[2026-04-16 12:38:29] [INFO] Typed Item Cat. Group = NORM
+[2026-04-16 12:38:31] [INFO] Clicking Status Complete...
+[2026-04-16 12:38:33] [INFO] Status completed
+[2026-04-16 12:38:34] [INFO] Executing dynamic data entry for 1 rows}
+[2026-04-16 12:38:34] [INFO] VIEW TYPE DETECTED → FORM
+[2026-04-16 12:38:34] [INFO] FORM → Availability check
+[2026-04-16 12:38:34] [INFO] FORM INPUT → Availability check
+[2026-04-16 12:38:34] [INFO] Typed Availability check = ST
+[2026-04-16 12:38:36] [INFO] Clicking Status Complete...
+[2026-04-16 12:38:37] [INFO] Status completed
+[2026-04-16 12:38:39] [INFO] Clicking Status Complete...
+[2026-04-16 12:38:40] [INFO] Status completed
+[2026-04-16 12:38:42] [INFO] Clicking Status Complete...
+[2026-04-16 12:38:43] [INFO] Status completed
+[2026-04-16 12:38:44] [INFO] END: Execute Task: Step 200 (21865ms)
+[2026-04-16 12:38:44] [INFO] Step: Step 200 | Execution: 1 | Action: Save
+[2026-04-16 12:38:44] [INFO] Executing action: Save
+[2026-04-16 12:38:44] [INFO] Progress reached 100%
+[2026-04-16 12:38:44] [INFO] Completing task Save workflow
+[2026-04-16 12:38:46] [INFO] Confirm popup detected → clicking Yes
+[2026-04-16 12:38:47] [INFO] Task completed and navigated back to Task List
+[2026-04-16 12:38:47] [INFO] Finalizing task: Step 200
+[2026-04-16 12:38:47] [INFO] Refreshing task list...
+[2026-04-16 12:38:48] [INFO] Task list refreshed for request: 40046
+[2026-04-16 12:38:48] [INFO] Marking completed: Step 200
+[2026-04-16 12:38:48] [INFO] Attempt 1: Finding executable task
+[2026-04-16 12:38:48] [INFO] Checking Step 300 | UI Present: true
+[2026-04-16 12:38:48] [INFO] Next executable task found: Step 300
+[2026-04-16 12:38:48] [INFO] Executing task: Step 300 - Data Collection
+[2026-04-16 12:38:48] [INFO] Clicking task: Step 300 for request: 40046
+[2026-04-16 12:38:48] [INFO] Task clicked, waiting for view to load
+[2026-04-16 12:38:51] [INFO] START: Execute Task: Step 300
+[2026-04-16 12:38:51] [INFO] Executing dynamic data entry for 1 rows}
+[2026-04-16 12:38:51] [INFO] VIEW TYPE DETECTED → FORM
+[2026-04-16 12:38:51] [INFO] FORM → Purchasing Group
+[2026-04-16 12:38:51] [INFO] FORM INPUT → Purchasing Group
+[2026-04-16 12:38:52] [INFO] Typed Purchasing Group = 001
+[2026-04-16 12:38:54] [INFO] Clicking Status Complete...
+[2026-04-16 12:38:55] [INFO] Status completed
+[2026-04-16 12:38:57] [INFO] Clicking Status Complete...
+[2026-04-16 12:38:58] [INFO] Status completed
+[2026-04-16 12:39:00] [INFO] Clicking Status Complete...
+[2026-04-16 12:39:01] [INFO] Status completed
+[2026-04-16 12:39:02] [INFO] END: Execute Task: Step 300 (10352ms)
+[2026-04-16 12:39:02] [INFO] Step: Step 300 | Execution: 1 | Action: Save
+[2026-04-16 12:39:02] [INFO] Executing action: Save
+[2026-04-16 12:39:02] [INFO] Progress reached 100%
+[2026-04-16 12:39:02] [INFO] Completing task Save workflow
+[2026-04-16 12:39:04] [INFO] Confirm popup detected → clicking Yes
+[2026-04-16 12:39:05] [INFO] Task completed and navigated back to Task List
+[2026-04-16 12:39:05] [INFO] Finalizing task: Step 300
+[2026-04-16 12:39:05] [INFO] Refreshing task list...
+[2026-04-16 12:39:06] [INFO] Task list refreshed for request: 40046
+[2026-04-16 12:39:06] [INFO] Marking completed: Step 300
+[2026-04-16 12:39:06] [INFO] Attempt 1: Finding executable task
+[2026-04-16 12:39:06] [INFO] Checking Step 400 | UI Present: true
+[2026-04-16 12:39:06] [INFO] Next executable task found: Step 400
+[2026-04-16 12:39:06] [INFO] Executing task: Step 400 - Data Collection
+[2026-04-16 12:39:06] [INFO] Clicking task: Step 400 for request: 40046
+[2026-04-16 12:39:06] [INFO] Task clicked, waiting for view to load
+[2026-04-16 12:39:09] [INFO] START: Execute Task: Step 400
+[2026-04-16 12:39:09] [INFO] Executing dynamic data entry for 1 rows}
+[2026-04-16 12:39:09] [INFO] VIEW TYPE DETECTED → FORM
+[2026-04-16 12:39:09] [INFO] FORM → Sch. Margin Key
+[2026-04-16 12:39:09] [INFO] FORM INPUT → Sch. Margin Key
+[2026-04-16 12:39:09] [INFO] Typed Sch. Margin Key = 001
+[2026-04-16 12:39:09] [INFO] FORM → MRP Type
+[2026-04-16 12:39:09] [INFO] FORM INPUT → MRP Type
+[2026-04-16 12:39:10] [INFO] Typed MRP Type = ND
+[2026-04-16 12:39:10] [INFO] FORM → Reorder Point
+[2026-04-16 12:39:10] [INFO] FORM INPUT → Reorder Point
+[2026-04-16 12:39:10] [INFO] Typed Reorder Point = 1
+[2026-04-16 12:39:10] [INFO] FORM → MRP Controller
+[2026-04-16 12:39:10] [INFO] FORM INPUT → MRP Controller
+[2026-04-16 12:39:10] [INFO] Typed MRP Controller = 001
+[2026-04-16 12:39:10] [INFO] FORM → Availability Check
+[2026-04-16 12:39:10] [INFO] FORM INPUT → Availability Check
+[2026-04-16 12:39:10] [INFO] Typed Availability Check = ST
+[2026-04-16 12:39:10] [INFO] FORM → Planned Del. Time
+[2026-04-16 12:39:10] [INFO] FORM INPUT → Planned Del. Time
+[2026-04-16 12:39:10] [INFO] Typed Planned Del. Time = 10
+[2026-04-16 12:39:10] [INFO] FORM → Planning time fence
+[2026-04-16 12:39:10] [INFO] FORM INPUT → Planning time fence
+[2026-04-16 12:39:10] [INFO] Typed Planning time fence = 1
+[2026-04-16 12:39:12] [INFO] Clicking Status Complete...
+[2026-04-16 12:39:13] [INFO] Status completed
+[2026-04-16 12:39:15] [INFO] Clicking Status Complete...
+[2026-04-16 12:39:16] [INFO] Status completed
+[2026-04-16 12:39:17] [INFO] END: Execute Task: Step 400 (8159ms)
+[2026-04-16 12:39:17] [INFO] Step: Step 400 | Execution: 1 | Action: Save
+[2026-04-16 12:39:17] [INFO] Executing action: Save
+[2026-04-16 12:39:17] [INFO] Progress reached 100%
+[2026-04-16 12:39:17] [INFO] Completing task Save workflow
+[2026-04-16 12:39:20] [INFO] Confirm popup detected → clicking Yes
+[2026-04-16 12:39:21] [INFO] Task completed and navigated back to Task List
+[2026-04-16 12:39:21] [INFO] Finalizing task: Step 400
+[2026-04-16 12:39:21] [INFO] Refreshing task list...
+[2026-04-16 12:39:21] [INFO] Task list refreshed for request: 40046
+[2026-04-16 12:39:21] [INFO] Marking completed: Step 400
+[2026-04-16 12:39:21] [INFO] Attempt 1: Finding executable task
+[2026-04-16 12:39:21] [INFO] Checking Step 500 | UI Present: true
+[2026-04-16 12:39:21] [INFO] Next executable task found: Step 500
+[2026-04-16 12:39:21] [INFO] Executing task: Step 500 - Data Collection
+[2026-04-16 12:39:21] [INFO] Clicking task: Step 500 for request: 40046
+[2026-04-16 12:39:21] [INFO] Task clicked, waiting for view to load
+[2026-04-16 12:39:25] [INFO] START: Execute Task: Step 500
+[2026-04-16 12:39:26] [INFO] Clicking Status Complete...
+[2026-04-16 12:39:27] [INFO] Status completed
+[2026-04-16 12:39:28] [INFO] END: Execute Task: Step 500 (3072ms)
+[2026-04-16 12:39:28] [INFO] Step: Step 500 | Execution: 1 | Action: Save
+[2026-04-16 12:39:28] [INFO] Executing action: Save
+[2026-04-16 12:39:28] [INFO] Progress reached 100%
+[2026-04-16 12:39:28] [INFO] Completing task Save workflow
+[2026-04-16 12:39:30] [INFO] Confirm popup detected → clicking Yes
+[2026-04-16 12:39:31] [INFO] Task completed and navigated back to Task List
+[2026-04-16 12:39:31] [INFO] Finalizing task: Step 500
+[2026-04-16 12:39:31] [INFO] Refreshing task list...
+[2026-04-16 12:39:31] [INFO] Task list refreshed for request: 40046
+[2026-04-16 12:39:31] [INFO] Marking completed: Step 500
+[2026-04-16 12:39:31] [INFO] Attempt 1: Finding executable task
+[2026-04-16 12:39:31] [INFO] Checking Step 600 | UI Present: true
+[2026-04-16 12:39:31] [INFO] Next executable task found: Step 600
+[2026-04-16 12:39:31] [INFO] Executing task: Step 600 - Data Collection
+[2026-04-16 12:39:31] [INFO] Clicking task: Step 600 for request: 40046
+[2026-04-16 12:39:32] [INFO] Task clicked, waiting for view to load
+[2026-04-16 12:39:35] [INFO] START: Execute Task: Step 600
+[2026-04-16 12:39:36] [INFO] Clicking Status Complete...
+[2026-04-16 12:39:37] [INFO] Status completed
+[2026-04-16 12:39:38] [INFO] END: Execute Task: Step 600 (3074ms)
+[2026-04-16 12:39:38] [INFO] Step: Step 600 | Execution: 1 | Action: Save
+[2026-04-16 12:39:38] [INFO] Executing action: Save
+[2026-04-16 12:39:38] [INFO] Progress reached 100%
+[2026-04-16 12:39:38] [INFO] Completing task Save workflow
+[2026-04-16 12:39:40] [INFO] Confirm popup detected → clicking Yes
+[2026-04-16 12:39:41] [INFO] Task completed and navigated back to Task List
+[2026-04-16 12:39:41] [INFO] Finalizing task: Step 600
+[2026-04-16 12:39:41] [INFO] Refreshing task list...
+[2026-04-16 12:39:41] [INFO] Task list refreshed for request: 40046
+[2026-04-16 12:39:41] [INFO] Marking completed: Step 600
+[2026-04-16 12:39:41] [INFO] Attempt 1: Finding executable task
+[2026-04-16 12:39:41] [INFO] Checking Step 700 | UI Present: true
+[2026-04-16 12:39:41] [INFO] Next executable task found: Step 700
+[2026-04-16 12:39:41] [INFO] Executing task: Step 700 - Data Collection
+[2026-04-16 12:39:41] [INFO] Clicking task: Step 700 for request: 40046
+[2026-04-16 12:39:41] [INFO] Task clicked, waiting for view to load
+[2026-04-16 12:39:45] [INFO] START: Execute Task: Step 700
+[2026-04-16 12:39:45] [INFO] Executing dynamic data entry for 1 rows}
+[2026-04-16 12:39:45] [INFO] VIEW TYPE DETECTED → FORM
+[2026-04-16 12:39:45] [INFO] FORM → Valuation Class
+[2026-04-16 12:39:45] [INFO] FORM INPUT → Valuation Class
+[2026-04-16 12:39:45] [INFO] Typed Valuation Class = 3100
+[2026-04-16 12:39:45] [INFO] FORM → Price Control
+[2026-04-16 12:39:45] [INFO] FORM INPUT → Price Control
+[2026-04-16 12:39:45] [INFO] Typed Price Control = S
+[2026-04-16 12:39:45] [INFO] FORM → Price Unit
+[2026-04-16 12:39:45] [INFO] FORM INPUT → Price Unit
+[2026-04-16 12:39:45] [INFO] Typed Price Unit = 1
+[2026-04-16 12:39:45] [INFO] FORM → Currency
+[2026-04-16 12:39:45] [INFO] FORM INPUT → Currency
+[2026-04-16 12:39:45] [INFO] Typed Currency = GBP
+[2026-04-16 12:39:47] [INFO] Clicking Status Complete...
+[2026-04-16 12:39:48] [INFO] Status completed
+[2026-04-16 12:39:49] [INFO] END: Execute Task: Step 700 (4651ms)
+[2026-04-16 12:39:49] [INFO] Step: Step 700 | Execution: 1 | Action: Save
+[2026-04-16 12:39:49] [INFO] Executing action: Save
+[2026-04-16 12:39:49] [INFO] Progress reached 100%
+[2026-04-16 12:39:49] [INFO] Completing task Save workflow
+[2026-04-16 12:39:51] [INFO] Confirm popup detected → clicking Yes
+[2026-04-16 12:39:52] [INFO] Task completed and navigated back to Task List
+[2026-04-16 12:39:52] [INFO] Finalizing task: Step 700
+[2026-04-16 12:39:52] [INFO] Refreshing task list...
+[2026-04-16 12:39:53] [INFO] Task list refreshed for request: 40046
+[2026-04-16 12:39:53] [INFO] Marking completed: Step 700
+[2026-04-16 12:39:53] [INFO] Attempt 1: Finding executable task
+[2026-04-16 12:39:53] [INFO] Checking Step 800 | UI Present: true
+[2026-04-16 12:39:53] [INFO] Next executable task found: Step 800
+[2026-04-16 12:39:53] [INFO] Executing task: Step 800 - Data Approval
+[2026-04-16 12:39:53] [INFO] Clicking task: Step 800 for request: 40046
+[2026-04-16 12:39:53] [INFO] Task clicked, waiting for view to load
+[2026-04-16 12:39:56] [INFO] START: Execute Task: Step 800
+[2026-04-16 12:39:57] [INFO] Clicking Status Complete...
+[2026-04-16 12:39:58] [INFO] Status completed
+[2026-04-16 12:40:00] [INFO] Clicking Status Complete...
+[2026-04-16 12:40:01] [INFO] Status completed
+[2026-04-16 12:40:03] [INFO] Clicking Status Complete...
+[2026-04-16 12:40:04] [INFO] Status completed
+[2026-04-16 12:40:06] [INFO] Clicking Status Complete...
+[2026-04-16 12:40:07] [INFO] Status completed
+[2026-04-16 12:40:09] [INFO] Clicking Status Complete...
+[2026-04-16 12:40:10] [INFO] Status completed
+[2026-04-16 12:40:12] [INFO] Clicking Status Complete...
+[2026-04-16 12:40:13] [INFO] Status completed
+[2026-04-16 12:40:15] [INFO] Clicking Status Complete...
+[2026-04-16 12:40:17] [INFO] Status completed
+[2026-04-16 12:40:19] [INFO] Clicking Status Complete...
+[2026-04-16 12:40:20] [INFO] Status completed
+[2026-04-16 12:40:22] [INFO] Clicking Status Complete...
+[2026-04-16 12:40:23] [INFO] Status completed
+[2026-04-16 12:40:25] [INFO] Clicking Status Complete...
+[2026-04-16 12:40:26] [INFO] Status completed
+[2026-04-16 12:40:28] [INFO] Clicking Status Complete...
+[2026-04-16 12:40:29] [INFO] Status completed
+[2026-04-16 12:40:31] [INFO] Clicking Status Complete...
+[2026-04-16 12:40:32] [INFO] Status completed
+[2026-04-16 12:40:34] [INFO] Clicking Status Complete...
+[2026-04-16 12:40:35] [INFO] Status completed
+[2026-04-16 12:40:37] [INFO] Clicking Status Complete...
+[2026-04-16 12:40:38] [INFO] Status completed
+[2026-04-16 12:40:40] [INFO] Clicking Status Complete...
+[2026-04-16 12:40:41] [INFO] Status completed
+[2026-04-16 12:40:43] [INFO] Clicking Status Complete...
+[2026-04-16 12:40:44] [INFO] Status completed
+[2026-04-16 12:40:46] [INFO] Clicking Status Complete...
+[2026-04-16 12:40:47] [INFO] Status completed
+[2026-04-16 12:40:49] [INFO] Clicking Status Complete...
+[2026-04-16 12:40:50] [INFO] Status completed
+[2026-04-16 12:40:51] [INFO] END: Execute Task: Step 800 (55238ms)
+[2026-04-16 12:40:51] [INFO] Step: Step 800 | Execution: 1 | Action: Approve
+[2026-04-16 12:40:51] [INFO] Executing action: Approve
+[2026-04-16 12:40:51] [INFO] Progress reached 100%
+[2026-04-16 12:40:51] [INFO] Approving task
+[2026-04-16 12:40:51] [INFO] Clicked Approve
+[2026-04-16 12:40:52] [INFO] Confirm popup detected
