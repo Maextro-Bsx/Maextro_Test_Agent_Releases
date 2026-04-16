@@ -1,77 +1,179 @@
 const express = require('express');
 const bodyParser = require('body-parser');
-const { spawn, exec } = require('child_process');
+const { spawn } = require('child_process');
+const APP_VERSION = "1.0.2"; // 🔥 bump this on every release
 
 const ENV_URLS = {
   DEV: 'https://maextro-tdd.launchpad.cfapps.eu10.hana.ondemand.com/site/Maextro?sap-ushell-config=headerless#Maextro-Display?sap-ui-app-id-hint=saas_approuter_bsxc.maextrohubui&/Dashboard',
   TEST: 'https://test-url...',
   SHS: 'https://shs-url...'
 };
+
 const app = express();
 const fs = require('fs');
 const path = require('path');
-const multer = require('multer');
-const upload = multer({
-  dest: 'uploads/' // temp storage
-});
+const unzipper = require('unzipper');
 
+// 🔥 fetch fix (works with node-fetch ESM)
+const fetch = (...args) =>
+  import('node-fetch').then(({ default: fetch }) => fetch(...args));
+
+const multer = require('multer');
+const upload = multer({ dest: 'uploads/' });
+
+app.use('/download', express.static(path.join(__dirname, 'updates')));
 app.use(bodyParser.json());
 app.use(express.static('ui'));
 app.use('/reports', express.static(path.join(__dirname, 'reports')));
+
 const PORT = 3000;
 let isRunning = false;
 
-// UPDATE BUTTON
-app.post('/update', (req, res) => {
-  exec('git pull && npm install', (err, stdout, stderr) => {
-    if (err) return res.send(stderr || err.message);
-    res.send(stdout);
+app.get('/version', (req, res) => {
+  res.json({
+    version: "1.0.2", // 🔥 keep in sync with APP_VERSION
+    url: "http://192.168.128.188:3000/download/maextro.zip"
   });
 });
 
-
-app.get('/templates/:env', (req, res) => {
-  const { env } = req.params;
-
-  const folderPath = path.join(__dirname, 'test-data', 'Templates', env);
-
-  console.log('Env:', env);
-  console.log('Path:', folderPath);
-
-  if (!fs.existsSync(folderPath)) {
-    return res.status(404).send(`Folder not found: ${env}`);
-  }
-
+// 🔥 AUTO UPDATE
+app.post('/update', async (req, res) => {
   try {
-    const files = fs.readdirSync(folderPath);
+    res.write('Checking for updates...\n');
 
-    const templates = files
-      .filter(file => file.endsWith('.xlsx'))
-      .map(file => file.replace('.xlsx', ''));
+    const versionRes = await fetch('http://localhost:3000/version');
+    const data = await versionRes.json();
 
-    res.json(templates);
+    const latestVersion = data.version;
+    const zipUrl = data.url;
+
+    res.write(`Current version: ${APP_VERSION}\n`);
+    res.write(`Latest version: ${latestVersion}\n`);
+
+    if (APP_VERSION === latestVersion) {
+      res.write('Already up to date ✅\n');
+      return res.end();
+    }
+
+    res.write('Update available 🚀\n');
+
+    // 🔥 DOWNLOAD
+    res.write('Downloading update...\n');
+    const zipPath = path.join(__dirname, 'update.zip');
+
+    const response = await fetch(zipUrl);
+    if (!response.ok) throw new Error('Download failed');
+
+    const fileStream = fs.createWriteStream(zipPath);
+
+    await new Promise((resolve, reject) => {
+      response.body.pipe(fileStream);
+      response.body.on('error', reject);
+      fileStream.on('finish', resolve);
+    });
+
+    res.write('Download complete ✅\n');
+
+    // 🔥 EXTRACT
+    res.write('Extracting update...\n');
+    const tempDir = path.join(__dirname, 'temp-update');
+
+    if (fs.existsSync(tempDir)) {
+      fs.rmSync(tempDir, { recursive: true, force: true });
+    }
+
+    fs.mkdirSync(tempDir);
+
+    await fs.createReadStream(zipPath)
+      .pipe(unzipper.Extract({ path: tempDir }))
+      .promise();
+
+    res.write('Extraction complete ✅\n');
+
+    // 🔥 APPLY UPDATE
+    res.write('Applying update...\n');
+
+    function copyRecursive(src, dest) {
+      const entries = fs.readdirSync(src, { withFileTypes: true });
+
+      for (let entry of entries) {
+        // 🔥 skip dangerous files
+        if (
+          entry.name === 'node_modules' ||
+          entry.name === 'update.zip' ||
+          entry.name === 'temp-update'
+        ) continue;
+
+        const srcPath = path.join(src, entry.name);
+        const destPath = path.join(dest, entry.name);
+
+        if (entry.isDirectory()) {
+          if (!fs.existsSync(destPath)) {
+            fs.mkdirSync(destPath);
+          }
+          copyRecursive(srcPath, destPath);
+        } else {
+          fs.copyFileSync(srcPath, destPath);
+        }
+      }
+    }
+
+    copyRecursive(tempDir, __dirname);
+
+    res.write('Update applied successfully ✅\n');
+
+    // 🔥 CLEANUP
+    if (fs.existsSync(zipPath)) fs.unlinkSync(zipPath);
+    if (fs.existsSync(tempDir)) fs.rmSync(tempDir, { recursive: true, force: true });
+
+    res.write('Restarting application...\n');
+    res.end();
+
+    // 🔥 AUTO RESTART
+    spawn('node', ['server.js'], {
+      cwd: __dirname,
+      detached: true,
+      stdio: 'inherit'
+    });
+
+    process.exit(0);
 
   } catch (err) {
-    console.error(err);
-    res.status(500).send('Failed to read templates');
+    res.write('Update failed: ' + err.message + '\n');
+    res.end();
   }
 });
 
-// RUN BUTTON (🔥 LIVE LOG STREAMING FIXED)
+// ---------------- EXISTING APIs ----------------
+
+app.get('/templates/:env', (req, res) => {
+  const folderPath = path.join(__dirname, 'test-data', 'Templates', req.params.env);
+
+  if (!fs.existsSync(folderPath)) {
+    return res.status(404).send(`Folder not found`);
+  }
+
+  const files = fs.readdirSync(folderPath);
+
+  const templates = files
+    .filter(f => f.endsWith('.xlsx'))
+    .map(f => f.replace('.xlsx', ''));
+
+  res.json(templates);
+});
+
 app.post('/run', (req, res) => {
-  const { templateId, username, password , environment } = req.body;
+  const { templateId, username, password, environment } = req.body;
 
   if (!templateId || !username || !password || !environment) {
     return res.status(400).send('Missing required fields');
   }
 
   if (isRunning) {
-    return res.status(400).send('A test is already running. Please wait.');
+    return res.status(400).send('A test is already running.');
   }
 
   isRunning = true;
-
-  console.log(`Running test for template: ${templateId}`);
 
   const child = spawn('npx', [
     'playwright',
@@ -89,87 +191,22 @@ app.post('/run', (req, res) => {
     shell: true
   });
 
-  // 🔥 CRITICAL FOR LIVE STREAM
   res.setHeader('Content-Type', 'text/plain');
   res.setHeader('Transfer-Encoding', 'chunked');
-  res.flushHeaders?.();
-
-  child.stdout.setEncoding('utf8');
-  child.stderr.setEncoding('utf8');
 
   function stripAnsi(text) {
     return text.replace(/\x1B\[[0-9;]*[A-Za-z]/g, '');
   }
-  child.stdout.on('data', (data) => {
-    res.write(stripAnsi(data));
-  });
-  child.stderr.on('data', (data) => {
-    res.write(stripAnsi(data));
-  });
 
-  child.on('close', (code) => {
+  child.stdout.on('data', data => res.write(stripAnsi(data)));
+  child.stderr.on('data', data => res.write(stripAnsi(data)));
+
+  child.on('close', code => {
     isRunning = false;
-    res.write(`\n\nProcess finished with code ${code}\n`);
+    res.write(`\nProcess finished with code ${code}\n`);
     res.end();
   });
 });
-
-
-// app.get('/report', (req, res) => {
-//   const reportPath = path.join(__dirname, 'playwright-report', 'index.html');
-
-//   res.sendFile(reportPath);
-// });
-
-app.get('/report', (req, res) => {
-  const reportsDir = path.join(__dirname, 'reports');
-
-  try {
-    const folders = fs.readdirSync(reportsDir)
-      .filter(name => name.startsWith('report-'))
-      .sort((a, b) => b.localeCompare(a)); // latest first
-
-    if (!folders.length) {
-      return res.status(404).send('No reports found');
-    }
-    const latestReport = folders[0];
-    res.redirect(`/reports/${latestReport}/index.html`);
-    // const reportPath = path.join(reportsDir, latestReport, 'index.html');
-    // res.sendFile(reportPath);
-  } catch (err) {
-    res.status(500).send('Error loading report');
-  }
-});
-
-app.get('/download-template/:env/:templateId', (req, res) => {
-  const { env, templateId } = req.params;
-  const filePath = path.join(__dirname, 'test-data', 'Templates', env, `${templateId}.xlsx`);
-  if (!fs.existsSync(filePath)) {
-    return res.status(404).send('Template not found');
-  }
-  res.download(filePath);
-});
-
-app.post('/upload', upload.single('file'), (req, res) => {
-  const { templateId, environment } = req.body;
-  if (!req.file) {
-    return res.status(400).send('No file uploaded');
-  }
-  if (!templateId || !environment) {
-    return res.status(400).send('Missing templateId or environment');
-  }
-  // ✅ Create env-specific upload folder
-  const uploadDir = path.join(__dirname, 'uploads', environment);
-  if (!fs.existsSync(uploadDir)) {
-    fs.mkdirSync(uploadDir, { recursive: true });
-  }
-  // ✅ Save file as templateId.xlsx
-  const targetPath = path.join(uploadDir, `${templateId}.xlsx`);
-  fs.renameSync(req.file.path, targetPath);
-  res.send('File uploaded successfully');
-});
-
-
 
 app.listen(PORT, () => {
   console.log(`UI running at http://localhost:${PORT}`);
