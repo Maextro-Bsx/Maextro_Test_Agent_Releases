@@ -149,7 +149,7 @@ test('Business Partner Request Creation - Excel Driven', async ({ page }) => {
   // while (tasks.length > 0) {
 
   //   /**Get next executable task based on dependency and click (refresh task list and click with request number and task name)**/
-  //   let task : Task | null = await myTasklistPage.getAndClickNextTask(requestNumber,tasks);
+    // let task : Task | null = await myTasklistPage.getAndClickNextTask(requestNumber,tasks);
   //   if (!task) {
   //     console.log('No more tasks → workflow complete');
   //     break;
@@ -264,14 +264,14 @@ test('Business Partner Request Creation - Excel Driven', async ({ page }) => {
   //     });
   //   }
 
-  //   /**Execute Task */
-  //   await step(`Execute Task: ${task.step} - ${task.action}`, page, async () => {
-  //     resolvedAction = (await executeWorkflowStep(requestDetailsFields,myTasklistPage,requestNumber,task,tasks,stepExecutionCount)).resolvedAction;
-  //   });
+    /**Execute Task */
+    // await step(`Execute Task: ${task.step} - ${task.action}`, page, async () => {
+    //   resolvedAction = (await executeWorkflowStep(requestDetailsFields,myTasklistPage,requestNumber,task,tasks,stepExecutionCount)).resolvedAction;
+    // });
 
   //   /**Finalize Task to remove from task list and validate in history**/
   //   await step(`Finalize Task: ${task.step} - ${task.action}`, page, async () => {
-  //     await myTasklistPage.finalizeTask(requestNumber,task,tasks,resolvedAction);
+      // await myTasklistPage.finalizeTask(requestNumber,task,tasks,resolvedAction);
   //   });  
   
   //   } 

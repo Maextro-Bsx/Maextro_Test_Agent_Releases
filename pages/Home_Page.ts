@@ -42,7 +42,7 @@ async navigateTo(menu: keyof ReturnType<typeof homeLocators>): Promise<void> {
   // await this.page.waitForTimeout(5000)
   await this.page.locator('.sapUiBody').first().waitFor({ state: 'visible', timeout: 60000 });
   await this.locators[menu].click();
-  await this.page.waitForTimeout(5000);
+  await this.page.waitForTimeout(2000);
 }
 
 

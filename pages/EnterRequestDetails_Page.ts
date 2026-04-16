@@ -37,54 +37,48 @@ export class EnterRequestDetailsPage extends BasePage {
   }
 
   /**
-   * Enters complete request details in the form.
+   * Enters request details into the SAP form fields.
    *
-   * @param description - CR Description text
-   * @param reason - Reason Code dropdown value
-   * @param division - Org Division dropdown value
-   * @param priority - Priority dropdown value
-   * @param expectedDate - Expected Completion Date (e.g. December 31, 2026)
+   * Steps:
+   * 1. Wait for the CR Description field to be visible.
+   * 2. Clear any existing value in the CR Description field.
+   * 3. Fill in the CR Description using the provided data.
+   * 4. Select the appropriate option from the Reason Code dropdown.
+   * 5. Select the appropriate option from the Org. Division dropdown.
+   * 6. Select the appropriate option from the Priority dropdown.
+   * 7. Click on the Expected Completion Date field (date input interaction placeholder).
    *
-   * Example Usage:
-   * await page.enterRequestDetails(
-   *   'Automation Test',
-   *   'Enhancement',
-   *   'IT',
-   *   'High',
-   *   'December 31, 2026'
-   * );
+   * @param data Key-value pairs containing request details:
+   *  - 'CR Description': Description text for the request.
+   *  - 'Reason Code': Dropdown value for reason code.
+   *  - 'Org. Division': Dropdown value for organizational division.
+   *  - 'Priority': Dropdown value for priority level.
+   *
+   * @returns Promise<void>
+   *
+   * Example:
+   * await page.enterRequestDetails({
+   *   'CR Description': 'System enhancement',
+   *   'Reason Code': 'Business Requirement',
+   *   'Org. Division': 'IT',
+   *   'Priority': 'High'
+   * });
    */
-  async enterRequestDetails(description: string,reason: string,division: string,priority: string,//expectedDate: string
-  ): Promise<void> {
+  async enterRequestDetails(data: Record<string, string>): Promise<void> {
 
     /* ---- CR Description ---- */
     await this.waitForVisible(this.locators.crDescription);
     await this.clearField(this.locators.crDescription);
-    await this.fill(this.locators.crDescription, description);
+    await this.fill(this.locators.crDescription, data['CR Description']);
 
-    /* ---- Reason Code ---- */
-    await this.selectFromDropdown(
-      this.locators.reasonCodeDropdown,
-      reason
-    );
-
-    /* ---- Org Division ---- */
-    await this.selectFromDropdown(
-      this.locators.orgDivisionDropdown,
-      division
-    );
-
-    /* ---- Priority ---- */
-    await this.selectFromDropdown(
-      this.locators.priorityDropdown,
-      priority
-    );
+    await this.selectFromDropdown(this.locators.reasonCodeDropdown,data['Reason Code']);
+    await this.selectFromDropdown(this.locators.orgDivisionDropdown,data['Org. Division']);
+    await this.selectFromDropdown(this.locators.priorityDropdown,data['Priority']);
 
     /* ---- Expected Completion Date ---- */
     // await this.clearField(this.locators.expectedCompletionDate);
-    // await this.fill(this.locators.expectedCompletionDate, expectedDate);
+    // await this.fill(this.locators.expectedCompletionDate, data['Expected Completion Date']);
     // await this.pressKey(this.locators.expectedCompletionDate, 'Enter');
-
      await this.click(this.locators.expectedCompletionDate);
   }
  
@@ -181,6 +175,8 @@ export class EnterRequestDetailsPage extends BasePage {
       }
     }
   }
+
+
 
 
 

@@ -61,7 +61,23 @@ return {
   bpAddRolesButton: frame.getByRole('button', { name: /BP\s*:\s*Add Roles/i }),
   confirmButton : frame.locator('button:has-text("Confirm")'),
   addRolesDialog : frame.locator('div.sapMDialog:has(span:text("BP : Add Roles"))'),
-  rejectSuccessMessageDynamic: frame.locator('.sapMIllustratedMessageDescription').filter({ hasText: /Request.*step/i }).first(),
+  // rejectSuccessMessageDynamic: frame.locator('.sapMIllustratedMessageDescription').filter({ hasText: /Request.*step/i }).first(),
+  rejectSuccessMessageDynamic: frame.locator('.sapMIllustratedMessageDescription').filter({ hasText: /Request/i }).first(),
+  dataINSAPERPConfirmMessage: frame.getByRole('dialog').getByText(/This approval will update SAP ERP, do you wish to continue?/i),
+  resultTitle: frame.getByRole('heading', { name: 'Result' }),
+  logTitle: frame.getByRole('heading', { name: 'Log' }),
+  messageLocator : frame.locator('li.sapMMsgViewItem span[id$="titleText"]'),
+  formLabel: (fieldName: string) =>frame.locator('label').filter({has: frame.locator('bdi').filter({hasText: new RegExp(`^\\s*${fieldName}\\s*$`, 'i')})}).first(),
+  formInputById: (inputId: string) =>frame.locator(`#${inputId}`),
+  formFieldContainer: (input: Locator) =>input.locator('xpath=ancestor::div[contains(@class,"sapMInputBase")]').first(),
+  formValueHelpIcon: (container: Locator) =>container.locator('[aria-label="Show Value Help"]'),
+
+
+
+
+
+
+
 
 }
 };

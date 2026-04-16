@@ -20,20 +20,14 @@
 export function filterRowData(rowsData: any[], fieldConfig: any) {
 
   return rowsData.map(row => {
-
     const filteredRow: Record<string, string> = {};
-
     for (const field in row) {
-
       if (fieldConfig && !fieldConfig[field]) continue;
-
       const value = row[field];
-
       if (value !== '' && value !== null && value !== undefined) {
         filteredRow[field] = value;
       }
     }
-
     return filteredRow;
   });
 }

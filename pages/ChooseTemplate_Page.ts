@@ -31,7 +31,7 @@ export class ChooseTemplatePage extends BasePage {
  * Example:
  * await chooseTemplate.searchAndSelectTemplate('AT Testing');
  */
-async searchAndSelectTemplate(templateName: string): Promise<void> {
+async searchAndSelectTemplate(templateName: string , object : string): Promise<void> {
 
   /* ---- Clear and enter search text ----*/
   await this.waitForVisible(this.locators.searchInput);
@@ -42,7 +42,7 @@ async searchAndSelectTemplate(templateName: string): Promise<void> {
   await this.pressKey(this.locators.searchInput, 'Enter');
 
   /* ---- Wait for result template to appear ----*/
-  const template = this.locators.templateByName(templateName);
+  const template = this.locators.templateByName(templateName,object);
   await this.waitForVisible(template);
 
   /* ---- Click template ----*/

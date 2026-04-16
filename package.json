@@ -1,7 +1,7 @@
 {
   "name": "maextroautomationtests",
   "version": "1.0.0",
-  "description": "",
+  "description": "Maextro Automation Test Scripts",
   "main": "index.js",
   "scripts": {},
   "keywords": [],
@@ -15,6 +15,20 @@
     "@types/xlsx": "^0.0.35"
   },
   "dependencies": {
+    "body-parser": "^2.2.2",
+    "express": "^5.2.1",
+    "multer": "^2.1.1",
     "xlsx": "^0.18.5"
-  }
+  },
+  "directories": {
+    "test": "tests"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Tejavathi96/Maextro_Automation.git"
+  },
+  "bugs": {
+    "url": "https://github.com/Tejavathi96/Maextro_Automation/issues"
+  },
+  "homepage": "https://github.com/Tejavathi96/Maextro_Automation#readme"
 }

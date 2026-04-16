@@ -1,7 +1,8 @@
 import { Page, Locator , expect} from '@playwright/test';
 import BasePage from './Base_Page';
 import { requestDetailsFieldsLocators } from '@locators/RequestDetailsFields_locators';
-import { Task } from '@utils/taskTransformer';
+// import { Task } from '@utils/taskTransformer';
+import { Task } from '@utils/New/taskBuilder';
 import { MyTasklistPage } from '@pages/MyTasklist_Page';
 import { logger } from '@utils/logger';
 
@@ -14,34 +15,32 @@ export class RequestDetailsFieldsPage extends BasePage {
     this.locators = requestDetailsFieldsLocators(page);
   }
 
-  /**
-   * Gets the 0-based column index for a given column name.
-   *
-   * Steps:
-   * 1. Finds the column header by name
-   * 2. Reads `aria-colindex` attribute
-   * 3. Converts it to 0-based index
-   *
-   * @param columnName - Name of the column
-   * @returns 0-based column index
-   *
-   * Example usage:
-   * const index = await MaterialDetailsPage.getColumnIndex('Material Type');
-   */
-  private async getColumnIndex(columnName: string): Promise<number> {
-
-    const headers = this.locators.tableGrid.locator('td[role="columnheader"]');
-    await headers.first().waitFor({ state: 'visible' , timeout: 10000});
-    const count = await headers.count();
-    for (let i = 0; i < count; i++) {
-      const text = (await headers.nth(i).locator('bdi').textContent())?.trim();
-      if (text?.toLowerCase() === columnName.toLowerCase()) {
-        return i;
-      }
+/**
+ * Gets the 0-based column index for a given column name.
+ *
+ * Steps:
+ * 1. Finds the column header by name
+ * 2. Reads `aria-colindex` attribute
+ * 3. Converts it to 0-based index
+ *
+ * @param columnName - Name of the column
+ * @returns 0-based column index
+ *
+ * Example usage:
+ * const index = await MaterialDetailsPage.getColumnIndex('Material Type');
+ */
+private async getColumnIndex(columnName: string): Promise<number> {
+  const headers = this.locators.tableGrid.locator('td[role="columnheader"]');
+  await headers.first().waitFor({ state: 'visible' , timeout: 10000});
+  const count = await headers.count();
+  for (let i = 0; i < count; i++) {
+    const text = (await headers.nth(i).locator('bdi').textContent())?.trim();
+    if (text?.toLowerCase() === columnName.toLowerCase()) {
+      return i;
     }
-    throw new Error(`Column "${columnName}" not found`);
-
   }
+  throw new Error(`Column "${columnName}" not found`);
+}
 
 /**
  * Gets a data row locator by index.
@@ -87,21 +86,23 @@ private async getCell(rowIndex: number, columnName: string): Promise<Locator> {
 }
 
 /**
- * Enters a value into a single editable cell (textbox or combobox)
- * identified by row index and column name.
+ * Enters a value into a specific table cell by activating edit mode and filling the input field.
  *
  * Steps:
- * 1. Get the cell using `getCell`
- * 2. Scroll into view and click to activate edit mode
- * 3. Check whether the cell contains a textbox or combobox
- * 4. Fill in the value and press Enter
+ * 1. Locate the target cell using row index and field name.
+ * 2. Scroll the cell into view to ensure it is visible in the viewport.
+ * 3. Double-click the cell to activate edit mode.
+ * 4. Locate the input element inside the activated cell.
+ * 5. Fill the input field with the provided value.
  *
- * @param rowIndex - Zero-based index of the row
- * @param fieldName - Column header name
- * @param value - Value to enter into the cell
+ * @param rowIndex The zero-based index of the row containing the target cell.
+ * @param fieldName The column/field name identifying the cell.
+ * @param value The value to be entered into the cell.
+ *
+ * @returns Promise<void>
  *
  * Example:
- * await MaterialDetailsPage.enterValueInCell(0, 'Industry sector', 'Manufacturing');
+ * await page.enterValueInCell(0, 'Quantity', '10');
  */
 private async enterValueInCell(rowIndex: number, fieldName: string, value: string) {
   const cell = await this.getCell(rowIndex, fieldName);
@@ -112,28 +113,30 @@ private async enterValueInCell(rowIndex: number, fieldName: string, value: strin
 }
 
 /**
- * Enters multiple field values for a single row identified by row index.
+ * Enters data into multiple table rows and their respective fields.
  *
  * Steps:
- * 1. Iterate over all fieldName/value pairs in `rowData`
- * 2. Call `enterValueInCell` for each field in the specified row
+ * 1. Validate that the provided row data length matches the expected row count.
+ * 2. Throw an error if the mismatch is detected to prevent inconsistent input.
+ * 3. Iterate through each row index.
+ * 4. For each row, iterate through all field-value pairs.
+ * 5. Enter the value into the corresponding cell using the row index and field name.
  *
- * @param rowIndex - Zero-based index of the row
- * @param rowData - Object containing fieldName: value pairs
+ * @param rowCount The expected number of rows to be filled.
+ * @param rowsData Array of objects representing row data (field-value mappings).
+ *
+ * @returns Promise<void>
  *
  * Example:
- * await MaterialDetailsPage.enterRowData(0, {
- *   Material: 'MAT-1001',
- *   'Industry sector': 'Manufacturing',
- *   'Lab/Office': 'Main Lab',
- *   UOM: 'KG'
- * });
+ * await page.enterRowsData(2, [
+ *   { Quantity: '10', Price: '100' },
+ *   { Quantity: '5', Price: '50' }
+ * ]);
  */
 async enterRowsData(rowCount: number, rowsData: Record<string, string>[]) {
   if (rowsData.length !== rowCount) {
     throw new Error(`rowsData length (${rowsData.length}) does not match rowCount (${rowCount})`);
   }
-
   for (let i = 0; i < rowCount; i++) {
     const rowData = rowsData[i];
     for (const [fieldName, value] of Object.entries(rowData)) {
@@ -173,16 +176,29 @@ async enterRowsData(rowCount: number, rowsData: Record<string, string>[]) {
 // }
 
 /**
- * Get data for multiple rows at once
+ * Retrieves data from a table for the specified number of rows and fields.
  *
- * @param rowCount - Number of rows to fetch (starting from row 0)
- * @param fieldNames - Array of field names to fetch
- * @returns Array of row data objects
+ * Steps:
+ * 1. Log the number of rows being fetched.
+ * 2. Wait for table headers to become visible.
+ * 3. Wait for the table rows to be visible.
+ * 4. Confirm that the table is ready for interaction.
+ * 5. Iterate through each row up to the specified row count.
+ * 6. For each field in the row:
+ *    a. Locate the corresponding cell.
+ *    b. Check if the cell contains an input element.
+ *    c. If input exists, extract its value.
+ *    d. Otherwise, extract the text content of the cell.
+ * 7. Log each row's extracted data.
+ * 8. Store all row data in an array and return it.
+ *
+ * @param rowCount The number of rows to fetch from the table.
+ * @param fieldNames Array of column/field names to extract.
+ *
+ * @returns Promise<Record<string, string>[]> Array of row data objects.
  *
  * Example:
- * const rowsData = await requestDetailsFields.getRowsData(2, ['BP No', 'Account Group']);
- * console.log(rowsData[0]['BP No']); // Row 1 BP No
- * console.log(rowsData[1]['BP No']); // Row 2 BP No
+ * const data = await page.getRowsData(3, ['Material', 'Quantity']);
  */
 async getRowsData(rowCount: number, fieldNames: string[]): Promise<Record<string, string>[]> {
   
@@ -195,11 +211,9 @@ async getRowsData(rowCount: number, fieldNames: string[]): Promise<Record<string
 
   for (let i = 0; i < rowCount; i++) {
     const rowData: Record<string, string> = {};
-
     for (const fieldName of fieldNames) {
       const cell = await this.getCell(i, fieldName);
       const input = cell.locator('input.sapMInputBaseInner').first();
-
       if (await input.count()) {
         rowData[fieldName] = (await input.inputValue()).trim();
       } else {
@@ -209,31 +223,42 @@ async getRowsData(rowCount: number, fieldNames: string[]): Promise<Record<string
     logger.info(`Row ${i + 1}: ${JSON.stringify(rowData)}`);
     rowsData.push(rowData);
   }
-
   return rowsData;
 }
 
 /**
- * Validates that the actual rows match the expected rows.
+ * Validates table row data against expected values.
  *
- * @param rowsData - Array of actual row objects from the table
- * @param expectedData - Array of expected row objects
+ * Steps:
+ * 1. Log the validation process start.
+ * 2. Log both actual UI data and expected data for debugging.
+ * 3. Compare the number of rows between actual and expected data.
+ * 4. Throw an error if row counts do not match.
+ * 5. Iterate through each row:
+ *    a. Log the row being validated.
+ *    b. Iterate through each field in the expected row.
+ *    c. Skip metadata fields like "Expected Record" and "Record".
+ *    d. Ignore empty, null, or undefined expected values.
+ *    e. Convert "No Value" to an empty string for comparison.
+ *    f. Trim actual values from UI.
+ *    g. Compare actual and expected values using assertions.
+ *    h. Log successful validation for each field.
  *
- * Example usage:
- * await validateRowsData(rowsData, [
- *   { 'BP No': '$1', 'Account Group': 'CUST' },
- *   { 'BP No': '$2', 'Account Group': 'CUST' }
- * ]);
+ * @param rowsData Actual data extracted from the UI table.
+ * @param expectedData Expected data used for validation.
+ *
+ * @returns Promise<void>
+ *
+ * Example:
+ * await page.validateRowsData(actualData, expectedData);
  */
 async validateRowsData(rowsData: Record<string, string>[],expectedData: Record<string, string>[]): Promise<void> {
   logger.info(`Validating rows data`);
   logger.info(`Data fetched from UI: ${JSON.stringify(rowsData)}`);
   logger.info(`Data expected: ${JSON.stringify(expectedData)}`);
-
   if (rowsData.length !== expectedData.length) {
     throw new Error(`Row count mismatch: expected ${expectedData.length} rows but found ${rowsData.length}`);
   }
-
   rowsData.forEach((row, index) => {
     const expectedRow = expectedData[index];
     logger.info(`Validating Row ${index + 1}`);
@@ -328,18 +353,95 @@ async validateRowsData(rowsData: Record<string, string>[],expectedData: Record<s
 //   }
 // }
 
+/**
+ * Marks the current task/status as "Complete" in the SAP UI and waits for UI transition.
+ *
+ * Steps:
+ * 1. Wait briefly to allow the UI to stabilize.
+ * 2. Locate the "Status Complete" button.
+ * 3. Locate the "Edit View" button (used to confirm UI transition).
+ * 4. Click the "Status Complete" button.
+ * 5. Wait for either:
+ *    a. The "Edit View" button to become visible, or
+ *    b. The "Status Complete" button to reappear.
+ * 6. Wait briefly to ensure the UI has fully updated.
+ * 7. Log completion of the status update.
+ *
+ * @returns Promise<void>
+ *
+ * Example:
+ * await page.clickStatusComplete();
+ */
 async clickStatusComplete(): Promise<void> {
   const statusBtn = this.locators.statusCompleteButton;
   const editBtn = this.locators.editViewButton;
-
+  await this.page.waitForTimeout(1000);
   logger.info('Clicking Status Complete...');
   await statusBtn.click(); 
   await Promise.race([
     editBtn.waitFor({ state: 'visible', timeout: 15000 }),
     statusBtn.waitFor({ state: 'visible', timeout: 15000 })
   ]);
+  await this.page.waitForTimeout(1000);
   logger.info('Status completed');
  
+}
+
+/**
+ * Clicks the "Status Complete" button for a specific view and handles view-specific error scenarios.
+ *
+ * Steps:
+ * 1. Wait briefly to allow the UI to stabilize.
+ * 2. Click the "Status Complete" button.
+ * 3. Wait for either:
+ *    a. The "Edit View" button to appear, or
+ *    b. The "Status Complete" button to remain visible.
+ * 4. Wait briefly for UI update completion.
+ * 5. If the view is "bd1":
+ *    a. Check if an error dialog is displayed.
+ *    b. If the error dialog appears:
+ *       i. Close the error dialog.
+ *       ii. Log the action.
+ *       iii. Retry clicking the "Status Complete" button.
+ *       iv. Wait for the UI to stabilize again.
+ * 6. Log completion of the status update.
+ *
+ * @param viewName The name of the view (used for conditional error handling, e.g., "bd1").
+ *
+ * @returns Promise<void>
+ *
+ * Example:
+ * await page.clickStatusCompleteForView('bd1');
+ */
+async clickStatusCompleteForView(viewName: string): Promise<void> {
+  const statusBtn = this.locators.statusCompleteButton;
+  const editBtn = this.locators.editViewButton;
+  await this.page.waitForTimeout(1000);
+  logger.info('Clicking Status Complete...');
+  await statusBtn.click(); 
+  await Promise.race([
+    editBtn.waitFor({ state: 'visible', timeout: 15000 }),
+    statusBtn.waitFor({ state: 'visible', timeout: 15000 })
+  ]);
+  await this.page.waitForTimeout(1000);
+  if (viewName.toLowerCase() === 'bd1') {
+  let isErrorDialog = false;
+  try {
+    await this.locators.closeDialogButton.waitFor({ state: 'visible', timeout: 4000 });
+    isErrorDialog = true;
+  } catch {
+    isErrorDialog = false;
+  }
+  if (isErrorDialog) { 
+    await this.locators.closeDialogButton.click();
+    console.log('Clicked on close button of error message');
+    await this.page.waitForTimeout(1000);
+    await statusBtn.click(); 
+    console.log('Clicked Status Complete again');
+    await this.page.waitForTimeout(2000);
+  }
+}
+  logger.info('Status completed');
 }
 
 /**
@@ -446,15 +548,19 @@ async waitForRequestDetailsPage(): Promise<void> {
 }
 
 /**
- * Extracts the request number from the success message and removes leading zeros.
+ * Retrieves the request number from the success message displayed in the SAP UI.
  *
  * Steps:
- * 1. Read success message textContent()
- * 2. Match request number using regex
- * 3. Remove leading zeros
- * 4. Return trimmed request number
+ * 1. Locate the success message element in the UI.
+ * 2. Wait until the success message becomes visible.
+ * 3. Extract the text content from the success message.
+ * 4. Validate that the message text exists.
+ * 5. Extract the request number using a regular expression.
+ * 6. Throw an error if the request number is not found in the message.
+ * 7. Remove any leading zeros from the extracted request number.
+ * 8. Return the cleaned request number.
  *
- * @returns Request number without leading zeros or null
+ * @returns Promise<string> The extracted request number.
  *
  * Example:
  * const requestNumber = await page.getRequestNumber();
@@ -475,22 +581,20 @@ async getRequestNumber(): Promise<string> {
 }
 
 /**
- * Validates that:
- * 1. Edit View button is enabled
- * 2. Status progress is 100% complete
+ * Validates that the Edit View button is visible and the status progress bar reaches completion (100%).
  *
  * Steps:
- * - Wait for Edit View button
- * - Verify it is enabled
- * - Wait for progress bar
- * - Validate aria-valuenow equals 100
+ * 1. Locate the Edit View button and status progress bar elements.
+ * 2. Wait for the Edit View button to become visible.
+ * 3. Wait for the progress bar to become visible.
+ * 4. Wait until the progress bar value reaches 100% (aria-valuenow = "100").
+ * 5. Log successful completion when progress reaches 100%.
+ * 6. Return true once validation is successful.
  *
- * Returns:
- * - true if both validations pass
- * - Throws error if validation fails
+ * @returns Promise<boolean> True if the progress bar reaches 100%.
  *
  * Example:
- * await materialDetailsPage.validateEditViewAndStatusProgressBar();
+ * const isCompleted = await page.validateEditViewAndStatusProgressBar();
  */
 async validateEditViewAndStatusProgressBar(): Promise<boolean> {
   const editViewButton = this.locators.editViewButton;
@@ -504,29 +608,29 @@ async validateEditViewAndStatusProgressBar(): Promise<boolean> {
   logger.info('Progress reached 100%');
   return true;
 }
+
 /**
- * Validates that:
- * 1. All provided column names are marked as mandatory
+ * Validates that the specified fields are marked as mandatory in the UI.
  *
  * Steps:
- * - Iterate through each column name
- * - Locate the mandatory column header indicator
- * - Verify the column is marked as mandatory
- * - Collect any non-mandatory fields
- * - Throw error if any field is not mandatory
+ * 1. Log the list of fields being validated.
+ * 2. Initialize a list to track fields that are not mandatory.
+ * 3. Iterate through each field name:
+ *    a. Locate the column header for the field.
+ *    b. Wait for the field header to become visible within the timeout.
+ *    c. Check if the element exists in the DOM.
+ *    d. If not found or not visible, mark it as non-mandatory.
+ * 4. If any non-mandatory fields are found:
+ *    a. Throw an error listing those fields.
+ * 5. If all fields are mandatory, log success.
  *
- * @param fieldNames - Array of column names expected to be mandatory
+ * @param fieldNames Array of field names expected to be mandatory.
+ * @param timeout Maximum time to wait for each field to appear (default: 15000ms).
  *
- * Returns:
- * - true if all fields are mandatory
- * - Throws error if one or more fields are not mandatory
+ * @returns Promise<boolean> True if all fields are mandatory.
  *
  * Example:
- * await materialDetailsPage.validateMandatoryFields([
- *   'Material Name',
- *   'Material Type',
- *   'Status'
- * ]);
+ * await page.validateMandatoryFields(['Material', 'Quantity']);
  */
 async validateMandatoryFields(fieldNames: string[],timeout = 15000): Promise<boolean> {
 
@@ -556,31 +660,32 @@ async validateMandatoryFields(fieldNames: string[],timeout = 15000): Promise<boo
 }
 
 /**
- * Validates that:
- * 1. All specified fields in a given row are auto-populated (not empty)
+ * Validates that specified fields in a table row are auto-populated with values.
  *
  * Steps:
- * - Iterate through each provided field name
- * - Locate the corresponding cell using row index and field name
- * - Check if the cell contains an input element
- * - If input exists, retrieve and trim its value
- * - Otherwise, retrieve and trim the cell text content
- * - Collect any fields that have empty values
- * - Throw error if any field is not populated
+ * 1. Log the fields being validated for the given row index.
+ * 2. Initialize arrays to track empty fields and store populated values.
+ * 3. Iterate through each field name:
+ *    a. Locate the corresponding cell using row index and field name.
+ *    b. Check if the cell contains an input element.
+ *    c. If input exists:
+ *       i. Wait for the input to be visible.
+ *       ii. Extract its value.
+ *    d. Otherwise, extract the text content of the cell.
+ * 4. Trim and evaluate the extracted value.
+ * 5. If the value is empty, add the field to the empty fields list.
+ * 6. If the value exists, store it in the populated values object.
+ * 7. If any fields are not populated, throw an error listing them.
+ * 8. Log successful validation if all fields are populated.
+ * 9. Return an object containing all populated field values.
  *
- * @param rowIndex - Zero-based index of the row to validate
- * @param fieldNames - Array of field names expected to be auto-populated
+ * @param rowIndex The zero-based index of the row to validate.
+ * @param fieldNames Array of field names expected to be auto-populated.
  *
- * Returns:
- * - An object containing field names and their populated values
- * - Throws error if one or more fields are empty
+ * @returns Promise<Record<string, string>> Object containing populated field values.
  *
  * Example:
- * await materialDetailsPage.validateFieldsAutoPopulated(0, [
- *   'Material Name',
- *   'Material Type',
- *   'Status'
- * ]);
+ * const values = await page.validateFieldsAutoPopulated(0, ['Material', 'Plant']);
  */
 async validateFieldsAutoPopulated(rowIndex: number,fieldNames: string[]): Promise<Record<string, string>> {
 
@@ -610,24 +715,26 @@ async validateFieldsAutoPopulated(rowIndex: number,fieldNames: string[]): Promis
   return populatedValues;
 }
 
-
 /**
- * Retrieves the index of the column header that contains the specified field name.
+ * Retrieves the column index for a given field name from the table headers.
  *
  * Steps:
- * - Retrieve the list of column headers
- * - Loop through each header and check if it contains the specified field name
- * - Return the index of the header that matches the field name
- * - Throw an error if the field name is not found in any column header
+ * 1. Locate all column header elements in the table.
+ * 2. Get the total number of headers.
+ * 3. Iterate through each header by index.
+ * 4. Extract and trim the header text.
+ * 5. Check if the header text contains the given field name.
+ * 6. If a match is found, return the corresponding column index.
+ * 7. If no match is found after iteration, throw an error.
  *
- * @param fieldName - The field name to search for in the table header
+ * @param fieldName The column header name to search for.
  *
- * Returns:
- * - The index of the column header that contains the specified field name
- * - Throws an error if the field name is not found
+ * @returns Promise<number> The zero-based index of the matching column.
+ *
+ * @throws Error If the column with the specified field name is not found.
  *
  * Example:
- * const columnIndex = await tablePage.getColumnIndexForHelperOption('Material Name');
+ * const index = await page.getColumnIndexForHelperOption('Material');
  */
 private async getColumnIndexForHelperOption(fieldName: string): Promise<number> {
 
@@ -643,31 +750,32 @@ private async getColumnIndexForHelperOption(fieldName: string): Promise<number> 
 }
 
 /**
- * Validates that the Value Help dialog for a specific field in a given row contains the expected values.
+ * Validates the Value Help (F4 help) options for a specific field in a table row.
  *
  * Steps:
- * - Dynamically retrieve the column index for the field name
- * - Click the Value Help icon for the corresponding row and column
- * - Wait for the Value Help dialog to become visible
- * - Wait for the page to settle and network activity to idle
- * - Capture and clean up the values from the dialog rows
- * - Validate that each expected value is present in the dialog values
- * - Close the Value Help dialog
+ * 1. Log the field and row being validated.
+ * 2. Determine the column index dynamically using the field name.
+ * 3. Click the Value Help icon for the specified cell.
+ * 4. Wait for the Value Help dialog to become visible.
+ * 5. Wait for the UI to fully load and stabilize.
+ * 6. Extract all available rows from the Value Help dialog.
+ * 7. For each row:
+ *    a. Collect all cell text values.
+ *    b. Normalize whitespace and combine values into a single string.
+ *    c. Store non-empty entries into an array of actual values.
+ * 8. Validate that each expected value exists in the actual Value Help list.
+ * 9. Close the Value Help dialog.
+ * 10. Wait until the dialog is fully closed.
+ * 11. Log successful validation.
  *
- * @param rowIndex - Zero-based index of the row containing the field
- * @param fieldName - Name of the field for which the Value Help is triggered
- * @param expectedValues - Array of expected values that should be present in the Value Help dialog
+ * @param rowIndex The zero-based index of the table row.
+ * @param fieldName The field/column name whose Value Help is being validated.
+ * @param expectedValues Array of expected values that should appear in Value Help.
  *
- * Returns:
- * - void if validation passes
- * - Throws error if any expected value is not found in the dialog
+ * @returns Promise<void>
  *
  * Example:
- * await materialDetailsPage.validateFieldValueHelp(
- *   0,
- *   'Material Type',
- *   ['Raw Material', 'Finished Product', 'Semi-Finished']
- * );
+ * await page.validateFieldValueHelp(0, 'Material', ['Steel', 'Aluminium']);
  */
 async validateFieldValueHelp(rowIndex: number,fieldName: string,expectedValues: string[]): Promise<void> {
 
@@ -706,29 +814,32 @@ async validateFieldValueHelp(rowIndex: number,fieldName: string,expectedValues: 
 }
 
 /**
- * Completes the full request creation workflow
- * and returns the generated request number.
+ * Submits a create request in SAP UI and captures the generated request number.
  *
  * Steps:
- * 1. Click Status Complete
- * 2. Validate Edit View and Progress bar
- * 3. Click Submit Task
- * 4. Click Save
- * 5. Validate confirmation dialog
- * 6. Click Submit Confirm
- * 7. Validate submission success screen
- * 8. Extract request number
- * 9. Exit workflow
+ * 1. Log the submission process start.
+ * 2. Validate that the Edit View is active and the progress bar is completed.
+ * 3. Click the Submit Task button.
+ * 4. Click the Save menu item.
+ * 5. Wait for the confirmation message to appear.
+ * 6. Confirm submission by clicking the submit confirmation button.
+ * 7. Wait for success-related UI messages:
+ *    a. Success title
+ *    b. Request raised title
+ *    c. Success message containing request number
+ * 8. Extract the request number from the success message.
+ * 9. Log the captured request number.
+ * 10. Wait for SAP loader to disappear.
+ * 11. Return the request number.
  *
- * @returns Request number (without leading zeros)
+ * @returns Promise<string> The generated request number after successful submission.
  *
  * Example:
- * const requestNumber = await requestDetailsFields.submitCreateRequestAndCaptureNumber();
+ * const requestId = await page.submitCreateRequestAndCaptureNumber();
  */
 async submitCreateRequestAndCaptureNumber(): Promise<string> {
 
   logger.info('Submitting request and capturing request number...');
-  await this.clickStatusComplete();
   await this.validateEditViewAndStatusProgressBar();
   await this.clickSubmitTask();
   await this.clickSaveMenuItem();
@@ -741,61 +852,119 @@ async submitCreateRequestAndCaptureNumber(): Promise<string> {
   logger.info(`Request Number: ${requestNumber}`);
   await this.waitForSAPLoader();
   return requestNumber;
-
 }
 
 /**
- * Waits for a locator to become visible with retry logic.
+ * Completes a task by saving changes, handling confirmation (if shown), and returning to the task list.
  *
  * Steps:
- * 1. Wait for locator to be visible within timeout
- * 2. If timeout occurs, wait for network to become idle
- * 3. Retry waiting for locator visibility
+ * 1. Log the start of the task completion process.
+ * 2. Click the Save button to trigger task completion.
+ * 3. Wait for any SAP loader to disappear.
+ * 4. Pause briefly to allow UI transitions.
+ * 5. Check if a confirmation popup is visible:
+ *    a. If visible, click the "Yes" button to confirm.
+ *    b. Wait for success-related messages:
+ *       - Success title
+ *       - Save success message
+ *       - Task closed message
+ * 6. Click the "Back to Task List" button.
+ * 7. Wait for the loader to disappear again after navigation.
+ * 8. Log completion of task workflow.
  *
- * @param locator - Playwright locator to wait for
- * @param timeout - Maximum wait time in milliseconds (default: 30000)
- *
- * Example:
- * await requestDetailsFields.waitForLocatorSafe(page.locator('#submitButton'));
- */
-async waitForLocatorSafe(locator: Locator, timeout = 30000): Promise<void> {
-  try {
-    await locator.waitFor({ state: 'visible', timeout });
-  } catch {
-    await this.page.waitForLoadState('networkidle');
-    await locator.waitFor({ state: 'visible', timeout });
-  }
-}
-
-
-/**
- * Completes Step 100 task workflow.
- *
- * Steps:
- * 1. Click Status Complete
- * 2. Validate Edit View and Progress bar
- * 3. Click Save button
- * 4. Validate task closure confirmation dialog
- * 5. Confirm task closure
- * 6. Validate task closed success message
- * 7. Navigate back to Task List
+ * @returns Promise<void>
  *
  * Example:
- * await requestDetailsFields.completeStep100Task();
+ * await page.completeTask();
  */
 async completeTask(): Promise<void> {
 
   logger.info('Completing task Save workflow');
   await this.clickSaveButton();
   await this.waitForLoaderToDisappear();
-  await this.waitForLocatorSafe(this.locators.taskCloseConfirmMessage);
-  await this.locators.confirmYesButton.click();
-  await this.waitForLocatorSafe(this.locators.successTitle);
-  await this.waitForLocatorSafe(this.locators.saveSuccessMessage);
-  await this.waitForLocatorSafe(this.locators.taskClosedMessage);
+  await this.page.waitForTimeout(2000);
+  const isConfirmVisible = await this.locators.confirmYesButton.isVisible({ timeout: 3000 }).catch(() => false);
+  if (isConfirmVisible) {
+    logger.info('Confirm popup detected → clicking Yes');
+    await this.locators.confirmYesButton.click();
+    await this.waitForLocatorSafe(this.locators.successTitle);
+    await this.waitForLocatorSafe(this.locators.saveSuccessMessage);
+    await this.waitForLocatorSafe(this.locators.taskClosedMessage);
+  }
   await this.locators.backToTaskListButton.click();
   await this.waitForLoaderToDisappear();
   logger.info('Task completed and navigated back to Task List');
+}
+
+/**
+ * Handles the approval flow in SAP UI by managing confirmation, success, and result/error states.
+ *
+ * Steps:
+ * 1. Retry up to 3 times to detect initial approval state:
+ *    a. Check if confirmation popup is visible.
+ *       - If visible, click "Yes" and wait for SAP loader.
+ *       - Exit the loop after handling confirmation.
+ *    b. Check if success title is visible.
+ *       - If visible, wait for approval success message.
+ *       - Log approval success and return.
+ *    c. Wait briefly before retrying.
+ * 2. After initial retries, monitor result/log state for up to 8 attempts:
+ *    a. If result screen is visible:
+ *       - Log all result messages.
+ *       - Return successfully.
+ *    b. If log/error screen is visible:
+ *       - Log error messages.
+ *       - Throw an error indicating approval failure.
+ *    c. Wait before next retry cycle.
+ * 3. If no valid state is reached after all retries, throw a final failure error.
+ *
+ * @returns Promise<void>
+ *
+ * @throws Error If approval fails or logs indicate an error state.
+ *
+ * Example:
+ * await page.handleApproveFlow();
+ */
+private async handleApproveFlow(): Promise<void> {
+
+  for (let i = 0; i < 3; i++) {
+    const isConfirmVisible = await this.locators.dataINSAPERPConfirmMessage.isVisible({ timeout: 1500 }).catch(() => false);
+    if (isConfirmVisible) {
+      logger.info(`Confirm popup detected`);
+      await this.locators.confirmYesButton.click();
+      await this.waitForSAPLoader();
+      break;
+    }
+    const isSuccessVisible = await this.locators.successTitle.isVisible({ timeout: 1500 }).catch(() => false);
+    if (isSuccessVisible) {
+      await this.waitForLocatorSafe(this.locators.approvalSuccessMessage);
+      logger.info('Approval successful');
+      return;
+    }
+    await this.page.waitForTimeout(1000);
+  }
+
+  for (let i = 0; i < 8; i++) {
+    const isResultVisible = await this.locators.resultTitle.isVisible({ timeout: 2000 }).catch(() => false);
+    if (isResultVisible) {
+      logger.info(`Result detected`);
+      const messages = await this.locators.messageLocator.allTextContents();
+      logger.info('--- RESULT MESSAGES ---');
+      messages.forEach(text => logger.info(text.trim()));
+      return;
+    }
+
+    const isLogVisible = await this.locators.logTitle.isVisible({ timeout: 2000 }).catch(() => false);
+    if (isLogVisible) {
+      logger.error(`Log detected`);
+      const messages = await this.locators.messageLocator.allTextContents();
+      logger.error('--- ERROR LOG MESSAGES ---');
+      messages.forEach(text => logger.error(text.trim()));
+      throw new Error('Approval failed due to Log messages');
+    }
+    await this.page.waitForTimeout(2500); // 🔥 longer wait
+  }
+  throw new Error('Approve flow failed after retries');
 }
 
 /**
@@ -812,53 +981,132 @@ async completeTask(): Promise<void> {
  * Example:
  * await requestDetailsFields.approveTask();
  */
+// async approveTask(): Promise<void> {
+//   logger.info('Approving task');
+//   await this.clickSubmitTask();
+//   const approve = this.locators.approveMenuItem;
+//   await this.waitForLocatorSafe(approve);
+//   await approve.click();
+//   await this.page.waitForTimeout(2000);
+//   logger.info('Clicked Approve');
+//   let isConfirmVisible = false; ;
+//   for(let i=0;i<2;i++){
+//      isConfirmVisible = await this.locators.dataINSAPERPConfirmMessage.isVisible({ timeout: 2000 }).catch(() => false);
+//     if (isConfirmVisible) {
+//       logger.info(`Result title detected on attempt ${i + 1}`);
+//       break;
+//     }
+//     }
+//   if (isConfirmVisible) {
+//     logger.info('Confirm popup detected → clicking Yes');
+//     await this.locators.confirmYesButton.click();
+//     await this.waitForSAPLoader();
+//     await this.page.waitForTimeout(30000);
+//   }
+//   let isResultTiltleVisible = false;
+//   for(let i=0;i<2;i++){
+//      isResultTiltleVisible = await this.locators.resultTitle.isVisible({ timeout: 2000 }).catch(() => false);
+//     if (isResultTiltleVisible) {
+//       logger.info(`Result title detected on attempt ${i + 1}`);
+//       break;
+//     }
+//   }
+//   if (isResultTiltleVisible) {
+//       const messages = await this.locators.messageLocator.allTextContents();
+//       messages.forEach(text => logger.info(text.trim()));
+//   } else {
+//       await this.waitForLocatorSafe(this.locators.successTitle);
+//       await this.waitForLocatorSafe(this.locators.approvalSuccessMessage);
+//   }
+//   await this.locators.backToTaskListButton.click();
+//   await this.waitForLoaderToDisappear();
+//   logger.info('Task approved and navigated back to Task List');
+// }
+
+/**
+ * Approves a task in SAP UI by submitting it, selecting approve action, and handling approval workflow.
+ *
+ * Steps:
+ * 1. Log the start of the approval process.
+ * 2. Click the Submit Task button to open available actions.
+ * 3. Wait for the Approve menu item to become visible.
+ * 4. Click the Approve option.
+ * 5. Log that approval has been initiated.
+ * 6. Execute the approval flow handler to manage:
+ *    - Confirmation dialogs
+ *    - Success messages
+ *    - Result or error states
+ * 7. Click the Back to Task List button.
+ * 8. Wait for any loader to disappear after navigation.
+ * 9. Log successful completion of task approval.
+ *
+ * @returns Promise<void>
+ *
+ * Example:
+ * await page.approveTask();
+ */
 async approveTask(): Promise<void> {
+
   logger.info('Approving task');
   await this.clickSubmitTask();
   const approve = this.locators.approveMenuItem;
   await this.waitForLocatorSafe(approve);
   await approve.click();
   logger.info('Clicked Approve');
-  await this.waitForLocatorSafe(this.locators.successTitle);
-  await this.waitForLocatorSafe(this.locators.approvalSuccessMessage);
+  await this.handleApproveFlow();
   await this.locators.backToTaskListButton.click();
   await this.waitForLoaderToDisappear();
   logger.info('Task approved and navigated back to Task List');
 }
 
 /**
- * Performs a task rejection flow using parameters from Excel input.
+ * Performs a rejection action on a SAP task and routes it to a target step.
  *
  * Steps:
- * 1. Logs incoming parameters for debugging
- * 2. Initializes default values (reason, step, comment)
- * 3. Parses parameters array (key=value format) and overrides defaults
- * 4. Initiates task completion flow
- * 5. Opens reject action from menu
- * 6. Selects rejection reason from dropdown
- * 7. Selects step to reject back to
- * 8. Enters rejection comment
- * 9. Submits the rejection
- * 10. Waits for success confirmation
- * 11. Exits the task screen and waits for loader to disappear
+ * 1. Log the rejection configuration (reason, step, comment).
+ * 2. Initialize default rejection values and override them from input params.
+ * 3. Validate that the target "rejectingTo" step is defined.
+ * 4. Parse input parameters (reason, step, comment) from key-value pairs.
+ * 5. Log final rejection configuration.
+ * 6. Open task actions via Submit Task.
+ * 7. Click the Reject menu option.
+ * 8. Select rejection reason from dropdown.
+ * 9. Select target step from dropdown.
+ * 10. Enter rejection comment in the text area.
+ * 11. Submit the rejection.
+ * 12. Wait for success confirmation.
+ * 13. Retrieve the step the task was rejected to.
+ * 14. Validate the rejected-to value is not null.
+ * 15. Navigate back to the task list.
+ * 16. Wait for loader to disappear.
+ * 17. Log completion of rejection flow.
  *
- * @param params - Array of key=value strings (e.g., ["reason=Incorrect Data", "step=Step 200"])
- * @returns Promise<void>
+ * @param task The task object containing metadata including default rejectingTo step.
+ * @param params Array of configuration strings in "key=value" format (e.g., reason=..., step=..., comment=...).
+ *
+ * @returns Promise<string | null> The step to which the task was rejected.
+ *
+ * @throws Error If rejectingTo is not defined for the task.
  *
  * Example:
- * await RejectTask([
- *   'reason=Incorrect Data',
- *   'step=Step 200',
- *   'comment=Validation failed'
+ * const rejectedStep = await page.RejectTask(task, [
+ *   "reason=Invalid Data",
+ *   "comment=Auto rejection"
  * ]);
  */
-async RejectTask(params: string[]): Promise<string | null> {
+async RejectTask(task: Task, params: string[]): Promise<string | null> {
 
   logger.info(`Performing REJECT action: ${JSON.stringify(params)}`);
   let reason = 'Inaccurate Customer Data';
-  let step = 'Tax Data collection - BC_APPDATA';
+  // let step = 'Tax Data collection - BC_APPDATA';
+  // let step ='Requester Review - TDODDAPANENI';
+  // let step = 'BP Data collection - A_DATA';
+  let step = task.rejectingTo;
   let comment = 'Rejected via automation';
 
+  if (!step) {
+    throw new Error(`Rejecting To not defined for ${task.step}`);
+  }
   // Parse params from Excel
   params.forEach(p => {const [key, value] = p.split('=');
 
@@ -920,20 +1168,23 @@ async ReviewTask(): Promise<void> {
 }
 
 /**
- * Retrieves all error messages displayed in the error panel.
+ * Retrieves all error messages displayed in the SAP UI error list.
  *
  * Steps:
- * 1. Wait for the first error item to appear
- * 2. Count the total number of error items
- * 3. Loop through each error item
- * 4. Extract the title and description
- * 5. Format and store them in an array
- * 6. Return the formatted error messages
+ * 1. Wait for the first error item to become visible.
+ * 2. Initialize an array to store formatted error messages.
+ * 3. Get the total number of error items in the UI.
+ * 4. Iterate through each error item:
+ *    a. Locate the error item by index.
+ *    b. Extract the error title text.
+ *    c. Extract the error description text.
+ *    d. Trim and combine both into a single formatted string.
+ * 5. Return the list of formatted error messages.
  *
- * @returns Array of formatted error messages ("Title | Description")
+ * @returns Promise<string[]> Array of error messages in "title | description" format.
  *
  * Example:
- * const errors = await requestDetailsFields.getAllErrorMessages();
+ * const errors = await page.getAllErrorMessages();
  */
 async getAllErrorMessages(): Promise<string[]> {
 
@@ -950,25 +1201,30 @@ async getAllErrorMessages(): Promise<string[]> {
 }
 
 /**
- * Validates mandatory field error messages against UI and expected data.
+ * Validates mandatory field error messages for empty fields in a table-based UI.
  *
  * Steps:
- * 1. Waits for error messages to be visible on the UI
- * 2. Retrieves all actual error messages from the UI
- * 3. Extracts row data from the UI based on provided row count and fields
- * 4. Builds expected error keywords for fields that are empty
- * 5. Logs actual UI data and expected errors for debugging
- * 6. Validates that each expected error exists in the actual error messages
- * 7. Ensures the number of actual errors matches expected errors
- * 8. Throws an error if there is a mismatch
- * 9. Closes the error dialog
+ * 1. Log the fields and row range being validated.
+ * 2. Fetch current table data from the UI.
+ * 3. Build expected error keywords for fields that are empty.
+ * 4. If no empty fields are found, skip validation.
+ * 5. Trigger validation by clicking the Status Complete button.
+ * 6. Wait for error messages to appear in the UI.
+ * 7. Retrieve all actual error messages from the UI.
+ * 8. Normalize both expected and actual error formats for consistent comparison.
+ * 9. Validate that each expected error exists in the actual error list.
+ * 10. Log each successfully validated error.
+ * 11. Compare expected vs actual error counts and throw an error if mismatched.
+ * 12. Close the error dialog.
+ * 13. Log successful validation completion.
  *
- * @param rowCount - Number of rows to validate from the UI
- * @param fields - List of field names to check for mandatory validation
+ * @param rowCount Number of rows to validate in the table.
+ * @param fields Array of field names that are mandatory.
+ *
  * @returns Promise<void>
  *
  * Example:
- * await validateMandatoryFieldErrorMessage(3, ['Name', 'Email']);
+ * await page.validateMandatoryFieldErrorMessage(3, ['Material', 'Quantity']);
  */
 async validateMandatoryFieldErrorMessage(rowCount: number,fields: string[]): Promise<void> {
 
@@ -990,19 +1246,16 @@ async validateMandatoryFieldErrorMessage(rowCount: number,fields: string[]): Pro
   });
 
   logger.info(`Expected Errors: ${expectedKeywords.join(', ')}`);
-  // DECISION POINT
   if (expectedKeywords.length === 0) {
     logger.info("No mandatory field errors → skipping validation");
     return; 
   }
-
   await this.clickStatusComplete();
   await this.locators.errorItems.first().waitFor({ state: 'visible', timeout: 10000 });
   await this.page.waitForTimeout(500);
   const actualErrors = await this.getAllErrorMessages();
   logger.info(`Actual Errors: ${actualErrors.join(', ')}`);
   const normalize = (text: string) =>text.replace(/\s+/g, ' ').replace(/Row\s*:?\s*(\d+)/gi, 'Row$1').replace(/\s*-\s*/g, ' - ').trim();
-
   // Validate expected errors
   for (const keyword of expectedKeywords) {
     const normalizedKeyword = normalize(keyword);
@@ -1010,7 +1263,6 @@ async validateMandatoryFieldErrorMessage(rowCount: number,fields: string[]): Pro
     expect(found,`Expected error containing "${keyword}" not found.\n\nActual Errors:\n${actualErrors.join('\n')}`).toBeTruthy();
     logger.info(`Validated error: ${keyword}`);
   }
-
   // Count validation
   logger.info(`Expected error count: ${expectedKeywords.length}, Actual error count: ${actualErrors.length}`);
   if (actualErrors.length !== expectedKeywords.length) {
@@ -1018,7 +1270,6 @@ async validateMandatoryFieldErrorMessage(rowCount: number,fields: string[]): Pro
       `Error count mismatch.\nExpected: ${expectedKeywords.length}\nActual: ${actualErrors.length}\n\nActual Errors:\n${actualErrors.join('\n')}`
     );
   }
-
   // Close dialog
   await this.locators.closeDialogButton.click();
   logger.info('Mandatory field error message validation passed');
@@ -1026,17 +1277,20 @@ async validateMandatoryFieldErrorMessage(rowCount: number,fields: string[]): Pro
 
 
 /**
- * Validates the total number of errors displayed.
+ * Validates the number of error messages displayed in the SAP UI.
  *
  * Steps:
- * 1. Wait for the first error item to be visible
- * 2. Count the number of error items
- * 3. Assert that the count matches the expected value
+ * 1. Wait for at least one error item to become visible.
+ * 2. Count all error items currently displayed in the UI.
+ * 3. Compare the actual error count with the expected count.
+ * 4. Assert that both values match.
  *
- * @param expectedCount - Expected number of error messages
+ * @param expectedCount The expected number of error messages.
+ *
+ * @returns Promise<void>
  *
  * Example:
- * await requestDetailsFields.validateErrorCount(3);
+ * await page.validateErrorCount(3);
  */
 async validateErrorCount(expectedCount: number) {
 
@@ -1046,29 +1300,32 @@ async validateErrorCount(expectedCount: number) {
 }
 
 /**
- * Validates that specified fields are read-only in the UI.
+ * Validates that specified fields are in read-only state for the given number of table rows.
  *
  * Steps:
- * 1. Waits for SAP UI to apply readonly rules using DOM inspection
- * 2. Waits for table rows to become visible
- * 3. Iterates through each row up to the given row count
- * 4. For each specified field:
- *    - Determines the column index dynamically
- *    - Locates the field wrapper in the table
- *    - Waits for the element to be visible and stable
- * 5. Checks readonly conditions using:
- *    - CSS class indicators
- *    - readonly attribute
- *    - disabled attribute
- * 6. Asserts that the field is read-only
- * 7. Logs validation details for debugging
+ * 1. Log the fields being validated and the row range.
+ * 2. Wait for the table rows to be visible and stable.
+ * 3. Iterate through each row up to the given row count.
+ * 4. For each field:
+ *    a. Determine the column index dynamically.
+ *    b. Locate the read-only field wrapper for the row and column.
+ *    c. Wait for the wrapper to be visible and stable.
+ *    d. Allow a short delay for SAP UI to apply read-only state.
+ *    e. Check multiple indicators of read-only state:
+ *       - CSS class indicators
+ *       - HTML readonly attribute
+ *       - HTML disabled attribute
+ *       - Custom field-level disable flag
+ * 5. Assert that the field is read-only.
+ * 6. Log validation success for each field.
  *
- * @param rowCount - Number of rows to validate
- * @param fieldNames - List of field names expected to be read-only
+ * @param rowCount Number of rows to validate.
+ * @param fieldNames Array of field names expected to be read-only.
+ *
  * @returns Promise<void>
  *
  * Example:
- * await validateFieldsReadOnly(3, ['Name', 'Status']);
+ * await page.validateFieldsReadOnly(3, ['Material', 'Quantity']);
  */
 async validateFieldsReadOnly(rowCount: number, fieldNames: string[]): Promise<void> {
 
@@ -1082,13 +1339,11 @@ async validateFieldsReadOnly(rowCount: number, fieldNames: string[]): Promise<vo
       // Wait for the wrapper to be visible AND stable
       await wrapper.waitFor({ state: 'visible', timeout: 10000 });
       await this.page.waitForTimeout(500); // Let SAP apply the readonly class
-      
       const classValue = await wrapper.getAttribute('class');
       const input = wrapper.locator('input').first();
       const readonlyAttr = await input.getAttribute('readonly');
       const disabledAttr = await input.getAttribute('disabled');
       const fieldLevelDisable = await wrapper.getAttribute('data-fieldleveldisable');
-
       // Check for readonly via class, readonly attribute, or disabled attribute
       const isReadonly = 
         classValue?.includes('sapMInputBaseReadonly') ||
@@ -1101,33 +1356,34 @@ async validateFieldsReadOnly(rowCount: number, fieldNames: string[]): Promise<vo
         isReadonly,
         `Field "${fieldName}" in row ${rowIndex + 1} is NOT read-only.\nClass: ${classValue}\nReadonly attr: ${readonlyAttr}\nDisabled attr: ${disabledAttr}`
       ).toBeTruthy();
-      
       logger.info(`Validated ${fieldName} (row ${rowIndex + 1}) is read-only - Class: ${classValue}`);
     }
   }
 }
 
 /**
- * Captures a mapping between two table fields.
+ * Captures a key-value mapping from table rows based on two specified fields.
  *
  * Steps:
- * 1. Get total number of rows in the table
- * 2. Throw an error if no rows are found
- * 3. Loop through each row
- * 4. Extract keyField and valueField data using getRowData()
- * 5. Validate that both values exist
- * 6. Store the mapping (key → value) in an object
- * 7. Log the captured mapping for debugging
- * 8. Return the completed field map
+ * 1. Log the mapping being captured (keyField → valueField).
+ * 2. Count total rows in the table.
+ * 3. If no rows are found, throw an error.
+ * 4. Fetch all row data for the specified key and value fields.
+ * 5. Initialize an empty object to store the mapping.
+ * 6. Iterate through each row:
+ *    a. Extract key and value from the row data.
+ *    b. Skip the row if either key or value is empty.
+ *    c. Store the mapping in a key-value object.
+ *    d. Log each captured mapping with row index.
+ * 7. Return the final field map object.
  *
- * @param keyField - Column name used as the key
- * @param valueField - Column name used as the mapped value
+ * @param keyField The field name used as the map key.
+ * @param valueField The field name used as the map value.
  *
- * @returns Object containing key-value mappings from the table
+ * @returns Promise<Record<string, string>> Object mapping keyField values to valueField values.
  *
  * Example:
- * const requestTypeMap =
- *   await requestDetailsFields.captureFieldMapWithValues('BP No', 'Account Group');
+ * const map = await page.captureFieldMapWithValues('Material', 'Quantity');
  */
 async captureFieldMapWithValues(keyField: string, valueField: string): Promise<Record<string, string>> {
   
@@ -1142,85 +1398,93 @@ async captureFieldMapWithValues(keyField: string, valueField: string): Promise<R
   allRowsData.forEach((rowData, index) => {
     const key = rowData[keyField];
     const value = rowData[valueField];
-
     // Skip empty rows
     if (!key || !value) return;
-
     fieldMap[key] = value;
     logger.info(`Captured mapping: ${keyField}="${key}" → ${valueField}="${value}" in row ${index + 1}`);
   });
-
   return fieldMap;
 }
 
-
 /**
- * Validates that a target field value matches the previously captured mapping.
+ * Validates that a target field in the table matches expected values based on a previously captured mapping.
  *
  * Steps:
- * 1. Get total number of rows in the table
- * 2. Throw an error if no rows are found
- * 3. Loop through each row
- * 4. Extract keyField and targetField values using getRowData()
- * 5. Retrieve expected value from the provided fieldMap
- * 6. Validate that key exists and mapping is available
- * 7. Compare actual value with expected mapped value
- * 8. Log the validated mapping for debugging
+ * 1. Log the validation process for the mapped field relationship.
+ * 2. Count the total number of rows in the table.
+ * 3. If no rows exist, throw an error.
+ * 4. Fetch all row data for the key field and target field.
+ * 5. Iterate through each row:
+ *    a. Extract the key and actual target field value.
+ *    b. Skip rows where the key is empty.
+ *    c. Ensure a mapping exists for the key in the provided field map.
+ *    d. Retrieve the expected value from the mapping.
+ *    e. Assert that the actual value matches the expected value.
+ * 6. Log successful validation for each mapped entry.
  *
- * @param fieldMap - Mapping object containing expected key-value pairs
- * @param keyField - Column name used to retrieve the key
- * @param targetField - Column name whose value should match the mapped value
+ * @param fieldMap Pre-captured mapping of keyField → expected targetField values.
+ * @param keyField The field used as the mapping key.
+ * @param targetField The field whose values are being validated against the mapping.
+ *
+ * @returns Promise<void>
  *
  * Example:
- * await requestDetailsFields.validateMappedField(
- *   bpAccountGroupMap,
- *   'BP No',
- *   'Customer Account Grp'
- * );
+ * await page.validateMappedField(map, 'Material', 'Plant');
  */
-  async validateMappedField(fieldMap: Record<string, string>, keyField: string, targetField: string): Promise<void> {
+async validateMappedField(fieldMap: Record<string, string>, keyField: string, targetField: string): Promise<void> {
     
-    logger.info(`Validating mapped field "${targetField}" against key "${keyField}" using provided mapping`);
-    const rowCount = await this.locators.tableRows.count();
-    if (rowCount === 0) {
-      throw new Error(`No rows found while validating mapped field "${targetField}"`);
+  logger.info(`Validating mapped field "${targetField}" against key "${keyField}" using provided mapping`);
+  const rowCount = await this.locators.tableRows.count();
+  if (rowCount === 0) {
+    throw new Error(`No rows found while validating mapped field "${targetField}"`);
+  }
+  // Get all row data at once
+  const allRowsData = await this.getRowsData(rowCount, [keyField, targetField]);
+  allRowsData.forEach((rowData, index) => {
+    const key = rowData[keyField];
+    const actualValue = rowData[targetField];
+    // Skip empty rows
+    if (!key) return;
+    if (!(key in fieldMap)) {
+      throw new Error(`No mapping found for ${keyField} "${key}"`);
     }
-
-    // Get all row data at once
-    const allRowsData = await this.getRowsData(rowCount, [keyField, targetField]);
-
-    allRowsData.forEach((rowData, index) => {
-      const key = rowData[keyField];
-      const actualValue = rowData[targetField];
-
-      // Skip empty rows
-      if (!key) return;
-      if (!(key in fieldMap)) {
-        throw new Error(`No mapping found for ${keyField} "${key}"`);
-      }
-      const expectedValue = fieldMap[key];
-      expect(actualValue, `Mapped value mismatch for ${keyField} "${key}" in row ${index + 1}`).toBe(expectedValue);
-      logger.info(`Validated mapping: ${keyField}="${key}" → ${targetField}="${actualValue}"`);
-    });
+    const expectedValue = fieldMap[key];
+    expect(actualValue, `Mapped value mismatch for ${keyField} "${key}" in row ${index + 1}`).toBe(expectedValue);
+    logger.info(`Validated mapping: ${keyField}="${key}" → ${targetField}="${actualValue}"`);
+  });
 }
 
-
 /**
- * Selects the checkbox of the row matching the provided BP Number
- * and clicks the "BP : Add Roles" button.
+ * Selects a table row based on BP Number and clicks the "BP : Add Roles" button.
  *
  * Steps:
- * 1. Get total row count
- * 2. Loop through each row
- * 3. Read BP No field value
- * 4. When match is found:
- *    - Click the row selection checkbox
- *    - Click "BP : Add Roles"
+ * 1. Log the BP number being searched.
+ * 2. Start a retry loop until the timeout is reached.
+ * 3. Check if table rows are loaded:
+ *    a. If no rows exist, wait and retry.
+ * 4. Fetch all visible rows' BP numbers from the UI.
+ * 5. Find the row index matching the given BP number.
+ * 6. If the row is found:
+ *    a. Locate and select the checkbox for that row.
+ *    b. Wait for the checkbox to become visible.
+ *    c. Scroll into view and click the checkbox.
+ *    d. Wait briefly for UI update.
+ *    e. Wait for the "BP Add Roles" button to become visible.
+ *    f. Click the "BP Add Roles" button.
+ *    g. Wait briefly for navigation/action to complete.
+ *    h. Exit the function successfully.
+ * 7. If not found, wait and retry.
+ * 8. If timeout is reached, throw an error.
  *
- * @param bpNumber BP number used to identify the row
+ * @param bpNumber The BP Number to search and select.
+ * @param timeout Maximum time to wait for the BP row to appear (default: 60000ms).
+ *
+ * @returns Promise<void>
+ *
+ * @throws Error If the BP number is not found within the timeout period.
  *
  * Example:
- * await requestDetailsPage.selectRowByBPAndClickAddRoles('10002345');
+ * await page.selectRowByBPAndClickAddRoles('BP12345');
  */
 async selectRowByBPAndClickAddRoles(bpNumber: string, timeout = 60000): Promise<void> {
   
@@ -1229,19 +1493,15 @@ async selectRowByBPAndClickAddRoles(bpNumber: string, timeout = 60000): Promise<
   while (Date.now() - startTime < timeout) {
     // Get the actual number of rows in the table
     const rowCount = await this.locators.tableRows.count();
-
     if (rowCount === 0) {
       // Table not loaded yet, wait and retry
       await this.page.waitForTimeout(500);
       continue;
     }
-
     // Get all rows' BP No at once
     const rowsData = await this.getRowsData(rowCount, ['BP No']);
-
     // Find the index of the row with the target BP No
     const targetIndex = rowsData.findIndex(row => row['BP No']?.trim() === bpNumber);
-
     if (targetIndex >= 0) {
       // Click the checkbox for that row
       const checkbox = this.locators.tableRowSelectionCheckbox(targetIndex);
@@ -1249,51 +1509,49 @@ async selectRowByBPAndClickAddRoles(bpNumber: string, timeout = 60000): Promise<
       await this.locators.tableGrid.locator(checkbox).scrollIntoViewIfNeeded();
       await this.locators.tableGrid.locator(checkbox).click();
       await this.page.waitForTimeout(1000);
-
       // Click the BP Add Roles button
       await this.locators.bpAddRolesButton.waitFor({ state: 'visible', timeout: 10000 });
       await this.locators.bpAddRolesButton.click();
       await this.page.waitForTimeout(1000);
       return;
     }
-
     // Wait a bit before retrying
     await this.page.waitForTimeout(1000);
   }
-
   throw new Error(`BP No "${bpNumber}" not found in table after ${timeout / 1000}s`);
 }
 
-
 /**
- * Validates row data inside the "Add Roles" dialog table against expected values.
+ * Validates the "Add Roles" dialog table rows against expected values and confirms the selection.
  *
  * Steps:
- * 1. Waits for the Add Roles dialog to be visible
- * 2. Extracts all table headers and builds a header-to-column index map
- * 3. Logs detected headers for debugging
- * 4. Iterates through each expected row:
- *    - Locates the corresponding row in the table
- *    - Waits for the row to be visible
- * 5. For each field in the row:
- *    - Maps the field name to the correct column index
- *    - Locates the corresponding cell
- *    - Extracts value from input field or cell text
- *    - Compares actual value with expected value
- *    - Throws an error if values do not match
- * 6. Logs validation success for each field
- * 7. Clicks the confirm button to finalize the dialog
- * 8. Waits briefly for UI stabilization
+ * 1. Log validation start.
+ * 2. Wait for the Add Roles dialog to become visible.
+ * 3. Extract all table headers and build a header-to-column-index map.
+ * 4. Log detected headers for debugging purposes.
+ * 5. Iterate through each expected row:
+ *    a. Locate the row by index in the table.
+ *    b. Wait for the row to become visible.
+ *    c. For each expected field in the row:
+ *       i. Resolve the column index from the header map.
+ *       ii. Locate the corresponding cell.
+ *       iii. Wait for the cell to be visible.
+ *       iv. Extract value from input field if present, otherwise from text content.
+ *       v. Compare actual value with expected value.
+ *       vi. Throw an error if mismatch is found.
+ *       vii. Log successful validation per field.
+ * 6. Click the Confirm button to submit selected roles.
+ * 7. Wait for confirmation button to disappear (dialog closes).
  *
- * @param expectedRows - Array of expected row objects containing:
- *   - rowIndex: index of the row in the table
- *   - values: key-value pairs of field names and expected values
+ * @param expectedRows Array of row objects containing rowIndex and expected field values.
+ *
  * @returns Promise<void>
- * 
- * Example usage:
- * await page.validateAddRolesRows([
- *   { rowIndex: 0, values: { 'BP Role': 'FLCU00', 'BP No': '10002345', 'BP Name': 'John Doe' } },
- *   { rowIndex: 1, values: { 'BP Role': 'FLCU01', 'BP No': '10002345', 'BP Name': 'John Doe' } }
+ *
+ * @throws Error If any column is not found or any field value mismatches expected data.
+ *
+ * Example:
+ * await page.validateAddRolesDialogRows([
+ *   { rowIndex: 0, values: { Role: 'Admin', Status: 'Active' } }
  * ]);
  */
 async validateAddRolesDialogRows(expectedRows: { rowIndex: number; values: Record<string, string> }[]): Promise<void> {
@@ -1301,38 +1559,28 @@ async validateAddRolesDialogRows(expectedRows: { rowIndex: number; values: Recor
   logger.info(`Validating Add Roles dialog rows against expected data`);  
   const dialog = this.locators.addRolesDialog;
   await dialog.waitFor({ state: 'visible', timeout: 10000 });
-
   // Grab all headers from the Add Roles table
   const headers = dialog.locator('table[id^="__table"] div.sapUiTableCellInner span.sapMLabelTextWrapper bdi.sapUiSelectable');
   const headerCount = await headers.count();
   const headerMap: Record<string, number> = {};
-
   for (let i = 0; i < headerCount; i++) {
     const headerText = (await headers.nth(i).textContent())?.trim();
     if (headerText) headerMap[headerText.replace(/\s+/g, ' ')] = i;
   }
-
   logger.info(`Detected headers in Add Roles table: ${JSON.stringify(headerMap)}`);
   for (const row of expectedRows) {
     const { rowIndex, values } = row;
     const rowLocator = dialog.locator('table[id^="__table"] tr[id*="rows-row"]').nth(rowIndex);
     await rowLocator.waitFor({ state: 'visible', timeout: 5000 });
-
     for (const fieldName of Object.keys(values)) {
       const colIndex = headerMap[fieldName.replace(/\s+/g, ' ')];
       if (colIndex === undefined) {
         throw new Error(`Column "${fieldName}" not found in Add Roles table`);
       }
-
       const cellLocator = rowLocator.locator('td.sapUiTableContentCell').nth(colIndex);
       await cellLocator.waitFor({ state: 'visible', timeout: 5000 });
-
       const input = cellLocator.locator('input');
-      const actualValue =
-        (await input.count()) > 0
-          ? (await input.inputValue()).trim()
-          : (await cellLocator.textContent())?.trim() || '';
-
+      const actualValue =(await input.count()) > 0? (await input.inputValue()).trim(): (await cellLocator.textContent())?.trim() || '';
       const expectedValue = values[fieldName];
 
       if (actualValue !== expectedValue) {
@@ -1340,7 +1588,6 @@ async validateAddRolesDialogRows(expectedRows: { rowIndex: number; values: Recor
           `Row ${rowIndex + 1}: Field "${fieldName}" expected "${expectedValue}", but found "${actualValue}"`
         );
       }
-
       logger.info(`Row ${rowIndex + 1} validated: ${fieldName} = ${actualValue}`);
     }
   }
@@ -1353,45 +1600,42 @@ async validateAddRolesDialogRows(expectedRows: { rowIndex: number; values: Recor
  * Retrieves the number of visible data rows in the SAP table.
  *
  * Steps:
- * 1. Locates the SAP application iframe using frameLocator
- * 2. Targets table rows excluding hidden rows using CSS selectors
- * 3. Counts all visible data rows in the table
- * 4. Logs the total row count for debugging
- * 5. Returns the row count
+ * 1. Locate the SAP application iframe container.
+ * 2. Target all visible table rows excluding hidden rows.
+ * 3. Count the number of matching rows.
+ * 4. Log the total row count for debugging purposes.
+ * 5. Return the row count.
  *
- * @returns Number of visible data rows in the SAP table
+ * @returns Promise<number> Number of visible data rows in the table.
  *
  * Example:
- * const rowCount = await getTableDataRowCount();
+ * const rowCount = await page.getTableDataRowCount();
  */
 async getTableDataRowCount(): Promise<number> {
   const frame = this.page.frameLocator('.sapUShellApplicationContainer iframe');
-  const rows = frame.locator(
-    'table[id^="__table"] tr.sapUiTableRow.sapUiTableContentRow:not(.sapUiTableRowHidden)'
-  );
-
+  const rows = frame.locator('table[id^="__table"] tr.sapUiTableRow.sapUiTableContentRow:not(.sapUiTableRowHidden)');
   const count = await rows.count();
   console.log(`SAP Data Rows: ${count}`);
-
   return count;
 }
 
 /**
- * Counts the number of visible data records in the SAP table.
+ * Retrieves the number of visible (non-hidden) records in the SAP table.
  *
  * Steps:
- * 1. Locates the SAP application frame
- * 2. Waits for at least one table row to be visible
- * 3. Retrieves all row elements matching the SAP row selector
- * 4. Iterates through each row and checks its CSS class
- * 5. Excludes rows marked as hidden (sapUiTableRowHidden)
- * 6. Counts only visible data rows
- * 7. Returns the final count
+ * 1. Locate the SAP application container using frame locator.
+ * 2. Wait for at least one table row to be visible.
+ * 3. Retrieve all row elements from the table.
+ * 4. Iterate through each row:
+ *    a. Check the row's CSS class attribute.
+ *    b. Exclude rows marked as "sapUiTableRowHidden".
+ *    c. Count only visible (active) data rows.
+ * 5. Return the total number of visible data rows.
  *
- * @returns Number of visible records in the table
+ * @returns Promise<number> Number of visible records in the table.
  *
  * Example:
- * const recordCount = await getRecordsCount();
+ * const count = await page.getRecordsCount();
  */
 async getRecordsCount(): Promise<number> {
 
@@ -1410,114 +1654,110 @@ async getRecordsCount(): Promise<number> {
 }
 
 /**
- * Validates a field across rows based on dynamic conditions and a reference mapping.
+ * Validates a cross-view field value using a previously captured mapping and conditional filters.
  *
  * Steps:
- * 1. Retrieves the total number of rows from the table
- * 2. Extracts relevant row data including:
- *    - key field
- *    - target field
- *    - all condition fields
- * 3. Iterates through each row:
- *    - Checks if the row satisfies all given conditions
- * 4. For matching rows:
- *    - Retrieves the key field value (e.g., BP number)
- *    - Looks up the expected value from the captured map
- *    - Compares actual target field value with expected value
- * 5. Logs successful validations
- * 6. Throws an error if no rows match the provided conditions
+ * 1. Log the validation context including target field, conditions, and key field.
+ * 2. Retrieve total number of rows in the table.
+ * 3. Fetch row data for:
+ *    - Key field
+ *    - Target field
+ *    - All condition fields
+ * 4. Initialize a flag to track if any row matches the given conditions.
+ * 5. Iterate through each row:
+ *    a. Check if the row satisfies all provided conditions.
+ *    b. If not, skip the row.
+ *    c. Mark that at least one matching row exists.
+ *    d. Extract the key field value (e.g., BP number).
+ *    e. Retrieve actual and expected values for comparison.
+ *    f. Validate that expected mapping exists for the key.
+ *    g. Assert that actual value matches the mapped expected value.
+ *    h. Log successful cross-view validation for the row.
+ * 6. After iteration, throw an error if no rows matched the conditions.
  *
- * @param capturedMap - Mapping of keyField values to expected targetField values
- * @param conditions - Key-value pairs that define filtering conditions for rows
- * @param keyField - Field used as the lookup key (e.g., "BP No")
- * @param targetField - Field whose value needs to be validated
+ * @param capturedMap Pre-captured mapping of keyField → expected targetField values.
+ * @param conditions Key-value pairs used to filter rows before validation.
+ * @param keyField Field used as the mapping key (e.g., BP No).
+ * @param targetField Field whose value is validated against the mapping.
+ *
  * @returns Promise<void>
  *
+ * @throws Error If no rows match the conditions or mapping is missing for a key.
+ *
  * Example:
- * await validateCrossViewFieldWithCondition(
- *   bpAccountGroupMap,
- *   { 'Name1': 'BP Test2' },
+ * await page.validateCrossViewFieldWithCondition(
+ *   map,
+ *   { Status: 'Active' },
  *   'BP No',
- *   'Customer Account Grp'
+ *   'Role'
  * );
  */
 async validateCrossViewFieldWithCondition(capturedMap: Record<string, string>,conditions: Record<string, string>,
   keyField: string,targetField: string): Promise<void> {
-
   logger.info(`Validating field "${targetField}" with conditions ${JSON.stringify(conditions)} using mapping on key "${keyField}"`);  
   const rowCount = await this.locators.tableRows.count();
   const rowsData = await this.getRowsData(rowCount, [keyField, targetField, ...Object.keys(conditions)]);
-
   let matched = false;
-
   rowsData.forEach((row, index) => {
-
-    // Check condition(s)
     const isMatch = Object.entries(conditions).every(([field, value]) => {
       return (row[field] ?? '').trim() === value;
     });
-
     if (!isMatch) return;
-
     matched = true;
-
     const bpNo = row[keyField];
     const actualValue = (row[targetField] ?? '').trim();
     const expectedValue = capturedMap[bpNo];
-
     if (!expectedValue) {
       throw new Error(`No mapping found for ${keyField}="${bpNo}"`);
     }
-
     expect(
       actualValue,
       `Row ${index + 1}: ${targetField} mismatch for ${JSON.stringify(conditions)} (BP No="${bpNo}")`
     ).toBe(expectedValue);
-
     logger.info(`Cross-view validated: ${JSON.stringify(conditions)} → ${bpNo} → ${targetField}="${actualValue}"`);
   });
-
   if (!matched) {
     throw new Error(`No rows matched condition: ${JSON.stringify(conditions)}`);
   }
 }
 
 /**
- * Validates conditional field rules across row data.
+ * Validates conditional field rules against table row data.
  *
  * Steps:
- * 1. Iterates through each row in the provided dataset
- * 2. Checks if all specified conditions match the row
- * 3. Skips rows that do not satisfy the conditions
- * 4. For matching rows:
- *    - Iterates through expected fields
- *    - Compares actual values against expected values
- *    - Treats "No Value" as an empty string
- * 5. Asserts that each expected field matches the actual value
- * 6. Logs successful validations for each rule
+ * 1. Log the conditions and expected field rules being validated.
+ * 2. Iterate through each row in the provided dataset.
+ * 3. For each row:
+ *    a. Check whether all provided conditions match the row values.
+ *    b. If conditions do not match, skip the row.
+ *    c. If conditions match:
+ *       i. Validate each expected field rule against the row.
+ *       ii. Normalize expected values (treat "No Value" as empty string).
+ *       iii. Compare actual vs expected values.
+ *       iv. Assert correctness using strict equality.
+ *       v. Log successful rule validation.
  *
- * @param rowsData - Array of row objects containing field-value pairs
- * @param conditions - Key-value pairs that define when the rule applies
- * @param expectedFields - Key-value pairs of fields and their expected values
+ * @param rowsData Array of row objects representing table data.
+ * @param conditions Key-value pairs that define when validation should be applied.
+ * @param expectedFields Key-value pairs defining expected field values when conditions match.
+ *
  * @returns Promise<void>
  *
  * Example:
- * await validateConditionalFieldRule(
- *   addressRowsDataFromUITask100,
- * { 'Region': 'SHR' },
- * { 'Country Key': 'GB' });
+ * await page.validateConditionalFieldRule(
+ *   rows,
+ *   { Status: 'Active' },
+ *   { Role: 'Admin', Type: 'Full' }
+ * );
  */
 async validateConditionalFieldRule(rowsData: Record<string, string>[],conditions: Record<string, string>,
   expectedFields: Record<string, string>): Promise<void> {
-
   logger.info(`Validating conditional field rules with conditions ${JSON.stringify(conditions)} and expected fields ${JSON.stringify(expectedFields)}`);
   rowsData.forEach((row, index) => {
-
     // Check if ALL conditions match
     const isMatch = Object.entries(conditions).every(([field, value]) => {
       return (row[field] ?? '').trim() === value;
     });
-
     if (!isMatch) return;
       // Validate expected fields
       Object.entries(expectedFields).forEach(([field, expected]) => {
@@ -1529,26 +1769,25 @@ async validateConditionalFieldRule(rowsData: Record<string, string>[],conditions
   });
 }
 
-//After Excel changes
-
 /**
- * Selects a value from a dropdown field within a specific table row.
+ * Selects a value from a dropdown field inside a specific table cell.
  *
  * Steps:
- * 1. Locates the target cell using row index and field name
- * 2. Scrolls the cell into view if needed
- * 3. Clicks the cell to activate the dropdown/input
- * 4. Locates the dropdown input inside the cell
- * 5. Fills the input with the provided value
- * 6. Presses Enter to confirm selection (SAP Fiori behavior)
+ * 1. Locate the target cell using row index and field name.
+ * 2. Scroll the cell into view to ensure it is interactable.
+ * 3. Click the cell to activate the dropdown input.
+ * 4. Locate the dropdown input inside the cell.
+ * 5. Fill the input with the provided value.
+ * 6. Confirm the selection by pressing "Enter".
  *
- * @param rowIndex - Index of the row in the table (0-based)
- * @param fieldName - Name of the field/column
- * @param value - Value to select from the dropdown
+ * @param rowIndex The zero-based index of the row.
+ * @param fieldName The column/field name of the dropdown.
+ * @param value The value to select from the dropdown.
+ *
  * @returns Promise<void>
  *
  * Example:
- * await selectDropdownByField(0, 'Country', 'Germany');
+ * await page.selectDropdownByField(0, 'Country', 'India');
  */
 async selectDropdownByField(rowIndex: number, fieldName: string, value: string) {
 
@@ -1561,24 +1800,26 @@ async selectDropdownByField(rowIndex: number, fieldName: string, value: string) 
 }
 
 /**
- * Selects a value using the SAP Value Help (F4) dialog for a specific table field.
+ * Selects a value using the Value Help (F4 help) dialog for a specific table field.
  *
  * Steps:
- * 1. Determines the column index for the given field name
- * 2. Locates and clicks the value help (F4) icon in the target cell
- * 3. Waits for the value help dialog to appear
- * 4. Enters the search value into the dialog's search box
- * 5. Waits briefly for search results to update
- * 6. Selects the matching row from the dialog
- * 7. Closes the dialog
+ * 1. Determine the column index for the given field name.
+ * 2. Locate and click the Value Help icon for the specified row and column.
+ * 3. Wait for the Value Help dialog to become visible.
+ * 4. Use the search box inside the dialog to filter results by the given value.
+ * 5. Wait briefly for the filtered results to load.
+ * 6. Locate the matching row in the dialog based on the provided value.
+ * 7. Click the matching row to select it.
+ * 8. Close the Value Help dialog.
  *
- * @param rowIndex - Index of the row in the table (0-based)
- * @param fieldName - Name of the field/column
- * @param value - Value to search and select from the value help dialog
+ * @param rowIndex The zero-based index of the table row.
+ * @param fieldName The field/column name where Value Help should be used.
+ * @param value The value to search and select from the Value Help dialog.
+ *
  * @returns Promise<void>
  *
  * Example:
- * await selectViaValueHelp(0, 'Customer', 'ABC Corp');
+ * await page.selectViaValueHelp(0, 'Material', 'Steel');
  */
 async selectViaValueHelp(rowIndex: number, fieldName: string, value: string) {
 
@@ -1587,44 +1828,42 @@ async selectViaValueHelp(rowIndex: number, fieldName: string, value: string) {
   await icon.waitFor({ state: 'visible' });
   await icon.click();
   await this.locators.valueHelpDialog.waitFor({ state: 'visible' });
-  // Search inside dialog
   const searchBox = this.page.getByRole('searchbox');
   await searchBox.fill(value);
   await this.page.waitForTimeout(500);
-  // Select row
   const row = this.locators.valueHelpDialogRows.filter({ hasText: value }).first();
   await row.click();
-  // Close dialog if needed
   await this.locators.closeDialogButton.click();
 }
 
 /**
- * Executes data entry dynamically based on row data and action mapping.
+ * Executes dynamic data entry into a table based on field-level action mapping.
  *
  * Steps:
- * 1. Iterates through each row in the provided dataset
- * 2. For each field in the row:
- *    - Retrieves the value
- *    - Determines the action type from actionMap (defaults to 'input')
- * 3. Skips empty values
- * 4. Executes field actions based on type:
- *    - input: enters text into the field
- *    - dropdown: selects value from dropdown
- *    - search/valuehelp: selects value using Value Help dialog
- * 5. Falls back to input if action is unknown
- * 6. Wraps each field action in try-catch to prevent one failure from stopping execution
- * 7. Logs warnings for skipped fields or unknown actions
+ * 1. Log the number of rows and the provided action mapping.
+ * 2. Iterate through each row of input data.
+ * 3. For each field in the row:
+ *    a. Extract the field value.
+ *    b. Determine the action type from actionMap (default: input).
+ *    c. Skip the field if value is empty.
+ * 4. Execute field interaction based on action type:
+ *    - "input" → enter value directly into the field.
+ *    - "dropdown" → select value from dropdown.
+ *    - "search" / "valuehelp" → select value using Value Help dialog.
+ *    - default → fallback to input and log a warning.
+ * 5. Catch and log errors per field without stopping execution.
+ * 6. Continue processing remaining fields and rows even if some fail.
  *
- * @param rowsData - Array of row objects containing field-value pairs
- * @param actionMap - Mapping of field names to action types (input, dropdown, valuehelp, etc.)
+ * @param rowsData Array of row objects containing field-value pairs.
+ * @param actionMap Mapping of field names to interaction types (input, dropdown, valuehelp, search).
+ *
  * @returns Promise<void>
  *
  * Example:
- * await executeDynamicData(rowsData, {
- *   Country: 'dropdown',
- *   Customer: 'valuehelp',
- *   Name: 'input'
- * });
+ * await page.executeDynamicData(
+ *   [{ Material: 'Steel', Qty: '10' }],
+ *   { Material: 'valuehelp', Qty: 'input' }
+ * );
  */
 async executeDynamicData(rowsData: any[],actionMap: Record<string, string>) {
 
@@ -1652,7 +1891,6 @@ async executeDynamicData(rowsData: any[],actionMap: Record<string, string>) {
             logger.warn(`Unknown action "${action}" for field "${field}", defaulting to input`);
             await this.enterField(i, field, value);
         }
-
       } catch (err) {
         logger.warn(`Skipping field ${field}: ${err}`);
       }
@@ -1660,59 +1898,251 @@ async executeDynamicData(rowsData: any[],actionMap: Record<string, string>) {
   }
 }
 
-
-////////Add loggers form here
 /**
- * Validates Add Roles dialog data against expected validation rows derived from Excel.
+ * Checks whether a given field exists as a visible form label on the page.
  *
  * Steps:
- * 1. Logs incoming validation rows for debugging
- * 2. Groups expected validation rows by BP identifier (e.g., $1, $2)
- * 3. Iterates through each record in the UI:
- *    - Retrieves BP No and BP Name from UI data
- *    - Validates BP No is present
- * 4. Selects the corresponding row and opens the Add Roles dialog
- * 5. Matches expected validation data using a placeholder key (e.g., "$1")
- * 6. Throws an error if no expected data is found for the BP
- * 7. Transforms expected rows into the format required by dialog validation
- * 8. Validates the Add Roles dialog using validateAddRolesDialogRows
+ * 1. Locate the form label element for the given field name.
+ * 2. Attempt to wait briefly (2 seconds) for the label to become visible.
+ * 3. If the label becomes visible within the timeout, return true.
+ * 4. If the wait fails (timeout or not found), return false.
  *
- * @param rowCount - Number of BP records to validate
- * @param bpRowsData - Data extracted from UI containing BP numbers
- * @param bPRowInputData - Input dataset containing BP names
- * @param validationRows - Expected validation rows from Excel
+ * @param fieldName The name of the form field to check.
+ *
+ * @returns Promise<boolean> True if the form field label is visible, otherwise false.
+ *
+ * Example:
+ * const exists = await page.isFormField('Customer Name');
+ */
+async isFormField(fieldName: string): Promise<boolean> {
+  const label = this.locators.formLabel(fieldName);
+  try {
+    await label.first().waitFor({ state: 'visible', timeout: 2000 });
+    return true;
+  } catch {
+    return false;
+  }
+}
+
+/**
+ * Handles input into a table cell field using a progressive fallback strategy.
+ *
+ * Steps:
+ * 1. Locate the target cell using row index and field name.
+ * 2. Scroll the cell into view and activate edit mode via double click.
+ * 3. Attempt primary input method:
+ *    a. Locate input element inside the cell.
+ *    b. Clear existing value.
+ *    c. Fill the new value.
+ *    d. Wait briefly for UI stabilization.
+ * 4. If input fails, log a warning (fallback logic exists but currently commented out):
+ *    - Dropdown selection (optional fallback)
+ *    - Value help dialog selection (final fallback)
+ * 5. If all methods fail (when enabled), an error would be thrown.
+ *
+ * Note:
+ * - Currently only the direct input strategy is active.
+ * - Dropdown and value help strategies are prepared but disabled.
+ *
+ * @param rowIndex The zero-based index of the table row.
+ * @param fieldName The field/column name to interact with.
+ * @param value The value to enter into the field.
+ *
  * @returns Promise<void>
  *
  * Example:
- * await validateAddRolesFromExcel(
- *   2,
- *   bpRowsData,
- *   bPRowInputData,
- *   validationRows
- * );
+ * await page.handleTableField(0, 'Material', 'Steel');
+ */
+async handleTableField(rowIndex: number, fieldName: string, value: string) {
+
+  const cell = await this.getCell(rowIndex, fieldName);
+  await cell.scrollIntoViewIfNeeded();
+  await cell.dblclick();
+  const input = cell.locator('input').first();
+  // ✅ STEP 1: TRY INPUT
+  try {
+    logger.info(`TABLE INPUT → ${fieldName}`);
+    await input.fill('');
+    await input.fill(value);
+    // await input.type(value, { delay: 50 });
+    // const entered = await input.inputValue();
+    // await input.press('Enter');
+    await this.page.waitForTimeout(100);
+    // if (entered?.trim()) return;
+  } catch (e) {
+    logger.warn(`TABLE INPUT failed → ${fieldName}`);
+  }
+  // ✅ STEP 2: TRY DROPDOWN
+  // try {
+  //   logger.info(`TABLE DROPDOWN → ${fieldName}`);
+  //   await input.fill(value);
+  //   await input.press('Enter');
+  //   return;
+  // } catch (e) {
+  //   logger.warn(`TABLE DROPDOWN failed → ${fieldName}`);
+  // }
+  // // ✅ STEP 3: VALUE HELP (LAST)
+  // try {
+  //   logger.info(`TABLE VALUE HELP → ${fieldName}`);
+  //   await this.selectViaValueHelp(rowIndex, fieldName, value);
+  //   return;
+  // } catch (e) {
+  //   logger.error(`TABLE VALUE HELP failed → ${fieldName}`);
+  // }
+  // throw new Error(`Unable to set table field: ${fieldName}`);
+}
+
+/**
+ * Detects the current UI view type (FORM or TABLE) based on visible elements.
+ *
+ * Steps:
+ * 1. Check if the table grid locator is visible on the page.
+ * 2. If the table is visible, classify the view as "TABLE".
+ * 3. If the table is not visible (or check fails), default to "FORM".
+ *
+ * @returns Promise<'FORM' | 'TABLE'> The detected view type.
+ *
+ * Example:
+ * const viewType = await page.detectViewType();
+ */
+async detectViewType(): Promise<'FORM' | 'TABLE'> {
+
+  // If table exists → it's TABLE view
+  const tableVisible = await this.locators.tableGrid.isVisible().catch(() => false);
+  if (tableVisible) {
+    return 'TABLE';
+  }
+  return 'FORM';
+}
+
+// async executeDynamicDataN(rowsData: any[]) {
+
+//   logger.info(`Executing dynamic data entry for ${rowsData.length} rows}`);
+//   const rowCount = rowsData.length;
+//   for (let i = 0; i < rowCount; i++) {
+//     const row = rowsData[i];
+//     for (const field in row) {
+//       const value = row[field];
+//       if (!value) continue;
+//       try {
+//         await this.enterField(i, field, value);
+//         logger.info(`Typed ${field} = ${value}`);
+//       } catch (err) {
+//         logger.warn(`Input failed for ${field}, trying value help`);
+//         try {
+//           await this.selectViaValueHelp(i, field, value);
+//           logger.info(`ValueHelp used for ${field} = ${value}`);
+//         } catch (err2) {
+//           logger.error(`Failed field ${field}: ${err2}`);
+//         }
+//       }
+//     }
+//   }
+// }
+
+/**
+ * Executes dynamic data entry into either FORM or TABLE view based on detected UI state.
+ *
+ * Steps:
+ * 1. Log the number of rows being processed.
+ * 2. Detect the current view type (FORM or TABLE).
+ * 3. Log the detected view type for debugging.
+ * 4. Iterate through each row of input data.
+ * 5. For each field in the row:
+ *    a. Skip empty values.
+ *    b. If view is FORM:
+ *       - Use form field handler to set the value.
+ *    c. If view is TABLE:
+ *       - Use table cell handler to set the value.
+ *    d. Log successful field entry.
+ * 6. Catch and log any field-level errors without stopping execution.
+ *
+ * Note:
+ * - View type is detected once before processing all rows.
+ * - FORM and TABLE handling logic is delegated to dedicated helper methods.
+ *
+ * @param rowsData Array of row objects containing field-value pairs.
+ *
+ * @returns Promise<void>
+ *
+ * Example:
+ * await page.executeDynamicDataN([
+ *   { Name: 'John', Age: '30' }
+ * ]);
+ */
+async executeDynamicDataN(rowsData: any[]) {
+
+  logger.info(`Executing dynamic data entry for ${rowsData.length} rows}`);
+  const viewType = await this.detectViewType();
+  logger.info(`VIEW TYPE DETECTED → ${viewType}`);
+  const rowCount = rowsData.length;
+  for (let i = 0; i < rowCount; i++) {
+    const row = rowsData[i];
+    for (const field in row) {
+      const value = row[field];
+      if (!value) continue;
+      try {
+        if (viewType === 'FORM') {
+          logger.info(`FORM → ${field}`);
+          await this.setFormFieldValue(field, value);
+        } else {
+          logger.info(`TABLE → ${field}`);
+          await this.handleTableField(i, field, value);
+        }
+        logger.info(`Typed ${field} = ${value}`);
+      } catch (err) {
+        logger.warn(`Input failed for ${field}`);
+      }
+    }
+  }
+}
+
+/**
+ * Validates "Add Roles" data against Excel-driven expected input by matching BP records
+ * and verifying dialog table values.
+ *
+ * Steps:
+ * 1. Log validation start with provided expected rows.
+ * 2. Group expected validation rows by BP No into a lookup structure.
+ * 3. Iterate through each UI row based on rowCount:
+ *    a. Extract BP No from UI data.
+ *    b. Extract BP Name from input data.
+ *    c. Validate BP No exists; throw error if missing.
+ *    d. Select the corresponding BP row and open "Add Roles" dialog.
+ *    e. Build a placeholder key (e.g., "$1", "$2") to match grouped expected data.
+ *    f. Retrieve expected rows for the current BP.
+ *    g. Throw error if no expected data exists for the BP.
+ *    h. Transform expected rows into dialog validation format.
+ * 4. Call dialog validation method to verify UI matches expected values.
+ *
+ * @param rowCount Total number of BP records to validate.
+ * @param bpRowsData UI data containing BP numbers.
+ * @param bPRowInputData Input dataset containing BP names.
+ * @param validationRows Expected validation dataset (from Excel).
+ *
+ * @returns Promise<void>
+ *
+ * @throws Error If BP number is missing or expected validation data is not found.
+ *
+ * Example:
+ * await page.validateAddRolesFromExcel(3, uiData, inputData, excelData);
  */
 async validateAddRolesFromExcel(rowCount: number,bpRowsData: any[],bPRowInputData: any[],validationRows: any[]): Promise<void> {
 
   logger.info(`Validating Add Roles: ${validationRows}`);
   const groupedExpected: Record<string, any[]> = {};
-
   for (const row of validationRows) {
     const key = row['BP No']; 
-
     if (!groupedExpected[key]) {
       groupedExpected[key] = [];
     }
     groupedExpected[key].push(row);
   }
-
   logger.info(`Validating field "${groupedExpected}"`); 
-
   // Loop records
   for (let i = 0; i < rowCount; i++) {
-
     const bpNo = bpRowsData[i]['BP No'];   // from UI
     const bpName = bPRowInputData[i]['BP Name'];
-
     if (!bpNo) {
       throw new Error(`BP No missing for record ${i + 1}`);
     }
@@ -1731,6 +2161,27 @@ async validateAddRolesFromExcel(rowCount: number,bpRowsData: any[],bPRowInputDat
   }
 }
 
+/**
+ * Extracts the "rejected to step" information from the rejection success message.
+ *
+ * Steps:
+ * 1. Wait for the rejection success message to become visible.
+ * 2. Retrieve the message text content.
+ * 3. If no text is found, return null.
+ * 4. Log the raw rejection message for debugging.
+ * 5. Attempt to extract a step number using regex (e.g., "step 100").
+ *    a. Convert extracted numeric string into integer.
+ *    b. Format it as "Step X" and return it.
+ * 6. If no numeric step is found:
+ *    a. Check if message contains "requestor/requester".
+ *    b. If found, assume it is "Step 1".
+ * 7. If no matching pattern is found, return null.
+ *
+ * @returns Promise<string | null> The resolved rejection step or null if not found.
+ *
+ * Example:
+ * const step = await page.getRejectedToStep();
+ */
 async getRejectedToStep(): Promise<string | null> {
 
   const locator = this.locators.rejectSuccessMessageDynamic;
@@ -1744,92 +2195,359 @@ async getRejectedToStep(): Promise<string | null> {
     const stepNumber = parseInt(rawStep, 10); // 100
     return `Step ${stepNumber}`;
   }
-
-  if (text.toLowerCase().includes('creator')) {
-    return 'CR';
+  if (text.toLowerCase().includes('requestor') || text.toLowerCase().includes('requester')) {
+    return 'Step 1';
   }
-
   return null;
 }
 
-
 /**
- * Executes a workflow action based on the task configuration.
+ * Executes a workflow action for a given task based on the configured action string.
  *
  * Steps:
- * 1. Extracts the raw action string from the task
- * 2. Splits the action into:
- *    - action type
- *    - optional parameters
- * 3. Normalizes the action to lowercase for consistent handling
- * 4. Logs the action being executed
- * 5. Routes execution based on action type:
- *    - save → completes the task
- *    - approve → approves the task
- *    - reject → executes rejection flow with parameters
- *    - review → executes review flow
- * 6. Throws an error for unknown or unsupported actions
+ * 1. Extract the raw action string from the task (may include parameters using "|").
+ * 2. Split the action into:
+ *    - Primary action (e.g., save, approve, reject, review)
+ *    - Optional parameters (params array)
+ * 3. Normalize action name to lowercase for consistent handling.
+ * 4. Log the action being executed.
+ * 5. Ensure UI is ready before performing actions:
+ *    a. Wait for Edit View button to be visible.
+ *    b. Validate Edit View and progress bar readiness.
+ * 6. Execute workflow action based on type:
+ *    - "save" → complete task and exit.
+ *    - "approve" → approve task and exit.
+ *    - "reject" → execute rejection flow and return rejected step.
+ *    - "review" → execute review workflow.
+ * 7. Throw an error if the action type is not recognized.
  *
- * @param task - Task object containing the workflow action definition
- * @returns Promise<void>
+ * @param task The workflow task containing action definition and metadata.
+ *
+ * @returns Promise<string | null>
+ *          - Returns rejected step (for reject flow) or null for other actions.
+ *
+ * @throws Error If the action type is unknown or unsupported.
  *
  * Example:
- * await executeWorkflowAction({
- *   action: 'reject|reason=Incorrect Data|step=Step 200'
+ * await page.executeWorkflowAction({
+ *   action: "reject|Reason=Invalid|Step=2",
+ *   step: "Step 1"
  * });
  */
 async executeWorkflowAction(task: Task): Promise<string | null> {
-
+  
   const actionRaw = task.action;
   const [action, ...params] = actionRaw.split('|');
-
   const normalizedAction = action.toLowerCase();
-
-  console.log(`Executing action: ${actionRaw}`);
-
-  await this.clickStatusComplete();
-  await this.page.waitForTimeout(2000);
+  logger.info(`Executing action: ${actionRaw}`);
   await this.locators.editViewButton.waitFor({ state: 'visible' });
   await this.validateEditViewAndStatusProgressBar();
-
   switch (normalizedAction) {
-
     case 'save' :
       await this.completeTask();
       return null;
       break;
-
     case 'approve':
       await this.approveTask();
       return null;
       break;
-
     case 'reject':
-      return await this.RejectTask(params);
+      return await this.RejectTask(task,params);
       break;
-
     case 'review':
-      await this.ReviewTask(); // or custom if needed
+      await this.ReviewTask(); // yet to work
       return null;
       break;
-
     default:
       throw new Error(`Unknown workflow action: ${actionRaw}`);
   }
 }
 
-
+/**
+ * Handles post-workflow actions after executing a task (e.g., rejection flow handling).
+ *
+ * Steps:
+ * 1. Execute the workflow action for the given task.
+ * 2. Capture the returned rejected step (if any).
+ * 3. If a rejected step is returned:
+ *    a. Log the rejected step for debugging.
+ *    b. Reset execution state from the rejected step onward.
+ *    c. Re-add the rejected step back into the task list.
+ *    d. Validate that the rejected step is visible again in the task list UI.
+ *
+ * Note:
+ * - This method primarily handles workflow reprocessing scenarios (e.g., reject → rework → retry).
+ * - Only rejection flows return a step value; other actions return null.
+ *
+ * @param myTasklistPage Instance of MyTasklistPage used for task state management and validations.
+ * @param requestNumber The request identifier used to locate tasks in UI.
+ * @param task The task being executed.
+ * @param tasks Mutable list of remaining workflow tasks.
+ *
+ * @returns Promise<void>
+ *
+ * Example:
+ * await handleWorkflowAction(tasklistPage, "REQ123", task, tasks);
+ */
 async  handleWorkflowAction(myTasklistPage: MyTasklistPage,requestNumber: string,task: Task,tasks: Task[]): Promise<void> {
-
+  
   const rejectedToStep = await this.executeWorkflowAction(task);
-
-  // Only for reject
   if (rejectedToStep) {
-    console.log(`Validating rejected step: ${rejectedToStep}`);
+    logger.info(`Validating rejected step: ${rejectedToStep}`);
     myTasklistPage.resetExecutionFromStep(rejectedToStep);
     myTasklistPage.reAddTask(tasks, rejectedToStep);
     await myTasklistPage.validateTaskPresentByStep(requestNumber, rejectedToStep);
   }
 }
+
+/**
+ * Retrieves metadata for a form field including input element, value help icon, and field type info.
+ *
+ * Steps:
+ * 1. Locate the form label for the given field name.
+ * 2. Wait for the label to become visible.
+ * 3. Extract the "for" attribute to identify the linked input field ID.
+ * 4. If no input ID is found, throw an error (broken label-input association).
+ * 5. Locate the input element using the extracted ID.
+ * 6. Wait for the input field to become visible.
+ * 7. Locate the field container wrapping the input element.
+ * 8. Locate the value help (F4) icon inside the container.
+ * 9. Read the container CSS class to determine field type.
+ * 10. Identify whether the field is a dropdown based on class name.
+ *
+ * @returns An object containing:
+ *          - input: Locator for the input field
+ *          - valueHelp: Locator for value help icon (if available)
+ *          - isDropdown: boolean indicating dropdown field type
+ *
+ * @throws Error If the field label is not linked to an input element.
+ *
+ * Example:
+ * const meta = await page.getFormFieldMeta('Customer Name');
+ * await meta.input.fill('ABC');
+ */
+async getFormFieldMeta(fieldName: string) {
+
+  const label = this.locators.formLabel(fieldName);
+  await label.waitFor({ state: 'visible', timeout: 15000 });
+  const inputId = await label.getAttribute('for');
+  if (!inputId) {
+    throw new Error(`Field "${fieldName}" not linked to input`);
+  }
+  const input = this.locators.formInputById(inputId);
+  await input.waitFor({ state: 'visible' });
+  const container = this.locators.formFieldContainer(input).first();
+  const valueHelp = this.locators.formValueHelpIcon(container);
+  const classAttr = await container.getAttribute('class') || '';
+  const isDropdown = classAttr?.includes('sapMComboBox');
+  return {input,valueHelp,isDropdown};
+}
+
+/**
+ * Selects a value from the Value Help (F4) dialog.
+ *
+ * Steps:
+ * 1. Wait for the Value Help dialog to become visible.
+ * 2. Locate the search box inside the dialog.
+ * 3. Fill the search box with the provided value to filter results.
+ * 4. Locate the matching row in the filtered results.
+ * 5. Click the first matching row to select the value.
+ * 6. Close the Value Help dialog.
+ *
+ * @param value The value to search and select from the dialog.
+ *
+ * @returns Promise<void>
+ *
+ * Example:
+ * await page.selectFromValueHelpDialog('Steel');
+ */
+async selectFromValueHelpDialog(value: string) {
+  await this.locators.valueHelpDialog.waitFor({ state: 'visible' });
+  const search = this.page.getByRole('searchbox');
+  await search.fill(value);
+  const row = this.locators.valueHelpDialogRows.filter({ hasText: value }).first();
+  await row.click();
+  await this.locators.closeDialogButton.click();
+}
+
+// async setFormFieldValue(fieldName: string, value: string) {
+//   const meta = await this.getFormFieldMeta(fieldName);
+//   // VALUE HELP
+//   if (await meta.valueHelp.count()) {
+//     await meta.valueHelp.click();
+//     await this.selectFromValueHelpDialog(value);   // check this later if index is needed
+//     return;
+//   }
+//   // DROPDOWN
+//   if (meta.isDropdown) {
+//     await meta.input.fill(value);
+//     await meta.input.press('Enter');
+//     return;
+//   }
+//   // DEFAULT INPUT
+//   await meta.input.fill(value);
+// }
+
+/**
+ * Sets a value for a form field using a progressive fallback strategy.
+ *
+ * Steps:
+ * 1. Retrieve form field metadata (input, value help icon, dropdown detection).
+ * 2. Try primary input method:
+ *    a. Wait for input field to be visible.
+ *    b. Click into the field to activate it.
+ *    c. Clear any existing value.
+ *    d. Fill the new value.
+ *    e. Wait briefly for UI stabilization.
+ * 3. If input method fails, log a warning (fallback logic exists but is currently commented out):
+ *    - Dropdown selection (optional fallback based on field type).
+ *    - Value help dialog selection (final fallback using F4 help).
+ *
+ * Note:
+ * - Currently only direct input strategy is active.
+ * - Dropdown and value help strategies are prepared but disabled.
+ *
+ * @param fieldName The label/name of the form field.
+ * @param value The value to set in the field.
+ *
+ * @returns Promise<void>
+ *
+ * Example:
+ * await page.setFormFieldValue('Customer Name', 'ABC Corp');
+ */
+async setFormFieldValue(fieldName: string, value: string) {
+
+  const meta = await this.getFormFieldMeta(fieldName);
+  try {
+    logger.info(`FORM INPUT → ${fieldName}`);
+    await meta.input.waitFor({ state: 'visible' });
+    await meta.input.click(); 
+    await meta.input.fill('');
+    await meta.input.fill(value);
+    // await meta.input.type(value, { delay: 50 });
+    // await meta.input.press('Enter');
+    await this.page.waitForTimeout(100);
+    // If input worked → exit
+    // const entered = await meta.input.inputValue();
+    // if (entered?.trim()) return;
+  } catch (e) {
+    logger.warn(`FORM INPUT failed → ${fieldName}`);
+  }
+  // ✅ STEP 2: TRY DROPDOWN
+  // try {
+  //   if (meta.isDropdown) {
+  //     logger.info(`FORM DROPDOWN → ${fieldName}`);
+  //     await meta.input.fill(value);
+  //     await meta.input.press('Enter');
+  //     return;
+  //   }
+  // } catch (e) {
+  //   logger.warn(`FORM DROPDOWN failed → ${fieldName}`);
+  // }
+  // // ✅ STEP 3: VALUE HELP (LAST)
+  // if (await meta.valueHelp.isVisible().catch(() => false)) {
+  //   logger.info(`FORM VALUE HELP → ${fieldName}`);
+  //   await meta.valueHelp.click();
+  //   await this.selectFromValueHelpDialog(value);
+  //   return;
+  // }
+  // throw new Error(`Unable to set form field: ${fieldName}`);
+}
+
+/**
+ * Retrieves the current value of a form field.
+ *
+ * Steps:
+ * 1. Retrieve metadata for the form field (input element and related info).
+ * 2. Read the current value from the input element.
+ * 3. Trim whitespace from the retrieved value.
+ * 4. Return the cleaned value.
+ *
+ * @param fieldName The label/name of the form field.
+ *
+ * @returns Promise<string> The current value of the field.
+ *
+ * Example:
+ * const value = await page.getFormFieldValue('Customer Name');
+ */
+async getFormFieldValue(fieldName: string): Promise<string> {
+
+  const meta = await this.getFormFieldMeta(fieldName);
+  const value = await meta.input.inputValue();
+  return value.trim();
+}
+
+/**
+ * Executes dynamic data entry for a FORM view based on key-value field mapping.
+ *
+ * Steps:
+ * 1. Log the start of FORM data execution.
+ * 2. Iterate through each field-value pair in the provided data object.
+ * 3. Skip fields with empty or falsy values.
+ * 4. Attempt to set each field value using form field handler.
+ * 5. If a field update fails, log the error and continue processing remaining fields.
+ *
+ * Note:
+ * - This method does not stop execution on failure of individual fields.
+ * - It is designed for resilient bulk form data entry.
+ *
+ * @param data Object containing field names as keys and values to be entered.
+ *
+ * @returns Promise<void>
+ *
+ * Example:
+ * await page.executeDynamicFormData({
+ *   "Customer Name": "ABC Corp",
+ *   "Country": "India"
+ * });
+ */
+async executeDynamicFormData(data: Record<string, string>) {
+
+  logger.info(`Executing dynamic FORM data`);
+  for (const [field, value] of Object.entries(data)) {
+    if (!value) continue;
+    try {
+      await this.setFormFieldValue(field, value);
+    } catch (err) {
+      logger.error(`Failed field ${field}: ${err}`);
+    }
+  }
+}
+
+/**
+ * Validates form field values against expected data.
+ *
+ * Steps:
+ * 1. Log the start of form validation.
+ * 2. Iterate through each field-value pair in the expected data.
+ * 3. Retrieve the actual value from the form field.
+ * 4. Compare actual value with expected value using strict equality.
+ * 5. Throw assertion error if values do not match.
+ * 6. Log successful validation for each field.
+ *
+ * @param expectedData Object containing field names as keys and expected values.
+ *
+ * @returns Promise<void>
+ *
+ * Example:
+ * await page.validateFormData({
+ *   "Customer Name": "ABC Corp",
+ *   "Country": "India"
+ * });
+ */
+async validateFormData(expectedData: Record<string, string>) {
+
+  logger.info(`Validating FORM data`);
+  for (const [field, expected] of Object.entries(expectedData)) {
+    const actual = await this.getFormFieldValue(field);
+    expect(actual,`Field "${field}" mismatch`).toBe(expected);
+    logger.info(`Validated ${field} = ${actual}`);
+  }
+}
+
+
+
+
+
 
 }

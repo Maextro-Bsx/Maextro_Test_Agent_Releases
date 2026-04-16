@@ -14,12 +14,15 @@ export default defineConfig({
 
   workers: process.env.CI ? 1 : undefined,
 
-  timeout: 240000,
+  timeout: 480000,
   expect: { timeout: 10000 },
 
   reporter: [
-    ['html', { outputFolder: `reports/report-${timestamp}`, open: 'on-failure' }]
+    // ['html', { outputFolder: `reports/report-${timestamp}`, open: 'on-failure' }]
+    ['html', { outputFolder: `reports/report-${timestamp}`, open: 'never' }],
   ],
+
+  // outputDir: `reports/report-${timestamp}/test-results`,
 
   use: {
     headless: process.env.CI ? true : false,

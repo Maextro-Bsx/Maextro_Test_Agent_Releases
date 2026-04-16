@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Maextro Automation Runner</title>
+
+  <!-- Google Font -->
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600&display=swap" rel="stylesheet">
+
+  <style>
+    body {
+      font-family: 'Inter', sans-serif;
+      background: #f4f6f8;
+      margin: 0;
+      height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+
+    .container {
+      background: white;
+      padding: 30px;
+      width: 420px;
+      border-radius: 16px;
+      box-shadow: 0 10px 25px rgba(0,0,0,0.15);
+    }
+
+    h2 {
+      text-align: center;
+      margin-bottom: 25px;
+      font-weight: 600;
+      color: #333;
+    }
+
+    .form-group {
+      margin-bottom: 15px;
+    }
+
+    label {
+      font-size: 13px;
+      font-weight: 600;
+      color: #444;
+    }
+
+    input, select {
+      width: 100%;
+      padding: 11px;
+      margin-top: 5px;
+      border-radius: 10px;
+      border: 1px solid #ccc;
+      font-size: 14px;
+      transition: 0.2s;
+      background: white;
+    }
+
+    input:focus, select:focus {
+      outline: none;
+      border-color: #999;
+      box-shadow: 0 0 0 2px rgba(150,150,150,0.2);
+    }
+
+    /* 🔥 ERROR TEXT STYLE */
+    .error-text {
+      font-size: 12px;
+      color: red;
+      margin-top: 4px;
+      display: none;
+    }
+
+    .button-group {
+      display: flex;
+      gap: 10px;
+      margin-top: 15px;
+    }
+
+    button {
+      flex: 1;
+      padding: 12px;
+      border: none;
+      border-radius: 10px;
+      background: #2563eb;
+      color: white;
+      font-weight: 600;
+      cursor: pointer;
+      transition: 0.2s;
+    }
+
+    button:hover {
+      background: #1d4ed8;
+    }
+
+    button:disabled {
+      background: #93c5fd;
+      color: #1e3a8a;
+      cursor: not-allowed;
+      opacity: 1;
+    }
+
+    #loader {
+      text-align: center;
+      margin-top: 15px;
+      font-weight: 500;
+      color: #555;
+    }
+
+    #output {
+      margin-top: 20px;
+      background: #f9fafb;
+      color: #333;
+      padding: 12px;
+      border-radius: 10px;
+      height: 150px;
+      overflow-y: auto;
+      font-size: 13px;
+      line-height: 1.5;
+    }
+  </style>
+</head>
+
+<body>
+
+  <div class="container">
+    <h2>Maextro Automation</h2>
+
+    <div class="form-group">
+      <label>Username <span style="color:red">*</span></label>
+      <input id="username" required placeholder="Enter your username" />
+      <div class="error-text" id="usernameError">Username is required</div>
+    </div>
+
+    <div class="form-group">
+      <label>Password <span style="color:red">*</span></label>
+      <input id="password" type="password" required placeholder="Enter your password" />
+      <div class="error-text" id="passwordError">Password is required</div>
+    </div>
+
+    <div class="form-group">
+      <label>Environment <span style="color:red">*</span></label>
+      <select id="environment" required>
+        <option value="">-- Select Environment --</option>
+        <option value="DEV">DEV</option>
+        <option value="TEST">TEST</option>
+        <option value="SHS">SHS</option>
+        <option value="RS">RS</option>
+        <option value="Glanbia">Glanbia</option>
+      </select>
+      <div class="error-text" id="environmentError">Environment is required</div>
+    </div>
+
+    <div class="form-group">
+      <label>Template <span style="color:red">*</span></label>
+      <select id="templateId" required>
+        <option value="">-- Select Template --</option>
+      </select>
+      <div class="error-text" id="templateIdError">Template is required</div>
+    </div>
+
+    <div class="form-group">
+      <button onclick="downloadTemplate()">⬇ Download Template</button>
+    </div>
+
+    <div class="form-group">
+      <label>Upload Filled Excel <span style="color:red">*</span></label>
+      <input type="file" id="excelFile" accept=".xlsx" />
+      <div class="error-text" id="fileError">File is required</div>
+    </div>
+
+    <div id="fileName" style="margin-top:5px; font-size:12px; color:#555;"></div>
+
+    <div class="button-group">
+      <button id="runBtn" onclick="runTest()">▶ Run Test</button>
+      <button id="updateBtn" onclick="update()">⬇ Update</button>
+      <button id="reportBtn" onclick="openReport()" disabled>📊 View Report</button>
+    </div>
+
+    <div id="loader" style="display:none;">
+      ⏳ Running test... Please wait
+    </div>
+
+    <div id="output"></div>
+  </div>
+
+  <script src="renderer.js"></script>
+
+</body>
+</html>
