@@ -182,6 +182,15 @@ app.post('/update', async (req, res) => {
   }
 });
 
+app.get('/download-template/:env/:templateId', (req, res) => { 
+  const { env, templateId } = req.params; 
+  const filePath = path.join(__dirname, 'test-data', 'Templates', env, `${templateId}.xlsx`); 
+  if (!fs.existsSync(filePath)) 
+    { return res.status(404).send('Template not found'); } 
+  res.download(filePath); 
+});
+
+
 app.get('/templates/:env', (req, res) => {
   const folderPath = path.join(__dirname, 'test-data', 'Templates', req.params.env);
 
