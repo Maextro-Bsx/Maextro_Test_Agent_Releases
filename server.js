@@ -1,8 +1,8 @@
 const express = require('express');
 const bodyParser = require('body-parser');
 const { spawn } = require('child_process');
-const APP_VERSION = "1.0.2"; // 🔥 bump this on every release
-
+const APP_VERSION = "1.0.0"; // 🔥 bump this on every release
+const UPDATE_SECRET = "maextro-secure-123";
 const ENV_URLS = {
   DEV: 'https://maextro-tdd.launchpad.cfapps.eu10.hana.ondemand.com/site/Maextro?sap-ushell-config=headerless#Maextro-Display?sap-ui-app-id-hint=saas_approuter_bsxc.maextrohubui&/Dashboard',
   TEST: 'https://test-url...',
@@ -21,7 +21,6 @@ const fetch = (...args) =>
 const multer = require('multer');
 const upload = multer({ dest: 'uploads/' });
 
-app.use('/download', express.static(path.join(__dirname, 'updates')));
 app.use(bodyParser.json());
 app.use(express.static('ui'));
 app.use('/reports', express.static(path.join(__dirname, 'reports')));
@@ -29,10 +28,48 @@ app.use('/reports', express.static(path.join(__dirname, 'reports')));
 const PORT = 3000;
 let isRunning = false;
 
+
+app.get('/report', (req, res) => {
+  const reportsDir = path.join(__dirname, 'reports');
+
+  try {
+    const folders = fs.readdirSync(reportsDir)
+      .filter(name => name.startsWith('report-'))
+      .sort((a, b) => b.localeCompare(a)); // latest first
+
+    if (!folders.length) {
+      return res.status(404).send('No reports found');
+    }
+
+    const latestReport = folders[0];
+
+    res.redirect(`/reports/${latestReport}/index.html`);
+
+  } catch (err) {
+    res.status(500).send('Error loading report');
+  }
+});
+
+app.get('/download/maextro.zip', (req, res) => {
+  const key = req.query.key;
+  console.log('Download request received');
+  if (key !== UPDATE_SECRET) {
+    console.log('Unauthorized access');
+    return res.status(403).send('Unauthorized');
+  }
+  const filePath = path.join(__dirname, 'updates', 'maextro.zip');
+  if (!fs.existsSync(filePath)) {
+    console.log('File not found:', filePath);
+    return res.status(404).send('File not found');
+  }
+  console.log('Sending file...');
+  return res.download(filePath);
+});
+
 app.get('/version', (req, res) => {
   res.json({
-    version: "1.0.2", // 🔥 keep in sync with APP_VERSION
-    url: "http://192.168.128.188:3000/download/maextro.zip"
+    version: "1.0.1", // 🔥 keep in sync with APP_VERSION
+    url: "http://192.168.50.10:3000/download/maextro.zip?key=maextro-secure-123"
   });
 });
 
@@ -41,7 +78,7 @@ app.post('/update', async (req, res) => {
   try {
     res.write('Checking for updates...\n');
 
-    const versionRes = await fetch('http://localhost:3000/version');
+    const versionRes = await fetch('http://192.168.128.188:3000/version');
     const data = await versionRes.json();
 
     const latestVersion = data.version;
@@ -101,7 +138,8 @@ app.post('/update', async (req, res) => {
         if (
           entry.name === 'node_modules' ||
           entry.name === 'update.zip' ||
-          entry.name === 'temp-update'
+          entry.name === 'temp-update' ||
+          entry.name === '__MACOSX' 
         ) continue;
 
         const srcPath = path.join(src, entry.name);
@@ -127,8 +165,8 @@ app.post('/update', async (req, res) => {
     if (fs.existsSync(tempDir)) fs.rmSync(tempDir, { recursive: true, force: true });
 
     res.write('Restarting application...\n');
+    res.write('UPDATE_COMPLETE\n');
     res.end();
-
     // 🔥 AUTO RESTART
     spawn('node', ['server.js'], {
       cwd: __dirname,
@@ -143,8 +181,6 @@ app.post('/update', async (req, res) => {
     res.end();
   }
 });
-
-// ---------------- EXISTING APIs ----------------
 
 app.get('/templates/:env', (req, res) => {
   const folderPath = path.join(__dirname, 'test-data', 'Templates', req.params.env);
@@ -161,6 +197,31 @@ app.get('/templates/:env', (req, res) => {
 
   res.json(templates);
 });
+
+app.post('/upload', upload.single('file'), (req, res) => {
+  const { templateId, environment } = req.body;
+
+  if (!req.file) {
+    return res.status(400).send('No file uploaded');
+  }
+
+  if (!templateId || !environment) {
+    return res.status(400).send('Missing templateId or environment');
+  }
+
+  const uploadDir = path.join(__dirname, 'uploads', environment);
+
+  if (!fs.existsSync(uploadDir)) {
+    fs.mkdirSync(uploadDir, { recursive: true });
+  }
+
+  const targetPath = path.join(uploadDir, `${templateId}.xlsx`);
+
+  fs.renameSync(req.file.path, targetPath);
+
+  res.send('File uploaded successfully');
+});
+
 
 app.post('/run', (req, res) => {
   const { templateId, username, password, environment } = req.body;
@@ -198,8 +259,8 @@ app.post('/run', (req, res) => {
     return text.replace(/\x1B\[[0-9;]*[A-Za-z]/g, '');
   }
 
-  child.stdout.on('data', data => res.write(stripAnsi(data)));
-  child.stderr.on('data', data => res.write(stripAnsi(data)));
+  child.stdout.on('data', data => res.write(stripAnsi(data.toString())));
+  child.stderr.on('data', data => res.write(stripAnsi(data.toString())));
 
   child.on('close', code => {
     isRunning = false;

@@ -87,19 +87,35 @@ function checkFormValidity() {
 async function update() {
   const output = document.getElementById('output');
   output.innerText = '';
-
   setLoading(true);
   log('Updating latest code...\n', 'info');
-
   try {
     const res = await fetch('/update', { method: 'POST' });
-    const text = await res.text();
-
-    log(text + '\n', 'success');
+    const reader = res.body.getReader();
+    const decoder = new TextDecoder("utf-8");
+    let buffer = '';
+    while (true) {
+      const { done, value } = await reader.read();
+      if (done) break;
+      const chunk = decoder.decode(value, { stream: true });
+      buffer += chunk;
+      const lines = buffer.split('\n');
+      buffer = lines.pop();
+      for (const line of lines) {
+        // 🎯 Detect update complete signal
+        if (line.includes('UPDATE_COMPLETE')) {
+          log('Update completed successfully ✅\n', 'success');
+          setTimeout(() => {
+            location.reload(); // 🔥 auto refresh UI
+          }, 2000);
+          return;
+        }
+        log(line + '\n');
+      }
+    }
   } catch (err) {
     log('Update failed: ' + err.message + '\n', 'error');
   }
-
   setLoading(false);
 }
 

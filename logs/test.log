@@ -13600,3 +13600,33 @@ Call log:
 [2026-04-16 12:40:51] [INFO] Approving task
 [2026-04-16 12:40:51] [INFO] Clicked Approve
 [2026-04-16 12:40:52] [INFO] Confirm popup detected
+[2026-04-17 12:17:41] [INFO] Using Template: R1
+[2026-04-17 12:17:41] [INFO] Excel Path: uploads/DEV/R1.xlsx
+[2026-04-17 12:17:41] [INFO] Request Details: {"Object":"Material","Template ID":"R1","CR Description":"Test CR","Reason Code":"Create New Material","Org. Division":"BSX RDS DIVISION","Priority":"Low","Expected Completion Date":"","Request Number":"39444"}
+[2026-04-17 12:17:41] [INFO] Steps: [{"stepNo":"0","taskType":"Create Request","views":["BD1","ORG1","ORG2","ORG3","ORG4","BD2","UOM","BTXT","CTXT"],"action":"Save"},{"stepNo":"100","taskType":"Data Collection","views":["BD1","ORG4"],"action":"Save"},{"stepNo":"200","taskType":"Data Collection","views":["BD1","STAX","SO","SGP","FTE","STXT"],"action":"Save"},{"stepNo":"300","taskType":"Data Collection","views":["PUR","PTXT","FTI"],"action":"Save"},{"stepNo":"400","taskType":"Data Collection","views":["MRP","FCST"],"action":"Save"},{"stepNo":"500","taskType":"Data Collection","views":["QM"],"action":"Save"},{"stepNo":"600","taskType":"Data Collection","views":["PSG"],"action":"Save"},{"stepNo":"700","taskType":"Data Collection","views":["ACC"],"action":"Save"},{"stepNo":"800","taskType":"Data Approval","views":["BD1","BD2","BTXT","CTXT","UOM","SGP","SO","STAX","FTE","STXT","PUR","PTXT","FTI","MRP","FCST","QM","ACC","PSG"],"action":"Approve","condition":"400"}]
+[2026-04-17 12:17:41] [INFO] ---------- GENERATED TASKS ----------
+[2026-04-17 12:17:41] [INFO] -----------------------------------
+[2026-04-17 12:17:41] [INFO] START: Login to Application
+[2026-04-17 12:17:45] [INFO] END: Login to Application (3560ms)
+[2026-04-17 12:17:45] [INFO] START: Navigate to Create Request Page
+[2026-04-17 12:18:02] [INFO] END: Navigate to Create Request Page (16930ms)
+[2026-04-17 12:18:02] [INFO] START: Select Template
+[2026-04-17 12:18:02] [INFO] END: Select Template (71ms)
+[2026-04-17 12:18:02] [INFO] START: Enter Request Details and confirm
+[2026-04-17 12:18:06] [ERROR] FAILED: Enter Request Details and confirm
+[2026-04-17 12:18:06] [WARN] [WARN] Failed to capture screenshot: Error: page.screenshot: Target page, context or browser has been closed
+[2026-04-17 12:24:15] [INFO] Using Template: R1
+[2026-04-17 12:24:15] [INFO] Excel Path: uploads/DEV/R1.xlsx
+[2026-04-17 12:24:15] [INFO] Request Details: {"Object":"Material","Template ID":"R1","CR Description":"Test CR","Reason Code":"Create New Material","Org. Division":"BSX RDS DIVISION","Priority":"Low","Expected Completion Date":"","Request Number":"39444"}
+[2026-04-17 12:24:15] [INFO] Steps: [{"stepNo":"0","taskType":"Create Request","views":["BD1","ORG1","ORG2","ORG3","ORG4","BD2","UOM","BTXT","CTXT"],"action":"Save"},{"stepNo":"100","taskType":"Data Collection","views":["BD1","ORG4"],"action":"Save"},{"stepNo":"200","taskType":"Data Collection","views":["BD1","STAX","SO","SGP","FTE","STXT"],"action":"Save"},{"stepNo":"300","taskType":"Data Collection","views":["PUR","PTXT","FTI"],"action":"Save"},{"stepNo":"400","taskType":"Data Collection","views":["MRP","FCST"],"action":"Save"},{"stepNo":"500","taskType":"Data Collection","views":["QM"],"action":"Save"},{"stepNo":"600","taskType":"Data Collection","views":["PSG"],"action":"Save"},{"stepNo":"700","taskType":"Data Collection","views":["ACC"],"action":"Save"},{"stepNo":"800","taskType":"Data Approval","views":["BD1","BD2","BTXT","CTXT","UOM","SGP","SO","STAX","FTE","STXT","PUR","PTXT","FTI","MRP","FCST","QM","ACC","PSG"],"action":"Approve","condition":"400"}]
+[2026-04-17 12:24:15] [INFO] ---------- GENERATED TASKS ----------
+[2026-04-17 12:24:15] [INFO] -----------------------------------
+[2026-04-17 12:24:15] [INFO] START: Login to Application
+[2026-04-17 12:24:18] [INFO] END: Login to Application (2520ms)
+[2026-04-17 12:24:18] [INFO] START: Navigate to Create Request Page
+[2026-04-17 12:24:35] [INFO] END: Navigate to Create Request Page (17374ms)
+[2026-04-17 12:24:35] [INFO] START: Select Template
+[2026-04-17 12:24:35] [INFO] END: Select Template (87ms)
+[2026-04-17 12:24:35] [INFO] START: Enter Request Details and confirm
+[2026-04-17 12:24:38] [ERROR] FAILED: Enter Request Details and confirm
+[2026-04-17 12:24:38] [WARN] [WARN] Failed to capture screenshot: Error: page.screenshot: Target page, context or browser has been closed
