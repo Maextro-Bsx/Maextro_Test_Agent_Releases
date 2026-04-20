@@ -1,27 +1,82 @@
 {
+  "build": {
+    "appId": "com.maextro.automation",
+    "productName": "Maextro-Automation",
+    
+    "publish": {
+      "provider": "github",
+      "owner": "Tejavathi96",
+      "repo": "Maextro_Automation_Releases"
+    },
+
+    "asar": false,
+    "files": [
+      "**/*",
+      "!dist/*",
+      "!node_modules/.cache"
+    ],
+    "extraResources": [
+      {
+        "from": "test-data",
+        "to": "test-data"
+      }
+    ],
+    "extraFiles": [
+      {
+        "from": "node_modules",
+        "to": "node_modules"
+      },
+      {
+        "from": "tests",
+        "to": "tests"
+      }
+    ],
+    "npmRebuild": false,
+    "nodeGypRebuild": false,
+    "buildDependenciesFromSource": true,
+    "disableDefaultIgnoredFiles": true,
+    "mac": {
+      "target": [
+        "dmg",
+        "zip"
+      ]
+    },
+    "win": {
+      "target": "nsis"
+    }
+  },
   "name": "maextroautomationtests",
-  "version": "1.0.0",
+  "version": "1.0.3",
   "description": "Maextro Automation Test Scripts",
-  "main": "index.js",
-  "scripts": {},
+  "main": "main.js",
+  "engines": {
+    "node": "20.x"
+  },
+  "scripts": {
+    "start": "electron .",
+    "test": "npx playwright test",
+    "build": "electron-builder"
+  },
   "keywords": [],
   "author": "",
   "license": "ISC",
   "type": "commonjs",
   "devDependencies": {
     "@faker-js/faker": "^10.3.0",
-    "@playwright/test": "^1.58.2",
     "@types/node": "^25.3.0",
-    "@types/xlsx": "^0.0.35"
+    "@types/xlsx": "^0.0.35",
+    "electron": "^41.2.1",
+    "electron-builder": "^26.8.1"
   },
   "dependencies": {
+    "@playwright/test": "^1.59.1",
     "body-parser": "^2.2.2",
+    "electron-updater": "^6.8.3",
     "express": "^5.2.1",
     "multer": "^2.1.1",
+    "playwright": "^1.59.1",
+    "unzipper": "^0.10.0",
     "xlsx": "^0.18.5"
-  },
-  "directories": {
-    "test": "tests"
   },
   "repository": {
     "type": "git",

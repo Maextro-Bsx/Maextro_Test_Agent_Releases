@@ -84,39 +84,18 @@ function checkFormValidity() {
   runBtn.disabled = !(username && password && environment && templateId);
 }
 
+let isCheckingUpdate = false;
 async function update() {
-  const output = document.getElementById('output');
-  output.innerText = '';
+  if (isCheckingUpdate) return; // 🔥 prevent double click
+  isCheckingUpdate = true;
   setLoading(true);
-  log('Updating latest code...\n', 'info');
   try {
-    const res = await fetch('/update', { method: 'POST' });
-    const reader = res.body.getReader();
-    const decoder = new TextDecoder("utf-8");
-    let buffer = '';
-    while (true) {
-      const { done, value } = await reader.read();
-      if (done) break;
-      const chunk = decoder.decode(value, { stream: true });
-      buffer += chunk;
-      const lines = buffer.split('\n');
-      buffer = lines.pop();
-      for (const line of lines) {
-        // 🎯 Detect update complete signal
-        if (line.includes('UPDATE_COMPLETE')) {
-          log('Update completed successfully ✅\n', 'success');
-          setTimeout(() => {
-            location.reload(); // 🔥 auto refresh UI
-          }, 2000);
-          return;
-        }
-        log(line + '\n');
-      }
-    }
+    window.electronAPI.checkForUpdates();
   } catch (err) {
     log('Update failed: ' + err.message + '\n', 'error');
+    setLoading(false);
+    isCheckingUpdate = false;
   }
-  setLoading(false);
 }
 
 async function runTest() {
@@ -224,8 +203,13 @@ document.getElementById('environment').addEventListener('change', async function
 
   try {
     const res = await fetch(`/templates/${env}`);
-    const templates = await res.json();
 
+    const data = await res.json();
+    console.log('Templates API:', data);
+    if (!res.ok) {
+      throw new Error(JSON.stringify(data));
+    }
+    const templates = data.templates;
     templates.forEach(t => {
       const option = document.createElement('option');
       option.value = t;
@@ -234,7 +218,7 @@ document.getElementById('environment').addEventListener('change', async function
     });
 
   } catch (err) {
-    log('Failed to load templates\n', 'error');
+  log('Failed to load templates: ' + err.message + '\n', 'error');
   }
 });
 
@@ -252,14 +236,15 @@ function downloadTemplate() {
   window.open(`/download-template/${environment}/${templateId}`, '_blank');
 }
 
-window.onload = () => {
-
+document.addEventListener('DOMContentLoaded', async () => {
+  const version = await window.electronAPI.getVersion();
+  log(`APP VERSION: ${version}\n`, 'info');
   // File name display
   document.getElementById('excelFile').addEventListener('change', function () {
     const fileNameDiv = document.getElementById('fileName');
     if (this.files.length > 0) {
       fileNameDiv.innerText = `Selected: ${this.files[0].name}`;
-      clearFileError(); // 🔥 clear error when user selects file
+      clearFileError(); 
     } else {
       fileNameDiv.innerText = '';
     }
@@ -282,4 +267,17 @@ window.onload = () => {
       });
     });
   checkFormValidity();
-};
+});
+
+window.electronAPI.onUpdateMessage((msg) => {
+  log(msg + '\n', 'info');
+
+  if (
+    msg.includes('latest version') ||
+    msg.includes('Update downloaded') ||
+    msg.includes('error')
+  ) {
+    setLoading(false);
+    isCheckingUpdate = false;
+  }
+});

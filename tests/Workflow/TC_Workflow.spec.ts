@@ -13,6 +13,7 @@ import { StepParser } from '@utils/New/stepParser';
 import { logger } from '@utils/logger';
 import { TaskBuilder , Task } from '@utils/New/taskBuilder';
 import fs from 'fs';
+import path from 'path';
 
 test('Business Partner Request Creation - Excel Driven', async ({ page }) => {
 
@@ -23,9 +24,20 @@ test('Business Partner Request Creation - Excel Driven', async ({ page }) => {
     throw new Error('TEMPLATE_ID not provided. Example: TEMPLATE_ID=ATBP');
   }
   // const excelPath = `test-data/Templates/${templateId}.xlsx`;
-  const environment = process.env.ENVIRONMENT;
-  const excelPath = `uploads/${environment}/${templateId}.xlsx`;
   // const excelPath = `test-data/Templates/DEV/R1.xlsx`;
+  // const excelPath = `uploads/${environment}/${templateId}.xlsx`;
+  const basePath = process.env.USER_DATA_PATH ?? process.cwd();
+  const environment = process.env.ENVIRONMENT ?? '';
+
+  if (!environment) {
+    throw new Error('ENVIRONMENT is not defined');
+  }
+  const excelPath = path.join(
+  basePath,
+  environment,
+  `${templateId}.xlsx`
+  );
+  
   logger.info(`Using Template: ${templateId}`);
   logger.info(`Excel Path: ${excelPath}`);
 
