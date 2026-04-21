@@ -229,11 +229,34 @@ function openReport() {
 function downloadTemplate() {
   const templateId = document.getElementById('templateId').value;
   const environment = document.getElementById('environment').value;
+  const msgEl = document.getElementById('downloadMsg');
+  const openBtn = document.getElementById('openDownloadsBtn');
+  
   if (!templateId || !environment) {
-    log('Select environment and template first\n', 'error');
+    msgEl.innerText = 'Select environment and template';
+    msgEl.style.color = 'red';
+    msgEl.style.display = 'block';
+    openBtn.style.display = 'none';
     return;
   }
-  window.open(`/download-template/${environment}/${templateId}`, '_blank');
+  msgEl.style.display = 'none';
+  openBtn.style.display = 'none';
+  const url = `/download-template/${environment}/${templateId}`;
+
+  // Create hidden link (no new window)
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = `${templateId}.xlsx`; 
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+
+  // Show message
+  msgEl.innerText = `Template ${templateId}.xlsx downloaded successfully`;
+  msgEl.style.color = 'green';
+  msgEl.style.display = 'block';
+  openBtn.style.display = 'block';
+
 }
 
 document.addEventListener('DOMContentLoaded', async () => {
@@ -267,6 +290,26 @@ document.addEventListener('DOMContentLoaded', async () => {
       });
     });
   checkFormValidity();
+
+  const downloadMsg = document.getElementById('downloadMsg');
+  const openBtn = document.getElementById('openDownloadsBtn');
+  ['environment', 'templateId'].forEach(id => {
+    document.getElementById(id).addEventListener('change', () => {
+      downloadMsg.style.display = 'none';
+      openBtn.style.display = 'none';
+    });
+  });
+
+  document.getElementById('aboutModal').addEventListener('click', (e) => {
+    if (e.target.id === 'aboutModal') {
+      closeAbout();
+    }
+  });
+
+  document.getElementById('openDownloadsBtn').addEventListener('click', () => {
+    window.electronAPI.openDownloads();
+  });
+
 });
 
 window.electronAPI.onUpdateMessage((msg) => {
@@ -281,3 +324,33 @@ window.electronAPI.onUpdateMessage((msg) => {
     isCheckingUpdate = false;
   }
 });
+
+
+// ===============================
+// 🔥 ABOUT MODAL (SAFE ADD)
+// ===============================
+
+async function openAbout() {
+  try {
+    const version = await window.electronAPI.getVersion();
+    document.getElementById('aboutVersion').innerText = `Version: ${version}`;
+  } catch (e) {
+    document.getElementById('aboutVersion').innerText = 'Version: unknown';
+  }
+
+  document.getElementById('aboutModal').style.display = 'flex';
+}
+
+function closeAbout() {
+  document.getElementById('aboutModal').style.display = 'none';
+}
+
+function showReadme() {
+  document.getElementById('aboutContent').style.display = 'none';
+  document.getElementById('readmeContent').style.display = 'block';
+}
+
+function backToAbout() {
+  document.getElementById('aboutContent').style.display = 'block';
+  document.getElementById('readmeContent').style.display = 'none';
+}

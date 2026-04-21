@@ -15,7 +15,7 @@ import { TaskBuilder , Task } from '@utils/New/taskBuilder';
 import fs from 'fs';
 import path from 'path';
 
-test('Business Partner Request Creation - Excel Driven', async ({ page }) => {
+test('TC_WorkflowExecution', async ({ page }) => {
 
   // const excelPath = 'test-data/BP Templates/ATBP.xlsx';
 

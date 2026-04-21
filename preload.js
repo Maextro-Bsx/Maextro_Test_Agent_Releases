@@ -9,5 +9,7 @@ contextBridge.exposeInMainWorld('electronAPI', {
   onUpdateDownloaded: (callback) =>
     ipcRenderer.on('update-downloaded', callback),
 
-  getVersion: () => ipcRenderer.invoke('get-app-version')
+  getVersion: () => ipcRenderer.invoke('get-app-version'),
+
+  openDownloads: () => ipcRenderer.send('open-downloads-folder')
 });

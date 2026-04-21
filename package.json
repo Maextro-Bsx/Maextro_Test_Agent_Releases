@@ -36,17 +36,15 @@
     "buildDependenciesFromSource": true,
     "disableDefaultIgnoredFiles": true,
     "mac": {
-      "target": [
-        "dmg",
-        "zip"
-      ]
+      "target":  "dmg",
+      "icon": "build/icon.icns"
     },
     "win": {
       "target": "nsis"
     }
   },
   "name": "maextroautomationtests",
-  "version": "1.0.3",
+  "version": "1.0.4",
   "description": "Maextro Automation Test Scripts",
   "main": "main.js",
   "engines": {

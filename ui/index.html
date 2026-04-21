@@ -3,13 +3,12 @@
 <head>
   <title>Maextro Automation Runner</title>
 
-  <!-- Google Font -->
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600&display=swap" rel="stylesheet">
 
   <style>
     body {
       font-family: 'Inter', sans-serif;
-      background: #f4f6f8;
+      background: #0a0a0a; /* 🔥 softer black */
       margin: 0;
       height: 100vh;
       display: flex;
@@ -17,19 +16,61 @@
       align-items: center;
     }
 
+    /* 🔥 TOP HEADER */
+    .topbar {
+      position: fixed;
+      top: 0;
+      width: 100%;
+      height: 80px; /* 🔥 increased */
+      background: #111;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      padding: 0 25px;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.6);
+      z-index: 10;
+    }
+
+    .topbar .left {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .topbar .logo {
+      width: 50px; /* 🔥 slightly bigger */
+    }
+
+    .topbar .title {
+      font-size: 24px; /* 🔥 bigger */
+      font-weight: 700;
+      color: #fff;
+    }
+
+    /* 🔥 FIX: move About to right */
+    .topbar .right {
+      position: absolute;
+      right: 25px;
+    }
+
+    .topbar button {
+      background: #2563eb;
+      border: none;
+      padding: 8px 14px;
+      border-radius: 8px;
+      color: white;
+      cursor: pointer;
+    }
+
+    /* 🔥 MAIN CONTAINER */
     .container {
-      background: white;
+      background: #f5f5f5;
+      color: #000;
       padding: 30px;
       width: 420px;
       border-radius: 16px;
-      box-shadow: 0 10px 25px rgba(0,0,0,0.15);
-    }
-
-    h2 {
-      text-align: center;
-      margin-bottom: 25px;
-      font-weight: 600;
-      color: #333;
+      margin-top: 110px; /* 🔥 adjusted for taller header */
+      box-shadow: 0 10px 30px rgba(0,0,0,0.6);
     }
 
     .form-group {
@@ -39,7 +80,7 @@
     label {
       font-size: 13px;
       font-weight: 600;
-      color: #444;
+      color: #222;
     }
 
     input, select {
@@ -49,17 +90,15 @@
       border-radius: 10px;
       border: 1px solid #ccc;
       font-size: 14px;
-      transition: 0.2s;
-      background: white;
+      background: #ffffff;
+      color: #000;
     }
 
     input:focus, select:focus {
       outline: none;
-      border-color: #999;
-      box-shadow: 0 0 0 2px rgba(150,150,150,0.2);
+      border-color: #2563eb;
     }
 
-    /* 🔥 ERROR TEXT STYLE */
     .error-text {
       font-size: 12px;
       color: red;
@@ -82,7 +121,6 @@
       color: white;
       font-weight: 600;
       cursor: pointer;
-      transition: 0.2s;
     }
 
     button:hover {
@@ -90,53 +128,94 @@
     }
 
     button:disabled {
-      background: #93c5fd;
-      color: #1e3a8a;
+      background: #ccc;
+      color: #666;
       cursor: not-allowed;
-      opacity: 1;
     }
 
     #loader {
       text-align: center;
       margin-top: 15px;
-      font-weight: 500;
       color: #555;
     }
 
     #output {
       margin-top: 20px;
-      background: #f9fafb;
-      color: #333;
+      background: #ffffff;
+      color: #000;
       padding: 12px;
       border-radius: 10px;
       height: 150px;
       overflow-y: auto;
       font-size: 13px;
-      line-height: 1.5;
+      border: 1px solid #ddd;
+    }
+
+    /* 🔥 ABOUT MODAL */
+    #aboutModal {
+      display: none;
+      position: fixed;
+      top: 0; left: 0;
+      width: 100%; height: 100%;
+      background: rgba(0,0,0,0.7);
+      justify-content: center;
+      align-items: center;
+      z-index: 9999;
+    }
+
+    #aboutModal .box {
+      background: #fff;
+      color: #000;
+      padding: 25px;
+      border-radius: 12px;
+      width: 650px;         
+      max-height: 80vh;      
+      overflow: hidden;
+      text-align: center;
+      box-shadow: 0 10px 40px rgba(0,0,0,0.5);
+    }
+
+    .required {
+      color: red;
+
     }
   </style>
 </head>
 
 <body>
 
+  <!-- 🔥 HEADER -->
+  <div class="topbar">
+    <div class="left">
+      <img src="assets/logo.png" class="logo" />
+      <span class="title">Maextro Automation</span>
+    </div>
+
+    <div class="right">
+      <button onclick="openAbout()">About</button>
+    </div>
+  </div>
+
+  <!-- 🔥 MAIN UI -->
   <div class="container">
-    <h2>Maextro Automation</h2>
+
+    <!-- (UNCHANGED CONTENT BELOW) -->
 
     <div class="form-group">
-      <label>Username <span style="color:red">*</span></label>
-      <input id="username" required placeholder="Enter your username" />
+      <label>Username <span class="required">*</span></label>
+      <input id="username" placeholder="Enter your username" />
       <div class="error-text" id="usernameError">Username is required</div>
     </div>
 
     <div class="form-group">
-      <label>Password <span style="color:red">*</span></label>
-      <input id="password" type="password" required placeholder="Enter your password" />
+      <label>Password <span class="required">*</span></label>
+      <input id="password" type="password" placeholder="Enter your password" />
       <div class="error-text" id="passwordError">Password is required</div>
     </div>
 
     <div class="form-group">
-      <label>Environment <span style="color:red">*</span></label>
-      <select id="environment" required>
+      <label>Environment <span class="required">*</span></label>
+      <select id="environment">
         <option value="">-- Select Environment --</option>
         <option value="DEV">DEV</option>
         <option value="TEST">TEST</option>
@@ -148,8 +227,8 @@
     </div>
 
     <div class="form-group">
-      <label>Template <span style="color:red">*</span></label>
-      <select id="templateId" required>
+      <label>Template <span class="required">*</span></label>
+      <select id="templateId">
         <option value="">-- Select Template --</option>
       </select>
       <div class="error-text" id="templateIdError">Template is required</div>
@@ -159,8 +238,24 @@
       <button onclick="downloadTemplate()">⬇ Download Template</button>
     </div>
 
+    <div id="downloadMsg" style="
+      font-size:12px;
+      color:red;
+      margin-top:5px;
+      display:none;">
+    </div>
+
+    <button id="openDownloadsBtn" style="
+      display:none;
+      margin-top:5px;
+      font-size:12px;
+      padding:6px;
+    ">
+      📂 Open Downloads Folder
+    </button>
+
     <div class="form-group">
-      <label>Upload Filled Excel <span style="color:red">*</span></label>
+      <label>Upload Filled Excel <span class="required">*</span></label>
       <input type="file" id="excelFile" accept=".xlsx" />
       <div class="error-text" id="fileError">File is required</div>
     </div>
@@ -168,16 +263,100 @@
     <div id="fileName" style="margin-top:5px; font-size:12px; color:#555;"></div>
 
     <div class="button-group">
-      <button id="runBtn" onclick="runTest()">▶ Run Test</button>
+      <button id="runBtn" onclick="runTest()" disabled>▶ Run Test</button>
       <button id="updateBtn" onclick="update()">⬇ Update</button>
       <button id="reportBtn" onclick="openReport()" disabled>📊 View Report</button>
     </div>
 
     <div id="loader" style="display:none;">
-      ⏳ Running test... Please wait
+      ⏳ Running test...
     </div>
 
     <div id="output"></div>
+  </div>
+
+  <!-- 🔥 ABOUT MODAL -->
+  <div id="aboutModal">
+    <div class="box">
+      <!-- About View -->
+      <div id="aboutContent">
+        <h3>About Maextro Automation</h3>
+        <p id="aboutVersion"></p>
+        <button onclick="showReadme()">📄 View Guide</button>
+        <button onclick="closeAbout()">Close</button>
+      </div>
+
+      <!-- README View -->
+      <div id="readmeContent" style="display:none; text-align:left; max-height:60vh; overflow-y:auto;">
+        <h2>Maextro Automation Runner</h2>
+        <h3>📌 Overview</h3>
+        <p>
+          Maextro Automation Runner is a desktop application that allows users to execute test scenarios quickly by uploading structured Excel templates.
+        </p>
+        <hr>
+        <h3>🖥️ How to Use</h3>
+        <h4>1. Enter Username and Password</h4>
+        <p>Provide your Maextro credentials:</p>
+        <ul>
+          <li>Username</li>
+          <li>Password</li>
+        </ul>
+        <p>⚠️ These credentials will be used to log in to the Maextro application during execution.</p>
+        <h4>2. Select Environment</h4>
+        <p>Choose the environment where you want to run the workflow:</p>
+        <ul>
+          <li>DEV</li>
+          <li>TEST</li>
+          <li>SHS</li>
+          <li>Others (if available)</li>
+        </ul>
+        <h4>3. Select Template</h4>
+        <ul>
+          <li>Templates will be displayed in the dropdown based on the selected environment</li>
+          <li>Choose the required template for your test execution</li>
+        </ul>
+        <h4>4. Download Template</h4>
+        <p>
+          Click <b>"Download Template"</b> to download the Excel file.
+        </p>
+        <p>
+          📂 The file will be saved in your system’s <b>Downloads folder</b>.
+        </p>
+        <h4>5. Fill the Template</h4>
+        <ul>
+          <li>Open the downloaded Excel file</li>
+          <li>Enter the required test data</li>
+          <li>Save the file without changing its name</li>
+        </ul>
+        <h4>6. Upload File</h4>
+        <ul>
+          <li>Upload the filled Excel file</li>
+          <li>Ensure the filename matches the selected template</li>
+        </ul>
+        <h4>7. Run Test</h4>
+        <p>Click <b>"Run Test"</b> to start execution.</p>
+        <p>You will see:</p>
+          <ul>
+            <li>Live execution logs</li>
+          </ul>
+        <h4>8. View Report</h4>
+        <p>Once execution is complete:</p>
+        <ul>
+          <li>Click <b>"View Report"</b></li>
+          <li>The report will open in your browser</li>
+        </ul>
+        <hr>
+        <h3>⚠️ Important Notes</h3>
+        <ul>
+          <li>All fields marked with * are mandatory</li>
+          <li>Do not modify the structure of the template</li>
+          <li>Ensure correct environment and template selection</li>
+          <li>Only one execution can run at a time</li>
+        </ul>
+        <br>
+        <button onclick="backToAbout()">⬅ Back</button>
+      </div>
+    </div>
   </div>
 
   <script src="renderer.js"></script>

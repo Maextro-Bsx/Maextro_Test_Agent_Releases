@@ -28,7 +28,7 @@ const testPath = path.join(
   basePath,
   'tests',
   'Workflow',
-  'TC_Workflow.spec.ts'
+  'TC_WorkflowExecution.spec.ts'
 );
 
 // 🔥 DEBUG LOGS

@@ -24,12 +24,6 @@ app.whenReady().then(() => {
   createWindow();
 
   autoUpdater.autoInstallOnAppQuit = false;
-  // 🔥 Logging (very useful)
-  autoUpdater.logger = require("electron-log");
-  autoUpdater.logger.transports.file.level = "info";
-
-  // 🔥 IMPORTANT: DO NOT auto-trigger (avoid double check)
-  // autoUpdater.checkForUpdatesAndNotify();
 });
 
 
@@ -70,6 +64,13 @@ autoUpdater.on('error', (err) => {
   mainWindow.webContents.send('update-message', 'Update error: ' + err.message);
 });
 
+ipcMain.handle('get-app-version', () => {
+  return app.getVersion();
+});
 
-
+ipcMain.on('open-downloads-folder', () => {
+  const downloadsPath = app.getPath('downloads');
+  console.log('Opening:', downloadsPath); 
+  shell.openPath(downloadsPath);
+});
 
