@@ -1,5 +1,9 @@
 import { Page , Locator } from '@playwright/test';
 
+function escapeRegex(text: string): string {
+  return text.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+}
+
 export const requestDetailsFieldsLocators = (page: Page) => {
 
 const frame = page.frameLocator('.sapUShellApplicationContainer');
@@ -15,6 +19,7 @@ return {
   saveAsDraftMenuItem: page.getByRole('menuitem', { name: 'Save As Draft'}),
   saveMenuItem: frame.locator('.sapMMenuItemText', {hasText: /^Save$/}),
   editViewButton: frame.getByRole('button', { name: 'Edit View' }),
+  statusText: frame.locator('[role="progressbar"] span.sapMPITextLeft'),
   statusCompleteIndicator: frame.locator('[role="progressbar"][aria-valuenow]'),
   confirmMessage : frame.getByText('This will submit this request and you will be unable to make any more changes, are you sure you wish to continue?',{ exact: true } ),
   submitConfirmButton : frame.getByRole('button', {name: 'Yes, Submit this request'}),
@@ -37,6 +42,7 @@ return {
   mandatoryColumnHeader: (columnName: string) =>frame.getByRole('columnheader').filter({ has: frame.locator('bdi', { hasText: columnName }) })
     .locator('span.sapMLabelRequired'),
   table: frame.locator('table[id^="__table"]'),
+  tableBody: frame.locator('table[id$="-table"]').first(),
   columnHeaders: frame.locator('td[role="columnheader"]'),
   tableRows : frame.locator('table[id^="__table"]:visible tr.sapUiTableContentRow:not(.sapUiTableRowHidden)'),
   getCell: (rowIndex: number, colIndex: number) =>frame.locator('tr[id^="__table"][id*="rows-row"]').nth(rowIndex)
@@ -57,7 +63,10 @@ return {
   errorDescription: (item: Locator) => item.locator(".sapMSLIDescription span"),
   readOnlyFieldWrapper: (rowIndex: number, colIndex: number) =>frame.locator('tr[id^="__table"][id*="rows-row"]')
     .nth(rowIndex).locator('td.sapUiTableContentCell').nth(colIndex).locator('.sapMInputBase'),
-  tableRowSelectionCheckbox: (rowIndex: number) => `div[role="row"]:nth-child(${rowIndex + 1}) div[role="gridcell"].sapUiTableRowSelectionCell`,
+  // tableRowSelectionCheckbox: (rowIndex: number) => `div[role="row"]:nth-child(${rowIndex + 1}) div[role="gridcell"].sapUiTableRowSelectionCell`,
+  tableRowSelectionCheckbox: (rowIndex: number) =>frame.locator('div[role="row"]').nth(rowIndex+1).locator('div.sapUiTableRowSelectionCell'),
+tableRowCheckbox: (visibleIndex: number) =>
+  frame.locator(`div[id$="rowsel${visibleIndex}"]`).first(),
   bpAddRolesButton: frame.getByRole('button', { name: /BP\s*:\s*Add Roles/i }),
   confirmButton : frame.locator('button:has-text("Confirm")'),
   addRolesDialog : frame.locator('div.sapMDialog:has(span:text("BP : Add Roles"))'),
@@ -67,16 +76,29 @@ return {
   resultTitle: frame.getByRole('heading', { name: 'Result' }),
   logTitle: frame.getByRole('heading', { name: 'Log' }),
   messageLocator : frame.locator('li.sapMMsgViewItem span[id$="titleText"]'),
-  formLabel: (fieldName: string) =>frame.locator('label').filter({has: frame.locator('bdi').filter({hasText: new RegExp(`^\\s*${fieldName}\\s*$`, 'i')})}).first(),
+  // formLabel: (fieldName: string) =>frame.locator('label').filter({has: frame.locator('bdi').filter({hasText: new RegExp(`^\\s*${fieldName}\\s*$`, 'i')})}).first(),
+  formLabel: (fieldName: string) => {
+    const safeField = escapeRegex(fieldName.trim());
+    return frame.locator('label').filter({
+      has: frame.locator('bdi', { hasText: new RegExp(`^${safeField}$`, 'i') })
+    }).first();
+  },
+  
   formInputById: (inputId: string) =>frame.locator(`#${inputId}`),
   formFieldContainer: (input: Locator) =>input.locator('xpath=ancestor::div[contains(@class,"sapMInputBase")]').first(),
   formValueHelpIcon: (container: Locator) =>container.locator('[aria-label="Show Value Help"]'),
-
-
-
-
-
-
+  errorSegment: frame.locator('.sapMMsgViewBtnError'),
+  warningSegment: frame.locator('.sapMMsgViewBtnWarning'),
+  successSegment: frame.locator('.sapMMsgViewBtnSuccess'),
+  errorCountText: frame.locator('.sapMMsgViewBtnError .sapMSegBBtnInner'),
+  warningCountText: frame.locator('.sapMMsgViewBtnWarning .sapMSegBBtnInner'),
+  successCountText: frame.locator('.sapMMsgViewBtnSuccess .sapMSegBBtnInner'),
+  segmentContainer: frame.locator('ul.sapMSegB'),
+  addRowButton: frame.locator('button[aria-label="Add Row"], button[title="Add Row"]'),
+  deleteRowButton: frame.locator('button[aria-label="Delete Row"], button[title="Delete Row"]'),
+  dependentViewWarningHeader: frame.locator('h1.sapMDialogTitle span.sapUiSelectable').filter({hasText: 'Warning'}),
+  dependentViewWarningMessages: frame.locator('section.sapMDialogSection div[id$="scrollCont"] span.sapMText'),
+  dependentViewYesButton: frame.getByRole('button', {name: 'Yes'}),
 
 
 }

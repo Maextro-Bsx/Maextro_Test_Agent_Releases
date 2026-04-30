@@ -1,9 +1,12 @@
 import * as XLSX from 'xlsx';
-
+import { logger } from '@utils/logger';
 export type ViewData = {
   viewName: string;
   headers: string[];
   records: Record<string, string>[];
+  multiOrg?: boolean;
+  addRecords: number;
+  deleteRecords: number[]; 
 };
 
 export class StepParser {
@@ -58,13 +61,23 @@ export class StepParser {
     while (i < raw.length) {
       const row = raw[i];
       const firstCell = row?.[0]?.toString().trim();
+      const fullRowText = row?.map(c => c?.toString().trim()).join(' ') || '';
+      
       if (firstCell && firstCell.startsWith('View -')) {
         const viewName = firstCell.replace('View -', '').trim();
+        // ✅ Extract Add Records
+        const addMatch = fullRowText.match(/add\s*records\s*-\s*(\d+)/i);
+        const addRecords = addMatch ? Number(addMatch[1]) : 0;
+        // ✅ Extract Delete Records
+        const deleteMatch = fullRowText.match(/delete\s*records\s*-\s*([\d,\s]+)/i);
+        const deleteRecords = deleteMatch? deleteMatch[1].split(',').map(x => x.trim()).filter(x => x !== '').map(x => Number(x))
+          .filter(n => !isNaN(n) && n > 0) : [];
+        const isMultiOrg = /multiorg\s*-\s*yes/i.test(fullRowText);
         if (!expectedViews.includes(viewName)) {
           i++;
           continue;
         }
-        console.log(`Parsing View: ${viewName}`);
+        logger.info(`Parsing View: ${viewName} - MultiOrg: ${isMultiOrg}`);
         const recordsRow = raw[i + 1];
         if (!recordsRow || recordsRow[0]?.toString().trim() !== 'Records') {
           throw new Error(`Missing 'Records' row for view: ${viewName}`);
@@ -91,12 +104,15 @@ export class StepParser {
               record[header] = String(value).trim();
             }
           });
-          if (Object.keys(record).length > 0) {
-            records.push(record);
-          }
+          const hasAnyValue = headers.some((_, index) => {
+            const value = currentRow[index + 1];
+            return value !== undefined && value !== null && String(value).trim() !== '';
+          });
+          // ✅ Push record EVEN IF EMPTY (important for MultiOrg)
+          records.push(hasAnyValue ? record : {});
           j++;
         }
-        views.push({viewName,headers,records});
+        views.push({viewName,headers,records,multiOrg: isMultiOrg,addRecords,deleteRecords});
         i = j;
         continue;
       }

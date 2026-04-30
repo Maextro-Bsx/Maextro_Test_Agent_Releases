@@ -33,16 +33,19 @@ export class ChooseTemplatePage extends BasePage {
  */
 async searchAndSelectTemplate(templateName: string , object : string): Promise<void> {
 
+  const templateDesc = templateName.replace(/^[^-]*-\s*/, '');
+  console.log(`Searching for template with description: ${templateDesc}`);  
   /* ---- Clear and enter search text ----*/
   await this.waitForVisible(this.locators.searchInput);
   await this.clearField(this.locators.searchInput);
-  await this.fill(this.locators.searchInput, templateName);
+  await this.fill(this.locators.searchInput, templateDesc);
 
   /* ---- Press Enter ---- */ 
   await this.pressKey(this.locators.searchInput, 'Enter');
 
   /* ---- Wait for result template to appear ----*/
-  const template = this.locators.templateByName(templateName,object);
+  // const template = this.locators.templateByName(templateName,object);
+  const template = this.locators.templateByName(templateDesc);
   await this.waitForVisible(template);
 
   /* ---- Click template ----*/

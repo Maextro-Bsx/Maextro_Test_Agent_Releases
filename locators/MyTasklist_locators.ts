@@ -19,5 +19,10 @@ return {
   taskSearchResultByStep: (requestNumber: string, step: string) => frame.locator('li[aria-roledescription="Group Header"]')
     .filter({ hasText: requestNumber }).first().locator('xpath=following-sibling::li').filter({ hasText: step }).first(),
   refreshButton: frame.getByRole('button', { name: 'Refresh tasks' }),
+  taskLockItems: frame.locator('li.sapMMsgViewItemError'),
+  taskLockTexts: frame.locator('li.sapMMsgViewItemError span[id$="titleText"]'),
+  taskErrorDialogTitle: frame.getByRole('heading', { name: 'Error' }),
+  taskErrorOkButton: frame.getByRole('button', { name: /^ok$/i }),
+
 }
 };

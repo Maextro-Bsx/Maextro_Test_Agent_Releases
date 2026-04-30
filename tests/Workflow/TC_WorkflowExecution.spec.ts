@@ -14,29 +14,24 @@ import { logger } from '@utils/logger';
 import { TaskBuilder , Task } from '@utils/New/taskBuilder';
 import fs from 'fs';
 import path from 'path';
+import { executeView } from '@utils/New/viewExecutor';
 
 test('TC_WorkflowExecution', async ({ page }) => {
 
-  // const excelPath = 'test-data/BP Templates/ATBP.xlsx';
 
   const templateId = process.env.TEMPLATE_ID || env.TEMPLATE_ID;;
   if (!templateId) {
     throw new Error('TEMPLATE_ID not provided. Example: TEMPLATE_ID=ATBP');
   }
-  // const excelPath = `test-data/Templates/${templateId}.xlsx`;
-  // const excelPath = `test-data/Templates/DEV/R1.xlsx`;
-  // const excelPath = `uploads/${environment}/${templateId}.xlsx`;
-  const basePath = process.env.USER_DATA_PATH ?? process.cwd();
-  const environment = process.env.ENVIRONMENT ?? '';
+  const excelPath = `test-data/Templates/SHS/M4 - Create Material type HAWA (DRINKS FG).xlsx`;
+  
+  // const basePath = process.env.USER_DATA_PATH ?? process.cwd();
+  // const environment = process.env.ENVIRONMENT ?? '';
 
-  if (!environment) {
-    throw new Error('ENVIRONMENT is not defined');
-  }
-  const excelPath = path.join(
-  basePath,
-  environment,
-  `${templateId}.xlsx`
-  );
+  // if (!environment) {
+  //   throw new Error('ENVIRONMENT is not defined');
+  // }
+  // const excelPath = path.join(basePath,environment,`${templateId}.xlsx`);
   
   logger.info(`Using Template: ${templateId}`);
   logger.info(`Excel Path: ${excelPath}`);
@@ -105,15 +100,8 @@ test('TC_WorkflowExecution', async ({ page }) => {
     // STEP 0 EXECUTION
     const step0Views = StepParser.parse(excelPath, 'Step 0', step0.views);
     for (const view of step0Views) {
-      console.log(`Step 0 → View: ${view.viewName}`);
-      if (view.records.length) {
-          await requestDetailsFields.executeDynamicDataN(view.records);
-      } else {
-          console.log(`No data for ${view.viewName} → Only Status Complete`);
-      }
-      await requestDetailsFields.clickStatusCompleteForView(view.viewName);
-      await requestDetailsFields.waitForSAPPageReady();
-      await page.waitForTimeout(2000);
+      console.log(`/=============================== Step 0 ==========================/`);
+      await executeView(requestDetailsFields, view);
     }
     // Submit request
     requestNumber = await requestDetailsFields.submitCreateRequestAndCaptureNumber();
@@ -170,14 +158,7 @@ test('TC_WorkflowExecution', async ({ page }) => {
         
         for (const view of views) {
           console.log(`Step ${stepNo} → View: ${view.viewName}`);
-          if (view.records.length) {
-            await requestDetailsFields.executeDynamicDataN(view.records);
-            await page.waitForTimeout(1000);
-          } else {
-            console.log(`No data for ${view.viewName} → Only Status Complete`);
-          }
-          await requestDetailsFields.clickStatusComplete();
-          await page.waitForTimeout(1000);
+          await executeView(requestDetailsFields, view);
         }
       });
 

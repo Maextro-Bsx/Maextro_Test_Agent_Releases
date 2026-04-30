@@ -157,6 +157,13 @@ async searchTask(requestNumber: string): Promise<boolean> {
   return true;
 }
 
+private async captureTaskLockMessages(): Promise<void> {
+
+  const messages = await this.locators.taskLockTexts.allTextContents();
+  logger.error('========== TASK LOCK MESSAGES ==========');
+  messages.forEach(msg => logger.error(msg.trim()));
+}
+
 /**
  * Clicks a specific task in the SAP UI based on request number and task name.
  *
@@ -227,6 +234,33 @@ async refreshTaskList(requestNumber: string): Promise<void> {
     logger.warn('No data found in task list');
   } else {
     logger.info(`Task list refreshed for request: ${requestNumber}`);
+  }
+}
+
+private async openTaskWithRetry(requestNumber: string, step: string): Promise<void> {
+
+  const maxRetries = 3;
+  for (let attempt = 1; attempt <= maxRetries; attempt++) {
+    logger.info(`Opening task (Attempt ${attempt}/${maxRetries})`);
+    await this.clickTaskByRequestNumber(requestNumber, step);
+    await this.page.waitForTimeout(2000);
+    const isErrorDialog = await this.locators.taskErrorDialogTitle.isVisible({ timeout: 2000 }).catch(() => false);
+    if (isErrorDialog) {
+      logger.warn('Error dialog detected while opening task');
+      await this.captureTaskLockMessages();
+      await this.locators.taskErrorOkButton.click();
+      await this.page.waitForTimeout(1000);
+      if (attempt < maxRetries) {
+        logger.info('Refreshing task list and retrying...');
+        await this.refreshTaskList(requestNumber);
+        await this.waitForSAPLoader();
+        continue;
+      }
+      logger.error('Task still locked after retries');
+      throw new Error('Task is locked after multiple retries');
+    }
+    logger.info('Task opened successfully');
+    return;
   }
 }
 
@@ -373,7 +407,7 @@ async getAndClickNextTask(requestNumber: string, tasks :Task[]): Promise<Task | 
   // const actualStep = await this.getCurrentStepFromUI();
   // logger.info(`UI Step: ${actualStep}`);
   // await this.validateStepAndStatus(task.step, 'Ready to process');
-  await this.clickTaskByRequestNumber(requestNumber,task.step);
+  await this.openTaskWithRetry(requestNumber, task.step);
   return task;
 }
 

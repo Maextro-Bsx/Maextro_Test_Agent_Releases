@@ -372,21 +372,56 @@ async validateRowsData(rowsData: Record<string, string>[],expectedData: Record<s
  * Example:
  * await page.clickStatusComplete();
  */
-async clickStatusComplete(): Promise<void> {
-  const statusBtn = this.locators.statusCompleteButton;
-  const editBtn = this.locators.editViewButton;
-  await this.page.waitForTimeout(1000);
-  logger.info('Clicking Status Complete...');
-  await statusBtn.click(); 
-  await Promise.race([
-    editBtn.waitFor({ state: 'visible', timeout: 15000 }),
-    statusBtn.waitFor({ state: 'visible', timeout: 15000 })
-  ]);
-  await this.page.waitForTimeout(1000);
-  logger.info('Status completed');
+// async clickStatusComplete(): Promise<void> {
+//   const statusBtn = this.locators.statusCompleteButton;
+//   const editBtn = this.locators.editViewButton;
+//   await this.page.waitForTimeout(1000);
+//   logger.info('Clicking Status Complete...');
+//   await statusBtn.click(); 
+//   await Promise.race([
+//     editBtn.waitFor({ state: 'visible', timeout: 15000 }),
+//     statusBtn.waitFor({ state: 'visible', timeout: 15000 })
+//   ]);
+//   await this.page.waitForTimeout(1000);
+//   logger.info('Status completed');
  
-}
+// }
 
+async clickStatusComplete(): Promise<void> {
+
+  const statusBtn = this.locators.statusCompleteButton;
+  const statusTextLocator = this.locators.statusText;
+
+  // ✅ Get current number
+  const beforeText = await statusTextLocator.textContent() || '';
+  const before = parseInt(beforeText.match(/\d+/)?.[0] || '0');
+  logger.info(`Current progress: ${beforeText}`);
+  logger.info('Clicking Status Complete...');
+  await this.page.waitForTimeout(500);
+  await statusBtn.click();
+
+  let incremented = false;
+
+  // ✅ Simple retry loop (your style)
+  for (let i = 0; i < 60; i++) {
+    await this.page.waitForTimeout(1000); // wait 1 sec between retries
+
+    const afterText = await statusTextLocator.textContent() || '';
+    const current = parseInt(afterText.match(/\d+/)?.[0] || '0');
+
+    if (current === before + 1) {
+      incremented = true;
+      logger.info(`Progress incremented: ${before} → ${current}`);
+      break;
+    }
+  }
+
+  if (!incremented) {
+    logger.warn(`Progress did not increment from ${before}`);
+  }
+  const finalText = await statusTextLocator.textContent();
+  logger.info(`Status completed → ${finalText}`);
+}
 /**
  * Clicks the "Status Complete" button for a specific view and handles view-specific error scenarios.
  *
@@ -896,6 +931,68 @@ async completeTask(): Promise<void> {
   logger.info('Task completed and navigated back to Task List');
 }
 
+private async getSegmentCount(locator: Locator): Promise<number> {
+  try {
+    const text = await locator.innerText({timeout: 1000});
+    const match = text.match(/\d+/);
+    return match ? parseInt(match[0], 10) : 0;
+  } catch {
+    return 0; // safe fallback if not found
+  }
+}
+
+private async selectSegment(segment: Locator): Promise<void> {
+
+  for (let i = 0; i < 3; i++) {
+    await segment.click({ force: true });
+    const isSelected = await segment.getAttribute('aria-selected');
+    if (isSelected === 'true') break;
+    await this.page.waitForTimeout(200);
+  }
+  await this.page.waitForTimeout(500);
+}
+
+private async captureErrorWarningDetails(): Promise<{ hasIssue: boolean }> {
+
+  const [errorCount, warningCount, successCount] = await Promise.all([
+    this.getSegmentCount(this.locators.errorCountText),
+    this.getSegmentCount(this.locators.warningCountText),
+    this.getSegmentCount(this.locators.successCountText)
+  ]);
+
+  logger.info(`Error Count: ${errorCount}`);
+  logger.info(`Warning Count: ${warningCount}`);
+  logger.info(`Success Count: ${successCount}`);
+
+  // ERROR
+  if (errorCount > 0 && await this.locators.errorSegment.isVisible().catch(() => false)) {
+    await this.selectSegment(this.locators.errorSegment);
+    const errors = await this.locators.messageLocator.allTextContents();
+    logger.error('========== ERROR MESSAGES ==========');
+    errors.forEach(m => logger.error(m.trim()));
+  }
+
+  // WARNING
+  if (warningCount > 0 && await this.locators.warningSegment.isVisible().catch(() => false)) {
+    await this.selectSegment(this.locators.warningSegment);
+    const warnings = await this.locators.messageLocator.allTextContents();
+    logger.warn('========== WARNING MESSAGES ==========');
+    warnings.forEach(m => logger.warn(m.trim()));
+  }
+
+  // SUCCESS 
+  if (successCount > 0 && await this.locators.successSegment.isVisible().catch(() => false)) {
+    await this.selectSegment(this.locators.successSegment);
+    const success = await this.locators.messageLocator.allTextContents();
+    logger.info('========== SUCCESS MESSAGES ==========');
+    success.forEach(m => logger.info(m.trim()));
+  }
+  return {
+    hasIssue: errorCount > 0 || warningCount > 0
+  };
+}
+
+
 /**
  * Handles the approval flow in SAP UI by managing confirmation, success, and result/error states.
  *
@@ -927,7 +1024,8 @@ async completeTask(): Promise<void> {
  */
 private async handleApproveFlow(): Promise<void> {
 
-  for (let i = 0; i < 3; i++) {
+  // CONFIRM / DIRECT SUCCESS
+  for (let i = 0; i < 20; i++) {
     const isConfirmVisible = await this.locators.dataINSAPERPConfirmMessage.isVisible({ timeout: 1500 }).catch(() => false);
     if (isConfirmVisible) {
       logger.info(`Confirm popup detected`);
@@ -938,31 +1036,59 @@ private async handleApproveFlow(): Promise<void> {
     const isSuccessVisible = await this.locators.successTitle.isVisible({ timeout: 1500 }).catch(() => false);
     if (isSuccessVisible) {
       await this.waitForLocatorSafe(this.locators.approvalSuccessMessage);
-      logger.info('Approval successful');
+      logger.info('Approval successful (no result screen)');
+      await this.locators.backToTaskListButton.click();
+      await this.waitForSAPLoader();
       return;
     }
-    await this.page.waitForTimeout(1000);
+    await this.page.waitForTimeout(2000);
   }
 
-  for (let i = 0; i < 20; i++) {
+  //RESULT / LOG HANDLING
+  for (let i = 0; i < 25; i++) {
+    // ---------- RESULT ----------
     const isResultVisible = await this.locators.resultTitle.isVisible({ timeout: 2000 }).catch(() => false);
     if (isResultVisible) {
       logger.info(`Result detected`);
-      const messages = await this.locators.messageLocator.allTextContents();
-      logger.info('--- RESULT MESSAGES ---');
-      messages.forEach(text => logger.info(text.trim()));
+      const allMessages = await this.locators.messageLocator.allTextContents();
+      logger.info('========== ALL RESULT MESSAGES ==========');
+      allMessages.forEach(m => logger.info(m.trim()));
+      const hasSegments = await this.locators.segmentContainer.isVisible({ timeout: 1000 }).catch(() => false);
+      let hasIssue = false;
+      if (hasSegments) {
+        logger.info('Segmented tabs detected → capturing by type');
+        const result = await this.captureErrorWarningDetails();
+        hasIssue = result.hasIssue;
+      } else {
+        logger.info('No segmented tabs → using message-based validation');
+        const lowerMsgs = allMessages.map(m => m.toLowerCase());
+        hasIssue = lowerMsgs.some(m =>m.includes('error') || m.includes('failed'));
+      }
+      await this.locators.backToTaskListButton.click();
+      await this.waitForSAPLoader();
+      if (hasIssue) {
+        throw new Error('Approval failed due to Error/Warning messages');
+      }
       return;
     }
-
     const isLogVisible = await this.locators.logTitle.isVisible({ timeout: 2000 }).catch(() => false);
     if (isLogVisible) {
       logger.error(`Log detected`);
       const messages = await this.locators.messageLocator.allTextContents();
-      logger.error('--- ERROR LOG MESSAGES ---');
-      messages.forEach(text => logger.error(text.trim()));
+      logger.error('========== LOG MESSAGES ==========');
+      messages.forEach(m => logger.error(m.trim()));
+      const hasSegments = await this.locators.segmentContainer.isVisible({ timeout: 1000 }).catch(() => false);
+      if (hasSegments) {
+        logger.info('Segmented tabs detected in log → capturing details');
+        await this.captureErrorWarningDetails();
+      } else {
+        logger.info('No segmented tabs in log → fallback detection');
+      }
+      await this.locators.backToTaskListButton.click();
+      await this.waitForSAPLoader();
       throw new Error('Approval failed due to Log messages');
     }
-    await this.page.waitForTimeout(3000); 
+    await this.page.waitForTimeout(3000);
   }
   throw new Error('Approve flow failed after retries');
 }
@@ -1953,25 +2079,25 @@ async isFormField(fieldName: string): Promise<boolean> {
  * Example:
  * await page.handleTableField(0, 'Material', 'Steel');
  */
-async handleTableField(rowIndex: number, fieldName: string, value: string) {
+// async handleTableField(rowIndex: number, fieldName: string, value: string) {
 
-  const cell = await this.getCell(rowIndex, fieldName);
-  await cell.scrollIntoViewIfNeeded();
-  await cell.dblclick();
-  const input = cell.locator('input').first();
-  // ✅ STEP 1: TRY INPUT
-  try {
-    logger.info(`TABLE INPUT → ${fieldName}`);
-    await input.fill('');
-    await input.fill(value);
-    // await input.type(value, { delay: 50 });
-    // const entered = await input.inputValue();
-    // await input.press('Enter');
-    await this.page.waitForTimeout(100);
-    // if (entered?.trim()) return;
-  } catch (e) {
-    logger.warn(`TABLE INPUT failed → ${fieldName}`);
-  }
+//   const cell = await this.getCell(rowIndex, fieldName);
+//   await cell.scrollIntoViewIfNeeded();
+//   await cell.dblclick();
+//   const input = cell.locator('input').first();
+//   // ✅ STEP 1: TRY INPUT
+//   try {
+//     logger.info(`TABLE INPUT → ${fieldName}`);
+//     await input.fill('');
+//     await input.fill(value);
+//     // await input.type(value, { delay: 50 });
+//     // const entered = await input.inputValue();
+//     // await input.press('Enter');
+//     await this.page.waitForTimeout(100);
+//     // if (entered?.trim()) return;
+//   } catch (e) {
+//     logger.warn(`TABLE INPUT failed → ${fieldName}`);
+//   }
   // ✅ STEP 2: TRY DROPDOWN
   // try {
   //   logger.info(`TABLE DROPDOWN → ${fieldName}`);
@@ -1990,6 +2116,86 @@ async handleTableField(rowIndex: number, fieldName: string, value: string) {
   //   logger.error(`TABLE VALUE HELP failed → ${fieldName}`);
   // }
   // throw new Error(`Unable to set table field: ${fieldName}`);
+// }
+
+private async scrollTableToRow(targetRow: number): Promise<void> {
+  const rowHeight = 33;
+  const visibleRows = 10;
+  const scrollRow = Math.max(targetRow - visibleRows, 0);
+  const scrollTopValue = scrollRow * rowHeight;
+  logger.info(`Scrolling table to row ${targetRow}`);
+  const frameElement = await this.page
+    .locator('.sapUShellApplicationContainer')
+    .elementHandle();
+  if (!frameElement) {
+    throw new Error('SAP iframe element not found');
+  }
+  const frame = await frameElement.contentFrame();
+  if (!frame) {
+    throw new Error('SAP iframe content frame not found');
+  }
+  await frame.evaluate(
+    ({ scrollTopValue }: { scrollTopValue: number }) => {
+      const scrollbar = document.querySelector(
+        '.sapUiTableVSb'
+      ) as HTMLElement;
+      if (!scrollbar) {
+        throw new Error(
+          'SAP vertical scrollbar not found inside iframe'
+        );
+      }
+      scrollbar.scrollTop = scrollTopValue;
+      scrollbar.dispatchEvent(
+        new Event('scroll', { bubbles: true })
+      );
+    },
+    { scrollTopValue }
+  );
+  await this.page.waitForTimeout(2000);
+  logger.info(`Scrolled to row ${targetRow}`);
+}
+
+private async getVisibleRowIndex(targetRow: number): Promise<number> {
+  const visibleRows = await this.locators.tableRows.count();
+  await this.scrollTableToRow(targetRow);
+  const visibleIndex =
+    targetRow <= visibleRows
+      ? targetRow - 1
+      : visibleRows - 1;
+  logger.info(
+    `Target row ${targetRow} → Visible row ${visibleIndex + 1}`
+  );
+  return visibleIndex;
+}
+
+async handleTableField(
+  targetRow: number,
+  fieldName: string,
+  value: string
+) {
+  // targetRow coming from Excel = 1-based
+  const visibleRowIndex =
+    await this.getVisibleRowIndex(targetRow + 1);
+
+  const cell = await this.getCell(
+    visibleRowIndex,
+    fieldName
+  );
+  await cell.scrollIntoViewIfNeeded();
+  await cell.dblclick();
+  const input = cell.locator('input').first();
+  try {
+    logger.info(
+      `TABLE INPUT → Row ${targetRow + 1}, ${fieldName}`
+    );
+    await input.fill('');
+    await input.fill(value);
+    await this.page.waitForTimeout(200);
+  } catch (e) {
+    logger.warn(
+      `TABLE INPUT failed → Row ${targetRow + 1}, ${fieldName}`
+    );
+  }
 }
 
 /**
@@ -2544,6 +2750,63 @@ async validateFormData(expectedData: Record<string, string>) {
     logger.info(`Validated ${field} = ${actual}`);
   }
 }
+
+async addRecord(count: number = 1) {
+
+  logger.info(`Adding ${count} record(s)`);
+  for (let i = 0; i < count; i++) {
+    await this.locators.addRowButton.waitFor({ state: 'visible' });
+    await this.locators.addRowButton.click();
+    await this.page.waitForTimeout(500);
+  }
+  logger.info(`Added ${count} record(s) successfully`);
+}
+
+private async handleDependentViewWarningPopup(): Promise<void> {
+  const isWarningVisible = await this.locators.dependentViewWarningHeader.isVisible({ timeout: 2000 }).catch(() => false);
+  if (!isWarningVisible) {
+    return;
+  }
+  logger.warn('Dependent View Warning popup detected');
+  const messages = await this.locators.dependentViewWarningMessages.allTextContents();
+  logger.warn('--- WARNING POPUP MESSAGES ---');
+  messages.forEach(msg => {
+    const text = msg.trim();
+    if (text) {
+      logger.warn(text);
+    }
+  });
+  await this.locators.dependentViewYesButton.click();
+  logger.info('Clicked Yes on Dependent View Warning popup');
+  await this.page.waitForTimeout(2000);
+}
+
+async deleteRecords(recordIndexes: number[]) {
+  
+  if (!recordIndexes?.length) {
+    logger.info('No records to delete');
+    return;
+  }
+  const pendingDeletes = [...recordIndexes].sort((a, b) => a - b);
+  logger.info(`Deleting records: ${pendingDeletes.join(', ')}`);
+  const visibleLimit = 10;
+  for (const recordNo of pendingDeletes) {
+    logger.info(`Selecting row ${recordNo}`);
+    await this.scrollTableToRow(recordNo);
+    const visibleIndex =(recordNo - 1) % visibleLimit;
+    const checkbox =this.locators.tableRowCheckbox(visibleIndex);
+    await checkbox.waitFor({state: 'visible',timeout: 8000});
+    await checkbox.click({ force: true });
+    await this.page.waitForTimeout(300);
+  }
+  await this.locators.deleteRowButton.waitFor({state: 'visible'});
+  await this.locators.deleteRowButton.click();
+  await this.page.waitForTimeout(1000);
+  await this.handleDependentViewWarningPopup();
+  logger.info('Deleted all selected records successfully');
+  await this.page.waitForTimeout(2000);
+}
+
 
 
 

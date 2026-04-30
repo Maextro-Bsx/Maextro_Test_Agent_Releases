@@ -13,9 +13,9 @@ const frame = page.frameLocator('.sapUShellApplicationContainer');
    align : frame.locator('button', { hasText: 'Align' }),
    previous : frame.locator('button', { hasText: 'Previous' }),
    next : frame.locator('button', { hasText: 'Next' }),
-  templateByName: (templateId: string, objectName: string) =>frame.locator(`.sapMPanel:has(.sapMPanelHdr:has-text("${objectName}"))`)
-    .locator('.sapMGT', {has: frame.locator('.templateId', { hasText: templateId })}).first(),
-
+  // templateByName: (templateId: string, objectName: string) =>frame.locator(`.sapMPanel:has(.sapMPanelHdr:has-text("${objectName}"))`)
+  //   .locator('.sapMGT', {has: frame.locator('.templateId', { hasText: templateId })}).first(),
+  templateByName: (templateId: string) => frame.locator('bdi', { hasText: templateId }),
 
 
 

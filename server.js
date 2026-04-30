@@ -6,7 +6,7 @@ const UPDATE_SECRET = "maextro-secure-123";
 const ENV_URLS = {
   DEV: 'https://maextro-tdd.launchpad.cfapps.eu10.hana.ondemand.com/site/Maextro?sap-ushell-config=headerless#Maextro-Display?sap-ui-app-id-hint=saas_approuter_bsxc.maextrohubui&/Dashboard',
   TEST: 'https://test-url...',
-  SHS: 'https://shs-url...'
+  SHS: 'https://shs-dev-x8j4td6e.launchpad.cfapps.eu10.hana.ondemand.com/site/Dev?sap-ushell-config=headerless#Maextro-Display?sap-ui-app-id-hint=saas_approuter_bsxc.maextrohubui&/Dashboard'
 };
 const app = express();
 const fs = require('fs');

@@ -35,7 +35,7 @@ export default defineConfig({
       use: {
         viewport: null,
         launchOptions: {
-          args: [],
+          args: ['--start-maximized', '--start-fullscreen'],
         },
       },
     },

@@ -36,7 +36,10 @@
     "buildDependenciesFromSource": true,
     "disableDefaultIgnoredFiles": true,
     "mac": {
-      "target":  "dmg",
+      "target": [
+                "dmg",
+                "zip"
+              ],
       "icon": "build/icon.icns"
     },
     "win": {
@@ -44,7 +47,7 @@
     }
   },
   "name": "maextroautomationtests",
-  "version": "1.0.4",
+  "version": "1.0.5",
   "description": "Maextro Automation Test Scripts",
   "main": "main.js",
   "engines": {
