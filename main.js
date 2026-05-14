@@ -1,4 +1,4 @@
-const { app, BrowserWindow, ipcMain } = require('electron');
+const { app, BrowserWindow, ipcMain , dialog } = require('electron');
 const path = require('path');
 const { autoUpdater } = require('electron-updater');
 const { shell } = require('electron');
@@ -74,3 +74,45 @@ ipcMain.on('open-downloads-folder', () => {
   shell.openPath(downloadsPath);
 });
 
+ipcMain.handle('save-recorded-template', async (_, fileName) => {
+  const fs = require('fs');
+  const path = require('path');
+
+  const sourcePath = path.join(
+    __dirname,
+    'test-data',
+    fileName
+  );
+
+  if (!fs.existsSync(sourcePath)) {
+    return {
+      success: false,
+      error: 'Generated Excel file not found'
+    };
+  }
+
+  const result = await dialog.showSaveDialog({
+    title: 'Save Recorded Template',
+    defaultPath: fileName,
+    filters: [
+      {
+        name: 'Excel Files',
+        extensions: ['xlsx']
+      }
+    ]
+  });
+
+  if (result.canceled || !result.filePath) {
+    return {
+      success: false,
+      error: 'Save cancelled by user'
+    };
+  }
+
+  fs.copyFileSync(sourcePath, result.filePath);
+
+  return {
+    success: true,
+    savedPath: result.filePath
+  };
+});

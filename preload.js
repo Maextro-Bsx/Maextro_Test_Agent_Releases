@@ -11,5 +11,9 @@ contextBridge.exposeInMainWorld('electronAPI', {
 
   getVersion: () => ipcRenderer.invoke('get-app-version'),
 
-  openDownloads: () => ipcRenderer.send('open-downloads-folder')
+  saveRecordedTemplate: (fileName) =>
+  ipcRenderer.invoke('save-recorded-template', fileName),
+  openDownloads: () => ipcRenderer.send('open-downloads-folder'),
+
+  
 });

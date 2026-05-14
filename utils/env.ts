@@ -4,5 +4,5 @@ export const env = {
   // baseURL: process.env.BASE_URL || 'default-url',
   username: process.env.USERNAME || 'vinodkumar.dodla@bluestonex.com',
   password: process.env.PASSWORD || 'Bsx@696015',
-  TEMPLATE_ID: process.env.TEMPLATE_ID || 'M4 - Create Material type HAWA (DRINKS FG)'
+  TEMPLATE_ID: process.env.TEMPLATE_ID || 'M6 - Create Material type SEMI-FINISHED (DRIN'
 };

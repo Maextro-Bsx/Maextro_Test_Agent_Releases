@@ -96,6 +96,7 @@ export class StepParser {
           const record: Record<string, string> = {};
           headers.forEach((header, index) => {
             const value = currentRow[index + 1]; 
+            logger.info(`PARSER DEBUG → ${header} = [${value}]`);
             if (
               value !== undefined &&
               value !== null &&

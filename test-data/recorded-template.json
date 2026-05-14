@@ -1,0 +1,23 @@
+{
+  "headerData": {
+    "object": "",
+    "templateId": "",
+    "crDescription": "",
+    "reasonCode": {
+      "selected": "",
+      "options": []
+    },
+    "orgDivision": {
+      "selected": "",
+      "options": []
+    },
+    "priority": {
+      "selected": "",
+      "options": []
+    },
+    "expectedCompletionDate": "",
+    "requestNumber": ""
+  },
+  "groupedData": {},
+  "stepRows": []
+}

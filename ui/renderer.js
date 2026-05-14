@@ -354,3 +354,104 @@ function backToAbout() {
   document.getElementById('aboutContent').style.display = 'block';
   document.getElementById('readmeContent').style.display = 'none';
 }
+
+async function startRecording() {
+  const username = document.getElementById('username').value.trim();
+  const password = document.getElementById('password').value.trim();
+  const environment = document.getElementById('environment').value.trim();
+  const output = document.getElementById('output');
+
+  output.innerText = '';
+
+  let isValid = true;
+
+  if (!username) {
+    showError('username', 'Username is required');
+    isValid = false;
+  }
+
+  if (!password) {
+    showError('password', 'Password is required');
+    isValid = false;
+  }
+
+  if (!environment) {
+    showError('environment', 'Environment is required');
+    isValid = false;
+  }
+
+  if (!isValid) return;
+
+  setLoading(true);
+
+  log('Starting recording session...\n', 'info');
+  log(`Environment: ${environment}\n`);
+  log('Launching browser and starting recorder...\n', 'info');
+
+  try {
+    const res = await fetch('/record', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({
+        username,
+        password,
+        environment
+      })
+    });
+
+    if (!res.ok) {
+      const errorText = await res.text();
+      throw new Error(errorText);
+    }
+
+    const reader = res.body.getReader();
+    const decoder = new TextDecoder("utf-8");
+
+    let buffer = '';
+    let finalFileName = '';
+
+    while (true) {
+      const { done, value } = await reader.read();
+
+      if (done) break;
+
+      const chunk = decoder.decode(value, { stream: true });
+      buffer += chunk;
+
+      const lines = buffer.split('\n');
+      buffer = lines.pop();
+
+      for (const line of lines) {
+        log(line + '\n');
+
+        /**
+         * Optional:
+         * capture generated filename from backend logs
+         */
+        if (line.includes('.xlsx')) {
+          finalFileName = line.trim();
+        }
+      }
+    }
+
+    log('\nRecording completed successfully\n', 'success');
+
+    /**
+     * Save dialog after process completes
+     */
+    const saveResult = await window.electronAPI.saveRecordedTemplate(finalFileName || 'generated-template.xlsx');
+
+    if (saveResult.success) {
+      log(`File saved successfully:\n${saveResult.savedPath}\n`, 'success');
+    } else {
+      log(`Save skipped: ${saveResult.error}\n`, 'info');
+    }
+
+  } catch (err) {
+    log(`Recording failed: ${err.message}\n`, 'error');
+  }
+
+  setLoading(false);
+}

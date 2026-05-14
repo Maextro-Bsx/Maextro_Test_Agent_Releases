@@ -65,7 +65,7 @@ return {
     .nth(rowIndex).locator('td.sapUiTableContentCell').nth(colIndex).locator('.sapMInputBase'),
   // tableRowSelectionCheckbox: (rowIndex: number) => `div[role="row"]:nth-child(${rowIndex + 1}) div[role="gridcell"].sapUiTableRowSelectionCell`,
   tableRowSelectionCheckbox: (rowIndex: number) =>frame.locator('div[role="row"]').nth(rowIndex+1).locator('div.sapUiTableRowSelectionCell'),
-tableRowCheckbox: (visibleIndex: number) =>
+  tableRowCheckbox: (visibleIndex: number) =>
   frame.locator(`div[id$="rowsel${visibleIndex}"]`).first(),
   bpAddRolesButton: frame.getByRole('button', { name: /BP\s*:\s*Add Roles/i }),
   confirmButton : frame.locator('button:has-text("Confirm")'),

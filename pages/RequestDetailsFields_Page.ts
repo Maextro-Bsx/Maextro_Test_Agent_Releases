@@ -309,10 +309,15 @@ async validateRowsData(rowsData: Record<string, string>[],expectedData: Record<s
  * Example:
  * const uom = await MaterialDetailsPage.getFieldValue(0, 'UOM');
  */
-  async getFieldValue(rowIndex: number, fieldName: string): Promise<string> {
-    const cell = await this.getCell(rowIndex, fieldName);
-    return (await cell.textContent())?.trim() || '';
+async getFieldValue(rowIndex: number, fieldName: string): Promise<string> {
+  const cell = await this.getCell(rowIndex, fieldName);
+  const input = cell.locator("input");
+  if (await input.count() > 0) {
+    const value = await input.first().inputValue();
+    return value?.trim() || "";
   }
+  return (await cell.textContent())?.trim() || "";
+}
 
 /**
  * Clicks the "Status Complete" button.
@@ -2276,7 +2281,7 @@ async detectViewType(): Promise<'FORM' | 'TABLE'> {
  *   { Name: 'John', Age: '30' }
  * ]);
  */
-async executeDynamicDataN(rowsData: any[]) {
+async executeDynamicDataNOld(rowsData: any[]) {
 
   logger.info(`Executing dynamic data entry for ${rowsData.length} rows}`);
   const viewType = await this.detectViewType();
@@ -2302,6 +2307,60 @@ async executeDynamicDataN(rowsData: any[]) {
     }
   }
 }
+
+async executeDynamicDataN(rowsData: any[]) {
+
+  logger.info(`Executing dynamic data for ${rowsData.length} rows`);
+  const viewType = await this.detectViewType();
+  logger.info(`VIEW TYPE DETECTED → ${viewType}`);
+  for (let i = 0; i < rowsData.length; i++) {
+    const row = rowsData[i];
+    for (const field in row) {
+      const rawValue = row[field];
+      if (!rawValue) continue;
+      const value = rawValue.toString().trim();
+      try {
+        // =========================
+        // VALIDATION MODE
+        // =========================
+        if (value.startsWith("^")) {
+          const expectedValue = value.replace("^", "").trim();
+          let actualValue = "";
+          if (viewType === "FORM") {
+            actualValue = await this.getFormFieldValue(field);
+          } else {
+            actualValue = await this.getFieldValue(i, field);
+          }
+          expect(
+            actualValue,
+            `Validation Failed → ${field}`
+          ).toBe(expectedValue);
+          logger.info(
+            `VALIDATED → ${field}: ${actualValue}`
+          );
+
+          continue;
+        }
+
+        // =========================
+        // INPUT MODE
+        // =========================
+
+        if (viewType === "FORM") {
+          await this.setFormFieldValue(field, value);
+        } else {
+          await this.handleTableField(i, field, value);
+        }
+
+        logger.info(`INPUT → ${field} = ${value}`);
+
+      } catch (err) {
+        logger.warn(`Failed field ${field}: ${err}`);
+      }
+    }
+  }
+}
+
 
 /**
  * Validates "Add Roles" data against Excel-driven expected input by matching BP records
@@ -2679,8 +2738,14 @@ async setFormFieldValue(fieldName: string, value: string) {
 async getFormFieldValue(fieldName: string): Promise<string> {
 
   const meta = await this.getFormFieldMeta(fieldName);
-  const value = await meta.input.inputValue();
-  return value.trim();
+  let value = await meta.input.inputValue().catch(() => '');
+  value = value?.trim();
+  if (value) {
+    return value;
+  }
+  const container = this.locators.formFieldContainer(meta.input).first();
+  const text = await container.textContent().catch(() => '');
+  return text?.trim() || '';
 }
 
 /**
@@ -2806,7 +2871,6 @@ async deleteRecords(recordIndexes: number[]) {
   logger.info('Deleted all selected records successfully');
   await this.page.waitForTimeout(2000);
 }
-
 
 
 

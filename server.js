@@ -146,6 +146,77 @@ app.post('/upload', upload.single('file'), (req, res) => {
   res.send('File uploaded successfully');
 });
 
+app.post('/record', (req, res) => {
+  const { username, password, environment } = req.body;
+
+  if (!username || !password || !environment) {
+    return res.status(400).send('Missing required fields');
+  }
+
+  const targetUrl = ENV_URLS[environment];
+
+  if (!targetUrl) {
+    return res.status(400).send('Invalid environment selected');
+  }
+
+  const nodePath = process.execPath;
+  const recorderScript = path.join(appRoot, 'runner', 'record-tests.js');
+
+  console.log('Recorder Script:', recorderScript);
+
+  const child = spawn(
+    nodePath,
+    [
+      recorderScript,
+      username,
+      password,
+      environment,
+      targetUrl
+    ],
+    {
+      env: {
+        ...process.env,
+        ELECTRON_RUN_AS_NODE: "1"
+      },
+      stdio: ['ignore', 'pipe', 'pipe']
+    }
+  );
+
+  res.setHeader('Content-Type', 'text/plain');
+  res.setHeader('Transfer-Encoding', 'chunked');
+
+  function stripAnsi(text) {
+    return text.replace(/\x1B\[[0-9;]*[A-Za-z]/g, '');
+  }
+
+  child.stdout.on('data', (data) => {
+    const message = stripAnsi(data.toString());
+    console.log(message);
+    res.write(message);
+  });
+
+  child.stderr.on('data', (data) => {
+    const message = stripAnsi(data.toString());
+    console.error(message);
+    res.write(message);
+  });
+
+  child.on('close', (code) => {
+    if (code === 0) {
+      res.write('\nRecording completed successfully\n');
+    } else {
+      res.write(`\nRecording failed with exit code ${code}\n`);
+    }
+
+    res.end();
+  });
+
+  child.on('error', (err) => {
+    res.write(`\nRecorder error: ${err.message}\n`);
+    res.end();
+  });
+});
+
 app.post('/run', (req, res) => {
   const { templateId, username, password, environment } = req.body;
 

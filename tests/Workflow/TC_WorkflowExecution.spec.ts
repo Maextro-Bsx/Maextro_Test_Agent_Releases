@@ -23,7 +23,7 @@ test('TC_WorkflowExecution', async ({ page }) => {
   if (!templateId) {
     throw new Error('TEMPLATE_ID not provided. Example: TEMPLATE_ID=ATBP');
   }
-  const excelPath = `test-data/Templates/SHS/M4 - Create Material type HAWA (DRINKS FG).xlsx`;
+  const excelPath = `test-data/Templates/SHS/M6 - Create Material type SEMI-FINISHED (DRIN.xlsx`;
   
   // const basePath = process.env.USER_DATA_PATH ?? process.cwd();
   // const environment = process.env.ENVIRONMENT ?? '';
