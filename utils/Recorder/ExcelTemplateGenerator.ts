@@ -443,8 +443,20 @@ export class ExcelTemplateGenerator {
 
     const safeTemplateName = rawTemplateName.replace(/[\\/:*?"<>|]/g, "").trim();
 
-    const outputPath = path.resolve(
-      `test-data/${safeTemplateName}.xlsx`
+    const tempFolderPath = path.join(
+      process.cwd(),
+      "temp"
+    );
+
+    if (!fs.existsSync(tempFolderPath)) {
+      fs.mkdirSync(tempFolderPath, {
+        recursive: true
+      });
+    }
+
+    const outputPath = path.join(
+      tempFolderPath,
+      `${safeTemplateName}.xlsx`
     );
 
     workbook.worksheets.forEach((worksheet) => {

@@ -1,3 +1,6 @@
+let lastSavedTemplatePath = '';
+let lastSavedReportPath = '';
+
 function setLoading(isLoading) {
   const loader = document.getElementById('loader');
   const runBtn = document.getElementById('runBtn');
@@ -78,15 +81,37 @@ function checkFormValidity() {
   const password = document.getElementById('password').value.trim();
   const environment = document.getElementById('environment').value.trim();
   const templateId = document.getElementById('templateId').value.trim();
-
+  const fileInput = document.getElementById('excelFile');
+  const hasFile = fileInput.files && fileInput.files.length > 0;
   const runBtn = document.getElementById('runBtn');
+  const recordBtn = document.getElementById('recordBtn');
+  const downloadBtn = document.getElementById('downloadBtn');
+  runBtn.disabled = !(
+    username &&
+    password &&
+    environment &&
+    templateId &&
+    hasFile
+  );
 
-  runBtn.disabled = !(username && password && environment && templateId);
+  recordBtn.disabled = !(
+    username &&
+    password &&
+    environment
+  );
+
+  downloadBtn.disabled = !(
+    environment &&
+    templateId
+  );
+
 }
 
 let isCheckingUpdate = false;
 async function update() {
   if (isCheckingUpdate) return; // 🔥 prevent double click
+  const output = document.getElementById('output');
+  output.innerText = '';
   isCheckingUpdate = true;
   setLoading(true);
   try {
@@ -178,6 +203,24 @@ async function runTest() {
 
       for (const line of lines) {
         log(line + '\n');
+
+        // Detect saved report path immediately
+        if (line.includes('Report copy saved →')) {
+          const savedPath = line
+            .replace('Report copy saved →', '')
+            .trim();
+
+          if (savedPath) {
+            lastSavedReportPath = savedPath;
+
+            const reportOpenBtn =
+              document.getElementById('openReportFolderBtn');
+
+            if (reportOpenBtn) {
+              reportOpenBtn.style.display = 'block';
+            }
+          }
+        }
       }
     }
 
@@ -192,8 +235,7 @@ async function runTest() {
   setLoading(false);
 }
 
-document.getElementById('environment').addEventListener('change', async function () {
-  const env = this.value;
+async function loadTemplates(env) {
   const dropdown = document.getElementById('templateId');
 
   // Reset dropdown
@@ -203,23 +245,32 @@ document.getElementById('environment').addEventListener('change', async function
 
   try {
     const res = await fetch(`/templates/${env}`);
-
     const data = await res.json();
+
     console.log('Templates API:', data);
+
     if (!res.ok) {
       throw new Error(JSON.stringify(data));
     }
+
     const templates = data.templates;
+
     templates.forEach(t => {
       const option = document.createElement('option');
       option.value = t;
       option.textContent = t;
       dropdown.appendChild(option);
     });
-
+    checkFormValidity();
   } catch (err) {
-  log('Failed to load templates: ' + err.message + '\n', 'error');
+    log('Failed to load templates: ' + err.message + '\n', 'error');
   }
+}
+
+document.getElementById('environment').addEventListener('change', function () {
+  const env = this.value;
+  loadTemplates(env);
+  checkFormValidity();
 });
 
 function openReport() {
@@ -229,9 +280,10 @@ function openReport() {
 function downloadTemplate() {
   const templateId = document.getElementById('templateId').value;
   const environment = document.getElementById('environment').value;
+
   const msgEl = document.getElementById('downloadMsg');
   const openBtn = document.getElementById('openDownloadsBtn');
-  
+
   if (!templateId || !environment) {
     msgEl.innerText = 'Select environment and template';
     msgEl.style.color = 'red';
@@ -239,24 +291,36 @@ function downloadTemplate() {
     openBtn.style.display = 'none';
     return;
   }
+
   msgEl.style.display = 'none';
   openBtn.style.display = 'none';
-  const url = `/download-template/${environment}/${templateId}`;
 
-  // Create hidden link (no new window)
-  const a = document.createElement('a');
-  a.href = url;
-  a.download = `${templateId}.xlsx`; 
-  document.body.appendChild(a);
-  a.click();
-  document.body.removeChild(a);
+  window.electronAPI
+    .downloadTemplateWithDialog({
+      env: environment,
+      templateId: templateId
+    })
+    .then((result) => {
+      if (result.success) {
+        msgEl.innerText =
+          `Template saved successfully:\n${result.savedPath}`;
+        msgEl.style.color = 'green';
+        msgEl.style.display = 'block';
 
-  // Show message
-  msgEl.innerText = `Template ${templateId}.xlsx downloaded successfully`;
-  msgEl.style.color = 'green';
-  msgEl.style.display = 'block';
-  openBtn.style.display = 'block';
-
+        lastSavedTemplatePath = result.savedPath;
+        openBtn.style.display = 'block';
+      } else {
+        msgEl.innerText = result.error;
+        msgEl.style.color = 'red';
+        msgEl.style.display = 'block';
+      }
+    })
+    .catch((err) => {
+      msgEl.innerText =
+        `Download failed: ${err.message}`;
+      msgEl.style.color = 'red';
+      msgEl.style.display = 'block';
+    });
 }
 
 document.addEventListener('DOMContentLoaded', async () => {
@@ -268,8 +332,10 @@ document.addEventListener('DOMContentLoaded', async () => {
     if (this.files.length > 0) {
       fileNameDiv.innerText = `Selected: ${this.files[0].name}`;
       clearFileError(); 
+      checkFormValidity();
     } else {
       fileNameDiv.innerText = '';
+      checkFormValidity();
     }
   });
   const fields = ['username', 'password', 'environment', 'templateId'];
@@ -300,14 +366,13 @@ document.addEventListener('DOMContentLoaded', async () => {
     });
   });
 
+  document.getElementById('templateId')
+  .addEventListener('change', checkFormValidity);
+
   document.getElementById('aboutModal').addEventListener('click', (e) => {
     if (e.target.id === 'aboutModal') {
       closeAbout();
     }
-  });
-
-  document.getElementById('openDownloadsBtn').addEventListener('click', () => {
-    window.electronAPI.openDownloads();
   });
 
 });
@@ -410,7 +475,6 @@ async function startRecording() {
     const decoder = new TextDecoder("utf-8");
 
     let buffer = '';
-    let finalFileName = '';
 
     while (true) {
       const { done, value } = await reader.read();
@@ -425,33 +489,43 @@ async function startRecording() {
 
       for (const line of lines) {
         log(line + '\n');
-
-        /**
-         * Optional:
-         * capture generated filename from backend logs
-         */
-        if (line.includes('.xlsx')) {
-          finalFileName = line.trim();
-        }
       }
     }
-
     log('\nRecording completed successfully\n', 'success');
-
-    /**
-     * Save dialog after process completes
-     */
-    const saveResult = await window.electronAPI.saveRecordedTemplate(finalFileName || 'generated-template.xlsx');
-
-    if (saveResult.success) {
-      log(`File saved successfully:\n${saveResult.savedPath}\n`, 'success');
-    } else {
-      log(`Save skipped: ${saveResult.error}\n`, 'info');
-    }
-
+    const selectedEnv =
+      document.getElementById('environment').value;
+    await loadTemplates(selectedEnv);
   } catch (err) {
     log(`Recording failed: ${err.message}\n`, 'error');
   }
 
   setLoading(false);
+}
+
+function openSavedFolder() {
+  console.log('Clicked Open Saved Folder');
+  console.log('Saved path:', lastSavedTemplatePath);
+
+  if (!lastSavedTemplatePath) {
+    console.log('No saved path found');
+    return;
+  }
+
+  window.electronAPI.openSavedTemplateFolder(
+    lastSavedTemplatePath
+  );
+}
+
+function openSavedReportFolder() {
+  console.log('Clicked Open Saved Report Folder');
+  console.log('Saved report path:', lastSavedReportPath);
+
+  if (!lastSavedReportPath) {
+    console.log('No saved report path found');
+    return;
+  }
+
+  window.electronAPI.openSavedTemplateFolder(
+    lastSavedReportPath
+  );
 }

@@ -922,14 +922,17 @@ async completeTask(): Promise<void> {
   logger.info('Completing task Save workflow');
   await this.clickSaveButton();
   await this.waitForLoaderToDisappear();
-  await this.page.waitForTimeout(2000);
-  const isConfirmVisible = await this.locators.confirmYesButton.isVisible({ timeout: 3000 }).catch(() => false);
-  if (isConfirmVisible) {
-    logger.info('Confirm popup detected → clicking Yes');
-    await this.locators.confirmYesButton.click();
-    await this.waitForLocatorSafe(this.locators.successTitle);
-    await this.waitForLocatorSafe(this.locators.saveSuccessMessage);
-    await this.waitForLocatorSafe(this.locators.taskClosedMessage);
+  for (let i = 0; i < 5; i++) {
+    await this.page.waitForTimeout(2000);
+    const isConfirmVisible = await this.locators.confirmYesButton.isVisible({ timeout: 3000 }).catch(() => false);
+    if (isConfirmVisible) {
+      logger.info('Confirm popup detected → clicking Yes');
+      await this.locators.confirmYesButton.click();
+      await this.waitForLocatorSafe(this.locators.successTitle);
+      await this.waitForLocatorSafe(this.locators.saveSuccessMessage);
+      await this.waitForLocatorSafe(this.locators.taskClosedMessage);
+      break;
+    }
   }
   await this.locators.backToTaskListButton.click();
   await this.waitForLoaderToDisappear();
@@ -1228,7 +1231,7 @@ async approveTask(): Promise<void> {
 async RejectTask(task: Task, params: string[]): Promise<string | null> {
 
   logger.info(`Performing REJECT action: ${JSON.stringify(params)}`);
-  let reason = 'Inaccurate Customer Data';
+  let reason = 'Incorrect data';
   // let step = 'Tax Data collection - BC_APPDATA';
   // let step ='Requester Review - TDODDAPANENI';
   // let step = 'BP Data collection - A_DATA';
@@ -2872,9 +2875,108 @@ async deleteRecords(recordIndexes: number[]) {
   await this.page.waitForTimeout(2000);
 }
 
+async getPendingProgress(): Promise<number> {
+  const progressText = await this.locators.statusText.textContent() || '';
+  logger.info(`Progress text: ${progressText}`);
+  const match = progressText.match(/^(\d+)/);
+  if (!match) {
+    throw new Error(
+      `Unable to parse progress text: ${progressText}`
+    );
+  }
+  const pendingCount = parseInt(match[1], 10);
+  logger.info(`Pending views count: ${pendingCount}`);
+  return pendingCount;
+}
 
+async openNextPendingView(): Promise<boolean> {
+  logger.info(`Opening dropdown to find next pending view`);
 
+  // Open dropdown
+  await this.locators.viewDropdownButton.click();
+  await this.page.waitForTimeout(1000);
+  const items = this.locators.viewListItems;
+  const count = await items.count();
+  logger.info(`Total views found in dropdown: ${count}`);
+  for (let i = 0; i < count; i++) {
+    const item = items.nth(i);
+    // Skip currently selected view
+    const className = await item.getAttribute('class');
+    if (className?.includes('sapMLIBSelected')) {
+      logger.info(`Skipping current selected view`);
+      continue;
+    }
+    // Check if completed icon exists
+    const isCompleted =
+      await this.locators.completedViewIcon(item).count();
 
+    if (isCompleted > 0) {
+      logger.info(`Skipping completed view`);
+      continue;
+    }
+    // First incomplete view found
+    logger.info(`Opening next pending view`);
+    await item.click();
+    await this.waitForSAPPageReady();
+    return true;
+  }
+  logger.info(`No pending views found`);
+  return false;
+}
 
+async resolvePendingViewsUntilZero(): Promise<void> {
+  logger.info(`Resolving pending views before execution`);
+  while (true) {
+    // Step 1 → Check progress
+    const pending = await this.getPendingProgress();
+    if (pending === 0) {
+      logger.info(`Progress reached 0 → all views ready`);
+      break;
+    }
+    logger.info(`Pending views remaining: ${pending}`);
+    // Step 2 → Edit View should be visible
+    await this.locators.editViewButton.waitFor({
+      state: 'visible',
+      timeout: 10000
+    });
+    logger.info(`Clicking Edit View`);
+    await this.locators.editViewButton.click();
+    await this.waitForSAPPageReady();
+    // Step 3 → Wait for Status Complete to appear
+    await this.locators.statusCompleteButton.waitFor({
+      state: 'visible',
+      timeout: 10000
+    });
+    logger.info(`Status Complete is now visible`);
+    // Step 4 → Open next pending view
+    const hasNextPendingView =
+      await this.openNextPendingView();
+    if (!hasNextPendingView) {
+      logger.info(`No more pending views found`);
+      break;
+    }
+    await this.page.waitForTimeout(1000);
+  }
+  logger.info(`Edit View recovery flow completed`);
+}
+
+async ensureViewReadyForExecution(): Promise<void> {
+  logger.info(`Checking if current view is ready for execution`);
+
+  const pending = await this.getPendingProgress();
+
+  if (pending === 0) {
+    logger.info(`Progress is 0 → normal flow can continue`);
+    return;
+  }
+
+  logger.info(
+    `Progress is greater than 0 → starting Edit View recovery flow`
+  );
+
+  await this.resolvePendingViewsUntilZero();
+
+  logger.info(`View is now ready for normal execution`);
+}
 
 }

@@ -99,7 +99,10 @@ return {
   dependentViewWarningHeader: frame.locator('h1.sapMDialogTitle span.sapUiSelectable').filter({hasText: 'Warning'}),
   dependentViewWarningMessages: frame.locator('section.sapMDialogSection div[id$="scrollCont"] span.sapMText'),
   dependentViewYesButton: frame.getByRole('button', {name: 'Yes'}),
-
+  viewDropdownButton: frame.locator('button[id$="dgViewName"]'),
+  viewListItems: frame.locator('ul[id$="dgPopoverList-listUl"] > li'),
+  selectedCurrentView: frame.locator('li.sapMLIBSelected'),
+  completedViewIcon: (item: Locator) =>item.locator('[aria-label="sys-enter-2"]'),
 
 }
 };

@@ -1,19 +1,29 @@
 {
   "headerData": {
-    "object": "",
-    "templateId": "",
-    "crDescription": "",
+    "object": "Asset Master",
+    "templateId": "A1 - AS01 Create Asset",
+    "crDescription": "test",
     "reasonCode": {
-      "selected": "",
-      "options": []
+      "selected": "New Asset",
+      "options": [
+        "New Asset",
+        "Create Sub Asset"
+      ]
     },
     "orgDivision": {
-      "selected": "",
-      "options": []
+      "selected": "BSX RDS DIVISION",
+      "options": [
+        "BSX RDS DIVISION",
+        "DEMO DIVISION CODE"
+      ]
     },
     "priority": {
-      "selected": "",
-      "options": []
+      "selected": "Low",
+      "options": [
+        "Low",
+        "Medium",
+        "High"
+      ]
     },
     "expectedCompletionDate": "",
     "requestNumber": ""

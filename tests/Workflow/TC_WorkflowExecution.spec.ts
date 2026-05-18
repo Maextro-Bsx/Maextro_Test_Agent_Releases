@@ -23,15 +23,15 @@ test('TC_WorkflowExecution', async ({ page }) => {
   if (!templateId) {
     throw new Error('TEMPLATE_ID not provided. Example: TEMPLATE_ID=ATBP');
   }
-  const excelPath = `test-data/Templates/SHS/M6 - Create Material type SEMI-FINISHED (DRIN.xlsx`;
+  // const excelPath = `test-data/Templates/DEV/R1 - RDS - create traded material(s).xlsx`;
   
-  // const basePath = process.env.USER_DATA_PATH ?? process.cwd();
-  // const environment = process.env.ENVIRONMENT ?? '';
+  const basePath = process.env.USER_DATA_PATH ?? process.cwd();
+  const environment = process.env.ENVIRONMENT ?? '';
 
-  // if (!environment) {
-  //   throw new Error('ENVIRONMENT is not defined');
-  // }
-  // const excelPath = path.join(basePath,environment,`${templateId}.xlsx`);
+  if (!environment) {
+    throw new Error('ENVIRONMENT is not defined');
+  }
+  const excelPath = path.join(basePath,environment,`${templateId}.xlsx`);
   
   logger.info(`Using Template: ${templateId}`);
   logger.info(`Excel Path: ${excelPath}`);
@@ -148,7 +148,7 @@ test('TC_WorkflowExecution', async ({ page }) => {
       await step(`Execute Task: ${task.step}`, page, async () => {
 
         // const views = StepParser.parse(excelPath,`Step ${stepNo}`,stepConfig.views);
-        
+        await requestDetailsFields.ensureViewReadyForExecution();
         const effectiveStepNo = task.step === 'Step 1' ? '0' : stepNo;
         const effectiveStepConfig =task.step === 'Step 1'? steps.find(s => s.stepNo === '0'): stepConfig;
         if (!effectiveStepConfig) {

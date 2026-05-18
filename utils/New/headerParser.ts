@@ -6,7 +6,7 @@ export type StepMeta = {
   taskType: string;
   views: string[];
   action: string;
-  condition?: string;
+  rejectingTo: string;
 };
 
 export type HeaderData = {requestDetails: Record<string, string>;steps: StepMeta[];};
@@ -91,9 +91,9 @@ export class HeaderParser {
       const taskType = row[1]?.toString().trim();
       const viewsRaw = row[2]?.toString().trim();
       const action = row[3]?.toString().trim() || 'Save';
-      const condition = row[4]?.toString().trim();
+      const rejectingTo = row[4]?.toString().trim();
       const views = viewsRaw? viewsRaw.split(',').map((v: string) => v.trim()): [];
-      steps.push({stepNo,taskType,views,action,condition});
+      steps.push({stepNo,taskType,views,action,rejectingTo});
       i++;
     }
     logger.info(`Request Details: ${JSON.stringify(requestDetails)}`);

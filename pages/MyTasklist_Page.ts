@@ -237,32 +237,95 @@ async refreshTaskList(requestNumber: string): Promise<void> {
   }
 }
 
-private async openTaskWithRetry(requestNumber: string, step: string): Promise<void> {
+// private async openTaskWithRetry(requestNumber: string, step: string): Promise<void> {
 
+//   const maxRetries = 3;
+//   for (let attempt = 1; attempt <= maxRetries; attempt++) {
+//     logger.info(`Opening task (Attempt ${attempt}/${maxRetries})`);
+//     await this.clickTaskByRequestNumber(requestNumber, step);
+//     await this.page.waitForTimeout(2000);
+//     const isErrorDialog = await this.locators.taskErrorDialogTitle.isVisible({ timeout: 2000 }).catch(() => false);
+//     if (isErrorDialog) {
+//       logger.warn('Error dialog detected while opening task');
+//       await this.captureTaskLockMessages();
+//       await this.locators.taskErrorOkButton.click();
+//       await this.page.waitForTimeout(1000);
+//       if (attempt < maxRetries) {
+//         logger.info('Refreshing task list and retrying...');
+//         await this.refreshTaskList(requestNumber);
+//         await this.waitForSAPLoader();
+//         continue;
+//       }
+//       logger.error('Task still locked after retries');
+//       throw new Error('Task is locked after multiple retries');
+//     }
+//     logger.info('Task opened successfully');
+//     return;
+//   }
+// }
+
+// In MyTasklistPage.ts
+
+private async openTaskWithRetry(
+  requestNumber: string,
+  step: string
+): Promise<void> {
   const maxRetries = 3;
+  const maxPollingLoops = 60;
   for (let attempt = 1; attempt <= maxRetries; attempt++) {
     logger.info(`Opening task (Attempt ${attempt}/${maxRetries})`);
     await this.clickTaskByRequestNumber(requestNumber, step);
-    await this.page.waitForTimeout(2000);
-    const isErrorDialog = await this.locators.taskErrorDialogTitle.isVisible({ timeout: 2000 }).catch(() => false);
-    if (isErrorDialog) {
-      logger.warn('Error dialog detected while opening task');
-      await this.captureTaskLockMessages();
-      await this.locators.taskErrorOkButton.click();
-      await this.page.waitForTimeout(1000);
+    let errorDetected = false;
+    for (let i = 1; i <= maxPollingLoops; i++) {
+      logger.info(`Checking task open status (${i}/${maxPollingLoops})`);
+      const isErrorDialog = await this.locators.taskErrorDialogTitle
+        .isVisible()
+        .catch(() => false);
+      if (isErrorDialog) {
+        logger.warn('Error dialog detected while opening task');
+        await this.captureTaskLockMessages();
+        await this.locators.taskErrorOkButton.click();
+        await this.page.waitForTimeout(1000);
+        errorDetected = true;
+        break;
+      }
+      const isTaskOpened = await this.locators
+        .openedTaskButton(requestNumber, step)
+        .isVisible()
+        .catch(() => false);
+      const count = await this.locators
+  .openedTaskButton(requestNumber, step)
+  .count();
+
+logger.info(`Opened task locator count: ${count}`);
+
+      if (isTaskOpened) {
+        logger.info('Task opened successfully');
+        return;
+      }
+
+      await this.page.waitForTimeout(2000);
+    }
+
+    // Retry only when error dialog happened
+    if (errorDetected) {
       if (attempt < maxRetries) {
         logger.info('Refreshing task list and retrying...');
         await this.refreshTaskList(requestNumber);
         await this.waitForSAPLoader();
-        continue;
+        continue; // goes to next OUTER attempt
       }
-      logger.error('Task still locked after retries');
+
       throw new Error('Task is locked after multiple retries');
     }
-    logger.info('Task opened successfully');
-    return;
+
+    // No success + no error
+    throw new Error(
+      `Unable to open task for Request ${requestNumber}, Step ${step}`
+    );
   }
 }
+
 
 /**
  * Gets the current step text.

@@ -44,7 +44,6 @@ autoUpdater.on('checking-for-update', () => {
 });
 
 autoUpdater.on('update-available', () => {
-  const { shell } = require('electron');
 
   mainWindow.webContents.send(
     'update-message',
@@ -74,6 +73,18 @@ ipcMain.on('open-downloads-folder', () => {
   shell.openPath(downloadsPath);
 });
 
+ipcMain.on('open-saved-template-folder', (_, filePath) => {
+  const path = require('path');
+  console.log('Received filePath:', filePath);
+  if (!filePath) return;
+
+  const folderPath = path.dirname(filePath);
+
+  console.log('Opening saved folder:', folderPath);
+
+  shell.openPath(folderPath);
+});
+
 ipcMain.handle('save-recorded-template', async (_, fileName) => {
   const fs = require('fs');
   const path = require('path');
@@ -94,6 +105,91 @@ ipcMain.handle('save-recorded-template', async (_, fileName) => {
   const result = await dialog.showSaveDialog({
     title: 'Save Recorded Template',
     defaultPath: fileName,
+    filters: [
+      {
+        name: 'Excel Files',
+        extensions: ['xlsx']
+      }
+    ]
+  });
+
+  if (result.canceled || !result.filePath) {
+    return {
+      success: false,
+      error: 'Save cancelled by user'
+    };
+  }
+
+  fs.copyFileSync(sourcePath, result.filePath);
+
+  return {
+    success: true,
+    savedPath: result.filePath
+  };
+});
+
+
+ipcMain.handle('check-template-overwrite', async (_, filePath) => {
+  const fs = require('fs');
+
+  if (!fs.existsSync(filePath)) {
+    return {
+      exists: false
+    };
+  }
+
+  const result = await dialog.showMessageBox(mainWindow, {
+    type: 'warning',
+    buttons: ['Replace', 'Cancel'],
+    defaultId: 0,
+    cancelId: 1,
+    title: 'Template Already Exists',
+    message: 'Template already exists.',
+    detail: 'Do you want to replace the existing template file?'
+  });
+
+  return {
+    exists: true,
+    shouldReplace: result.response === 0
+  };
+});
+
+
+ipcMain.handle('download-template-with-dialog', async (_, data) => {
+  const fs = require('fs');
+  const path = require('path');
+
+  const { env, templateId } = data;
+
+  // First check system templates
+  let sourcePath = path.join(
+    __dirname,
+    'test-data',
+    'Templates',
+    env,
+    `${templateId}.xlsx`
+  );
+
+  // If not found, check user templates
+  if (!fs.existsSync(sourcePath)) {
+    sourcePath = path.join(
+      process.cwd(),
+      'user-templates',
+      env,
+      `${templateId}.xlsx`
+    );
+  }
+
+  if (!fs.existsSync(sourcePath)) {
+    return {
+      success: false,
+      error: 'Template file not found'
+    };
+  }
+
+  const result = await dialog.showSaveDialog({
+    title: 'Save Template',
+    defaultPath: `${templateId}.xlsx`,
     filters: [
       {
         name: 'Excel Files',

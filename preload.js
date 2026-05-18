@@ -13,7 +13,18 @@ contextBridge.exposeInMainWorld('electronAPI', {
 
   saveRecordedTemplate: (fileName) =>
   ipcRenderer.invoke('save-recorded-template', fileName),
+
   openDownloads: () => ipcRenderer.send('open-downloads-folder'),
 
-  
+  openSavedTemplateFolder: (filePath) =>
+  ipcRenderer.send('open-saved-template-folder', filePath),
+
+  downloadTemplateWithDialog: (data) =>
+  ipcRenderer.invoke('download-template-with-dialog', data),
+
+  checkTemplateOverwrite: (filePath) =>
+  ipcRenderer.invoke('check-template-overwrite', filePath),
+
+
+
 });

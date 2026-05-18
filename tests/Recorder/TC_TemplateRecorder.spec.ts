@@ -5,9 +5,9 @@ import { LoginPage } from "../../pages/Login_Page";
 test("TC_TemplateRecorder", async ({page,context}) => {
   
   
-  const targetUrl = process.env.RECORD_URL || "";
-  const username = process.env.RECORD_USERNAME || "";
-  const password = process.env.RECORD_PASSWORD || "";
+  const targetUrl = process.env.RECORD_URL || "https://maextro-tdd.launchpad.cfapps.eu10.hana.ondemand.com/site/Maextro?sap-ushell-config=headerless#Maextro-Display?sap-ui-app-id-hint=saas_approuter_bsxc.maextrohubui&/Dashboard";
+  const username = process.env.RECORD_USERNAME || "tejavathi.doddapaneni@bluestonex.com";
+  const password = process.env.RECORD_PASSWORD || "Gowri@2023";
 
   if (!targetUrl) {
     throw new Error("RECORD_URL is missing");

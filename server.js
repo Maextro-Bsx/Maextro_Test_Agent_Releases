@@ -97,29 +97,49 @@ app.get('/download-template/:env/:templateId', (req, res) => {
 });
 
 app.get('/templates/:env', (req, res) => {
-  const folderPath = path.join(appRoot, 'test-data', 'Templates', req.params.env);
-  console.log('Templates folder path:', folderPath);
-  if (!fs.existsSync(folderPath)) {
-    // return res.status(404).send(`Folder not found`);
-    return res.status(404).json({
-    error: 'Folder not found',
-    path: folderPath,
-    exists: fs.existsSync(folderPath)
-    });
+  const env = req.params.env;
+
+  // Default system templates
+  const systemTemplatePath = path.join(
+    appRoot,
+    'test-data',
+    'Templates',
+    env
+  );
+
+  // User recorded templates
+  const userTemplatePath = path.join(
+    process.cwd(),
+    'user-templates',
+    env
+  );
+
+  let systemTemplates = [];
+  let userTemplates = [];
+
+  if (fs.existsSync(systemTemplatePath)) {
+    systemTemplates = fs.readdirSync(systemTemplatePath)
+      .filter(f => f.endsWith('.xlsx'))
+      .map(f => f.replace('.xlsx', ''));
   }
 
-  const files = fs.readdirSync(folderPath);
+  if (fs.existsSync(userTemplatePath)) {
+    userTemplates = fs.readdirSync(userTemplatePath)
+      .filter(f => f.endsWith('.xlsx'))
+      .map(f => f.replace('.xlsx', ''));
+  }
 
-  const templates = files
-    .filter(f => f.endsWith('.xlsx'))
-    .map(f => f.replace('.xlsx', ''));
+  // Merge + remove duplicates
+  const templates = [...new Set([
+    ...systemTemplates,
+    ...userTemplates
+  ])].sort();
 
-  // res.json(templates);
   res.json({
-  templates,
-  path: folderPath,
-  exists: true
-});
+    templates,
+    systemPath: systemTemplatePath,
+    userPath: userTemplatePath
+  });
 });
 
 app.post('/upload', upload.single('file'), (req, res) => {
@@ -201,14 +221,144 @@ app.post('/record', (req, res) => {
     res.write(message);
   });
 
-  child.on('close', (code) => {
-    if (code === 0) {
-      res.write('\nRecording completed successfully\n');
-    } else {
+  child.on('close', async (code) => {
+    if (code !== 0) {
       res.write(`\nRecording failed with exit code ${code}\n`);
+      res.end();
+      return;
     }
 
-    res.end();
+    try {
+      const tempFolderPath = path.join(
+        process.cwd(),
+        'temp'
+      );
+
+      if (!fs.existsSync(tempFolderPath)) {
+        res.write('\nTemp folder not found\n');
+        res.end();
+        return;
+      }
+
+      const jsonPath = path.resolve(
+        'test-data',
+        'recorded-template.json'
+      );
+
+      if (!fs.existsSync(jsonPath)) {
+        res.write('\nrecorded-template.json not found\n');
+        res.end();
+        return;
+      }
+
+      const raw = fs.readFileSync(jsonPath, 'utf-8');
+      const parsed = JSON.parse(raw);
+
+      const rawTemplateName =
+        parsed.headerData?.templateId || 'generated-template';
+
+      const safeTemplateName = rawTemplateName
+        .replace(/[\\/:*?"<>|]/g, '')
+        .trim();
+
+      const generatedFile =
+        `${safeTemplateName}.xlsx`;
+
+      const sourcePath = path.join(
+        tempFolderPath,
+        generatedFile
+      );
+
+      const finalFolderPath = path.join(
+        process.cwd(),
+        'user-templates',
+        environment
+      );
+
+      if (!fs.existsSync(finalFolderPath)) {
+        fs.mkdirSync(finalFolderPath, {
+          recursive: true
+        });
+      }
+
+      const finalPath = path.join(
+        finalFolderPath,
+        generatedFile
+      );
+
+      let shouldReplace = true;
+
+      if (fs.existsSync(finalPath)) {
+        const { dialog } = require('electron');
+
+        const result = await dialog.showMessageBox({
+          type: 'warning',
+          buttons: ['Replace', 'Cancel'],
+          defaultId: 0,
+          cancelId: 1,
+          title: 'Template Already Exists',
+          message: 'Template already exists.',
+          detail: `Do you want to replace ${generatedFile}?`
+        });
+
+        shouldReplace = result.response === 0;
+      }
+
+      if (!shouldReplace) {
+        res.write('\nTemplate save cancelled by user\n');
+        res.end();
+        return;
+      }
+
+      fs.copyFileSync(sourcePath, finalPath);
+      
+      const { dialog } = require('electron');
+
+      const saveCopyResult = await dialog.showMessageBox({
+        type: 'question',
+        buttons: ['Save Copy', 'Skip'],
+        defaultId: 0,
+        cancelId: 1,
+        title: 'Save Personal Copy',
+        message: 'Template saved successfully.',
+        detail: 'Would you also like to save a copy?'
+      });
+
+      if (saveCopyResult.response === 0) {
+        const saveDialog = await dialog.showSaveDialog({
+          title: 'Save Personal Copy',
+          defaultPath: generatedFile,
+          filters: [
+            {
+              name: 'Excel Files',
+              extensions: ['xlsx']
+            }
+          ]
+        });
+
+        if (!saveDialog.canceled && saveDialog.filePath) {
+          fs.copyFileSync(
+            sourcePath,
+            saveDialog.filePath
+          );
+
+          res.write(`\nPersonal copy saved → ${saveDialog.filePath}\n`);
+        }
+      }
+
+      // cleanup temp file after all saves are done
+      if (fs.existsSync(sourcePath)) {
+        fs.unlinkSync(sourcePath);
+      }
+      res.write(`\nTemplate saved successfully → ${generatedFile}\n`);
+      res.write('\nRecording completed successfully\n');
+
+      res.end();
+
+    } catch (err) {
+      res.write(`\nFinal save failed: ${err.message}\n`);
+      res.end();
+    }
   });
 
   child.on('error', (err) => {
@@ -271,10 +421,85 @@ app.post('/run', (req, res) => {
     res.write(stripAnsi(data.toString()));
   });
 
-  child.on('close', code => {
+  child.on('close', async (code) => {
     isRunning = false;
-    res.write(`\nProcess finished with code ${code}\n`);
-    res.end();
+
+    if (code !== 0 && code !== 1) {
+      res.write(`\nProcess finished with code ${code}\n`);
+      res.end();
+      return;
+    }
+
+    if (code === 1) {
+      res.write(
+        '\nExecution completed with test failures. Report is available.\n'
+      );
+    }
+
+    try {
+      const reportsDir = reportsBasePath;
+
+      const reportFolders = fs.readdirSync(reportsDir)
+        .filter(name => name.startsWith('report-'))
+        .sort((a, b) => b.localeCompare(a));
+
+      if (!reportFolders.length) {
+        res.write('\nNo report folder found\n');
+        res.end();
+        return;
+      }
+
+      const latestReportFolder = reportFolders[0];
+      const sourceReportPath = path.join(
+        reportsDir,
+        latestReportFolder
+      );
+
+      const { dialog } = require('electron');
+
+      const saveCopyResult = await dialog.showMessageBox({
+        type: 'question',
+        buttons: ['Save Copy', 'Skip'],
+        defaultId: 0,
+        cancelId: 1,
+        title: 'Save Report Copy',
+        message: 'Test execution completed successfully.',
+        detail: 'Would you like to save a copy of this report?'
+      });
+
+      if (saveCopyResult.response === 0) {
+        const folderDialog = await dialog.showOpenDialog({
+          title: 'Select Folder to Save Report',
+          properties: ['openDirectory', 'createDirectory']
+        });
+
+        if (!folderDialog.canceled && folderDialog.filePaths.length > 0) {
+          const selectedFolder = folderDialog.filePaths[0];
+
+          const finalReportPath = path.join(
+            selectedFolder,
+            latestReportFolder
+          );
+
+          fs.cpSync(
+            sourceReportPath,
+            finalReportPath,
+            { recursive: true }
+          );
+
+          res.write(
+            `\nReport copy saved → ${finalReportPath}\n`
+          );
+        }
+      }
+
+      res.write(`\nProcess finished successfully\n`);
+      res.end();
+
+    } catch (err) {
+      res.write(`\nReport save failed: ${err.message}\n`);
+      res.end();
+    }
   });
 
   child.on('error', err => {

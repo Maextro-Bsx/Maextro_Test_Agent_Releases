@@ -445,30 +445,104 @@ export class BrowserRecorder {
          * Capture only once when user clicks template tile
          */
         const templateCard = (event.target as HTMLElement)?.closest( ".templateNoHdr");
-        if (templateCard &&!(window as any).__HEADER_CAPTURED__) {
-          const templateCode =templateCard.querySelector(".templateId bdi")?.textContent ?.trim() || "";
-          const templateTitle =templateCard.querySelector(".templateTitleText bdi")?.textContent?.trim() || "";
-          /**
-           * Object like:
-           * Materials / Customers / Business Partners
-           */
+        if (templateCard && !(window as any).__HEADER_CAPTURED__) {
+          const templateCode =
+            templateCard.querySelector(".templateId bdi")
+              ?.textContent?.trim() || "";
+
+          const templateTitle =
+            templateCard.querySelector(".templateTitleText bdi")
+              ?.textContent?.trim() || "";
+
           let objectName = "";
 
-          const objectElement = document.querySelector(".typeSubGroupTitle bdi");
-          if (objectElement) {
-            objectName =objectElement.textContent?.trim() || "";
+          /**
+           * CASE 1:
+           * First check subsection
+           * Example:
+           * Business Partners → Customer
+           */
+          let parent = templateCard.parentElement;
+
+          while (parent && !objectName) {
+            /**
+             * Look for nearest subsection title
+             * in current container only
+             */
+            const subSection = parent.closest(
+              ".subObjPanelTitle"
+            )?.querySelector(".typeSubGroupTitle bdi");
+
+            if (subSection?.textContent?.trim()) {
+              objectName = subSection.textContent.trim();
+              break;
+            }
+
+            parent = parent.parentElement;
           }
 
-          const finalTemplateId =`${templateCode} - ${templateTitle}`;
+          /**
+           * CASE 2:
+           * No subsection exists
+           * Example:
+           * Asset Master
+           *
+           * Find real panel header
+           */
+          if (!objectName) {
+            let parent = templateCard.parentElement;
+
+            /**
+             * Move upward until:
+             * immediate parent panel only
+             *
+             * Example:
+             * __panel5-content → __panel5
+             */
+            while (
+              parent &&
+              !(
+                parent.id &&
+                /^__panel\d+$/.test(parent.id) &&
+                parent.classList.contains("sapMPanel")
+              )
+            ) {
+              parent = parent.parentElement;
+            }
+
+            /**
+             * Get exact matching header
+             *
+             * __panel5 → __panel5-header
+             */
+            if (parent?.id) {
+              const headerId = `${parent.id}-header`;
+              const panelHeader =
+                document.getElementById(headerId);
+
+              if (
+                panelHeader &&
+                panelHeader.classList.contains("sapMPanelHdr")
+              ) {
+                objectName =
+                  panelHeader.textContent?.trim() || "";
+              }
+            }
+          }
+
+          /**
+           * Final cleanup
+           */
+          objectName = objectName.replace(/\.$/, "").trim();
 
           console.log(
-            "[HEADER CAPTURE]",
-            "Object:",
-            objectName,
-            "| Template:",
-            finalTemplateId
+            "[OBJECT DETECTION]",
+            "Captured Object →",
+            objectName
           );
 
+          const finalTemplateId =
+            `${templateCode} - ${templateTitle}`;
           await (window as any).captureHeaderData({
             object: objectName,
             templateId: finalTemplateId

@@ -23,6 +23,10 @@ return {
   taskLockTexts: frame.locator('li.sapMMsgViewItemError span[id$="titleText"]'),
   taskErrorDialogTitle: frame.getByRole('heading', { name: 'Error' }),
   taskErrorOkButton: frame.getByRole('button', { name: /^ok$/i }),
+  openedTaskButton: (requestNumber: string, step: string) =>
+  frame.locator(`bdi:has-text("${requestNumber}")`).first(),
+  
+
 
 }
 };
