@@ -51,17 +51,21 @@
   "nodeGypRebuild": false,
   "buildDependenciesFromSource": true,
 
-  "disableDefaultIgnoredFiles": true,
-
   "mac": {
     "target": ["dmg", "zip"],
-    "icon": "build/icon.icns"
+    "icon": "build/icon.icns",
+    "artifactName": "${productName}.${ext}",
+    "hardenedRuntime": false,
+    "identity": null
+
   },
 
   "win": {
     "target": "nsis"
-  }
+  },
+  "afterPack": "./fix-frameworks.js"
 },
+  
   "name": "maextroautomationtests",
   "version": "1.0.5",
   "description": "Maextro Automation Test Scripts",
