@@ -1,7 +1,7 @@
 import { Page } from "@playwright/test";
 import { TemplateRecorder } from "../../utils/Recorder/TemplateRecorder";
 import { RecorderStorage } from "../../utils/Recorder/RecorderStorage";
-import { ViewMapper } from "../../utils/Recorder/ViewMapper";
+import { ViewMapper } from "../../utils/Recorder/ViewMappings/ViewMapper";
 import { RecorderViewTracker } from "../../utils/Recorder/RecorderViewTracker";
 import { Logger } from "../../utils/Recorder/Logger";
 import { browserDomScript } from "../../utils/Recorder/BrowserDom"; 
@@ -81,7 +81,7 @@ export class BrowserRecorder {
      * - saving to recorder
      */
     await page.exposeFunction("captureField", async (payload: any) => {
-      const mappedView = ViewMapper.resolve(payload.view);
+      const mappedView =ViewMapper.resolve(payload.view,RecorderStorage.headerData.object)
       const cleanView = mappedView.cleanName;
       const viewCode = mappedView.viewCode;
 

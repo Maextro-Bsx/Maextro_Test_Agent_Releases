@@ -392,6 +392,38 @@ async getFieldValue(rowIndex: number, fieldName: string): Promise<string> {
  
 // }
 
+
+private async checkForStatusCompleteErrors(): Promise<void> {
+
+  const hasErrors = await this.locators.errorItems
+    .first()
+    .isVisible({ timeout: 5000 })
+    .catch(() => false);
+
+  if (!hasErrors) {
+    return;
+  }
+  const errorCount = await this.locators.errorItems.count();
+  logger.error(`Detected ${errorCount} error message(s)`);
+  const errors: string[] = [];
+  for (let i = 0; i < errorCount; i++) {
+    const item = this.locators.errorItems.nth(i);
+    const title =
+      await this.locators.errorTitle(item).textContent() || '';
+    const description =
+      await this.locators.errorDescription(item).textContent() || '';
+    const message =
+      `${title.trim()} ${description.trim()}`.trim();
+    errors.push(message);
+    logger.error(message);
+  }
+  // ❌ FAIL TEST
+  throw new Error(
+    `Status Complete failed with error:\n${errors.join('\n')}`
+  );
+}
+
+
 async clickStatusComplete(): Promise<void> {
 
   const statusBtn = this.locators.statusCompleteButton;
@@ -404,7 +436,8 @@ async clickStatusComplete(): Promise<void> {
   logger.info('Clicking Status Complete...');
   await this.page.waitForTimeout(500);
   await statusBtn.click();
-
+  await this.page.waitForTimeout(1000);
+  await this.checkForStatusCompleteErrors();
   let incremented = false;
 
   // ✅ Simple retry loop (your style)
@@ -1033,7 +1066,7 @@ private async captureErrorWarningDetails(): Promise<{ hasIssue: boolean }> {
 private async handleApproveFlow(): Promise<void> {
 
   // CONFIRM / DIRECT SUCCESS
-  for (let i = 0; i < 20; i++) {
+  for (let i = 0; i < 60; i++) {
     const isConfirmVisible = await this.locators.dataINSAPERPConfirmMessage.isVisible({ timeout: 1500 }).catch(() => false);
     if (isConfirmVisible) {
       logger.info(`Confirm popup detected`);
@@ -1053,7 +1086,7 @@ private async handleApproveFlow(): Promise<void> {
   }
 
   //RESULT / LOG HANDLING
-  for (let i = 0; i < 25; i++) {
+  for (let i = 0; i < 60; i++) {
     // ---------- RESULT ----------
     const isResultVisible = await this.locators.resultTitle.isVisible({ timeout: 2000 }).catch(() => false);
     if (isResultVisible) {
@@ -1231,11 +1264,16 @@ async approveTask(): Promise<void> {
 async RejectTask(task: Task, params: string[]): Promise<string | null> {
 
   logger.info(`Performing REJECT action: ${JSON.stringify(params)}`);
-  let reason = 'Incorrect data';
+  // let reason = 'Incorrect data';
+  let reason = 'Data Issue';
+ 
   // let step = 'Tax Data collection - BC_APPDATA';
   // let step ='Requester Review - TDODDAPANENI';
   // let step = 'BP Data collection - A_DATA';
   let step = task.rejectingTo;
+  if (step === '0') {
+    step = '1';
+  }
   let comment = 'Rejected via automation';
 
   if (!step) {
@@ -2358,7 +2396,10 @@ async executeDynamicDataN(rowsData: any[]) {
         logger.info(`INPUT → ${field} = ${value}`);
 
       } catch (err) {
-        logger.warn(`Failed field ${field}: ${err}`);
+        logger.error(`Failed field ${field}: ${err}`);
+        logger.error(String(err));
+        throw err;
+
       }
     }
   }
@@ -2889,10 +2930,8 @@ async getPendingProgress(): Promise<number> {
   return pendingCount;
 }
 
-async openNextPendingView(): Promise<boolean> {
-  logger.info(`Opening dropdown to find next pending view`);
-
-  // Open dropdown
+async openNextCompletedView(): Promise<boolean> {
+  logger.info(`Opening dropdown to find completed view`);
   await this.locators.viewDropdownButton.click();
   await this.page.waitForTimeout(1000);
   const items = this.locators.viewListItems;
@@ -2900,28 +2939,41 @@ async openNextPendingView(): Promise<boolean> {
   logger.info(`Total views found in dropdown: ${count}`);
   for (let i = 0; i < count; i++) {
     const item = items.nth(i);
-    // Skip currently selected view
+    // Skip current selected row
     const className = await item.getAttribute('class');
     if (className?.includes('sapMLIBSelected')) {
       logger.info(`Skipping current selected view`);
       continue;
     }
-    // Check if completed icon exists
-    const isCompleted =
-      await this.locators.completedViewIcon(item).count();
+    // Read row icon
+    const iconAriaLabel =
+      await this.locators.viewStatusIcon(item)
+        .getAttribute('aria-label');
+    logger.info(`View icon label: ${iconAriaLabel}`);
 
-    if (isCompleted > 0) {
-      logger.info(`Skipping completed view`);
-      continue;
+    /**
+     * sys-enter-2
+     * = completed view
+     * = should open Edit View
+     */
+    if (iconAriaLabel === 'sys-enter-2') {
+      logger.info(`Opening completed view`);
+      await item.click();
+      await this.waitForSAPPageReady();
+      return true;
     }
-    // First incomplete view found
-    logger.info(`Opening next pending view`);
-    await item.click();
-    await this.waitForSAPPageReady();
-    return true;
   }
-  logger.info(`No pending views found`);
+  logger.info(`No completed views found`);
   return false;
+}
+
+async openFirstView(): Promise<void> {
+  logger.info(`Opening first view`);
+  await this.locators.viewDropdownButton.click();
+  await this.page.waitForTimeout(1000);
+  await this.locators.firstViewItem.click();
+  await this.waitForSAPPageReady();
+  logger.info(`First view opened successfully`);
 }
 
 async resolvePendingViewsUntilZero(): Promise<void> {
@@ -2950,7 +3002,7 @@ async resolvePendingViewsUntilZero(): Promise<void> {
     logger.info(`Status Complete is now visible`);
     // Step 4 → Open next pending view
     const hasNextPendingView =
-      await this.openNextPendingView();
+      await this.openNextCompletedView();
     if (!hasNextPendingView) {
       logger.info(`No more pending views found`);
       break;
@@ -2958,7 +3010,10 @@ async resolvePendingViewsUntilZero(): Promise<void> {
     await this.page.waitForTimeout(1000);
   }
   logger.info(`Edit View recovery flow completed`);
+  // Return to first view before normal execution starts
+  await this.openFirstView();
 }
+
 
 async ensureViewReadyForExecution(): Promise<void> {
   logger.info(`Checking if current view is ready for execution`);

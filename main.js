@@ -31,6 +31,22 @@ app.whenReady().then(() => {
 // 🔥 UPDATE BUTTON TRIGGER ONLY
 // ===============================
 ipcMain.on('check-for-updates', () => {
+
+  if (!app.isPackaged) {
+    dialog.showMessageBox(mainWindow, {
+      type: 'info',
+      buttons: ['OK'],
+      title: 'Info',
+      message: 'Update check works only in installed application.'
+    });
+    return;
+  }
+
+  mainWindow.webContents.send(
+    'update-message',
+    '🔄 Checking for updates...'
+  );
+
   autoUpdater.checkForUpdates();
 });
 
@@ -43,24 +59,43 @@ autoUpdater.on('checking-for-update', () => {
   mainWindow.webContents.send('update-message', 'Checking for updates...');
 });
 
-autoUpdater.on('update-available', () => {
-
-  mainWindow.webContents.send(
-    'update-message',
-    'Update available. Opening download page...'
-  );
+autoUpdater.on('update-available', async () => {
 
   const url = 'https://github.com/Tejavathi96/Maextro_Automation_Releases/releases/latest';
 
-  shell.openExternal(url);
+  const result = await dialog.showMessageBox(mainWindow, {
+    type: 'info',
+    buttons: ['Download', 'Cancel'],
+    defaultId: 0,
+    cancelId: 1,
+    title: 'Update Available',
+    message: 'A new version is available.',
+    detail: 'The app will be downloaded from GitHub. Please install it manually.'
+  });
+
+  if (result.response === 0) {
+    shell.openExternal(url);
+  }
 });
 
-autoUpdater.on('update-not-available', () => {
-  mainWindow.webContents.send('update-message', 'You are already using latest version.');
+
+autoUpdater.on('update-not-available', async () => {
+  await dialog.showMessageBox(mainWindow, {
+    type: 'info',
+    buttons: ['OK'],
+    title: 'Up to Date',
+    message: 'You are already using the latest version.'
+  });
 });
 
-autoUpdater.on('error', (err) => {
-  mainWindow.webContents.send('update-message', 'Update error: ' + err.message);
+autoUpdater.on('error', async (err) => {
+  await dialog.showMessageBox(mainWindow, {
+    type: 'error',
+    buttons: ['OK'],
+    title: 'Update Error',
+    message: 'Failed to check for updates',
+    detail: err.message
+  });
 });
 
 ipcMain.handle('get-app-version', () => {
@@ -212,3 +247,13 @@ ipcMain.handle('download-template-with-dialog', async (_, data) => {
     savedPath: result.filePath
   };
 });
+
+ipcMain.handle('show-error-dialog',async (_, title, message) => {
+    await dialog.showMessageBox(mainWindow, {
+      type: 'error',
+      title,
+      message,
+      buttons: ['OK']
+    });
+  }
+);

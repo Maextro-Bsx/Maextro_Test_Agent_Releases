@@ -1,13 +1,19 @@
 {
   "headerData": {
-    "object": "Asset Master",
-    "templateId": "A1 - AS01 Create Asset",
+    "object": "Materials",
+    "templateId": "AT - AT Testing",
     "crDescription": "test",
     "reasonCode": {
-      "selected": "New Asset",
+      "selected": "Create New Material",
       "options": [
-        "New Asset",
-        "Create Sub Asset"
+        "Create New Material",
+        "Create Sales Pricing",
+        "New Sales Condition record",
+        "Create Purchase Order",
+        "Create Purchase requisition",
+        "Create Production Version",
+        "Create Sales Order",
+        "Habasit training"
       ]
     },
     "orgDivision": {
@@ -28,6 +34,64 @@
     "expectedCompletionDate": "",
     "requestNumber": ""
   },
-  "groupedData": {},
-  "stepRows": []
+  "groupedData": {
+    "Step 0": {
+      "PLEASE_ENTER_YOUR_'BASIC_DATA'_MATERIAL_DETAILS": [
+        {
+          "viewName": "Please enter your 'Basic data' material details",
+          "viewCode": "PLEASE_ENTER_YOUR_'BASIC_DATA'_MATERIAL_DETAILS",
+          "appearance": 1,
+          "record": 1,
+          "multiOrg": "NO",
+          "field": "Material",
+          "value": "50473607",
+          "mode": "INPUT",
+          "mandatory": true,
+          "step": "Step 0"
+        },
+        {
+          "viewName": "Please enter your 'Basic data' material details",
+          "viewCode": "PLEASE_ENTER_YOUR_'BASIC_DATA'_MATERIAL_DETAILS",
+          "appearance": 1,
+          "record": 1,
+          "multiOrg": "NO",
+          "field": "Material Type",
+          "value": "FERT",
+          "mode": "INPUT",
+          "mandatory": false,
+          "step": "Step 0"
+        },
+        {
+          "viewName": "Please enter your 'Basic data' material details",
+          "viewCode": "PLEASE_ENTER_YOUR_'BASIC_DATA'_MATERIAL_DETAILS",
+          "appearance": 1,
+          "record": 1,
+          "multiOrg": "NO",
+          "field": "Industry sector",
+          "value": "F",
+          "mode": "INPUT",
+          "mandatory": false,
+          "step": "Step 0"
+        },
+        {
+          "viewName": "Please enter your 'Basic data' material details",
+          "viewCode": "PLEASE_ENTER_YOUR_'BASIC_DATA'_MATERIAL_DETAILS",
+          "appearance": 1,
+          "record": 1,
+          "multiOrg": "NO",
+          "field": "UOM",
+          "value": "EA",
+          "mode": "INPUT",
+          "mandatory": false,
+          "step": "Step 0"
+        }
+      ]
+    }
+  },
+  "stepRows": [
+    {
+      "stepNo": "Step 0",
+      "views": "PLEASE_ENTER_YOUR_'BASIC_DATA'_MATERIAL_DETAILS"
+    }
+  ]
 }

@@ -103,6 +103,8 @@ return {
   viewListItems: frame.locator('ul[id$="dgPopoverList-listUl"] > li'),
   selectedCurrentView: frame.locator('li.sapMLIBSelected'),
   completedViewIcon: (item: Locator) =>item.locator('[aria-label="sys-enter-2"]'),
+  viewStatusIcon: (item: Locator) => item.locator('span.sapUiIcon').last(),
+  firstViewItem: frame.locator('ul[id$="dgPopoverList-listUl"] > li').first(),
 
 }
 };

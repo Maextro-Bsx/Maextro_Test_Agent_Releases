@@ -388,8 +388,17 @@ export async function executeWorkflowStep(
       logger.info('Reject to Request Creator → Injecting Step 1');
       const alreadyExists = tasks.find(t => t.step === 'Step 1');
       if (!alreadyExists) {
+        
+        const step0Config = steps.find(s => s.stepNo === '0');
+        if (!step0Config) {
+          throw new Error('Step 0 config not found');
+        }
+        const reinjectedAction = resolveAction(
+          step0Config.action,
+          2
+        );
         tasks.length = 0;
-        tasks.push({step: 'Step 1',taskName: 'Request Creator',action: 'save'});
+        tasks.push({step: 'Step 1',taskName: 'Request Creator',action: reinjectedAction});
         tasks.push(...myTasklistPage.allTasks);
       }
       // FIXED COUNTS

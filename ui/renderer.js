@@ -1,12 +1,14 @@
 let lastSavedTemplatePath = '';
 let lastSavedReportPath = '';
 
-function setLoading(isLoading) {
+function setLoading(isLoading, message = "⏳ Processing...") {
   const loader = document.getElementById('loader');
   const runBtn = document.getElementById('runBtn');
   const updateBtn = document.getElementById('updateBtn');
 
+  loader.innerText = message;
   loader.style.display = isLoading ? 'block' : 'none';
+
   runBtn.disabled = isLoading;
   updateBtn.disabled = isLoading;
 }
@@ -113,7 +115,7 @@ async function update() {
   const output = document.getElementById('output');
   output.innerText = '';
   isCheckingUpdate = true;
-  setLoading(true);
+  setLoading(true, "🔄 Checking for updates...");
   try {
     window.electronAPI.checkForUpdates();
   } catch (err) {
@@ -274,7 +276,9 @@ document.getElementById('environment').addEventListener('change', function () {
 });
 
 function openReport() {
+  setLoading(true, "📊 Preparing report...");
   window.open('/report', '_blank');
+  setTimeout(() => setLoading(false), 1000)
 }
 
 function downloadTemplate() {
@@ -291,6 +295,7 @@ function downloadTemplate() {
     openBtn.style.display = 'none';
     return;
   }
+  setLoading(true, "⬇ Downloading template...");
 
   msgEl.style.display = 'none';
   openBtn.style.display = 'none';
@@ -301,6 +306,7 @@ function downloadTemplate() {
       templateId: templateId
     })
     .then((result) => {
+      setLoading(false);
       if (result.success) {
         msgEl.innerText =
           `Template saved successfully:\n${result.savedPath}`;
@@ -316,6 +322,7 @@ function downloadTemplate() {
       }
     })
     .catch((err) => {
+      setLoading(false);
       msgEl.innerText =
         `Download failed: ${err.message}`;
       msgEl.style.color = 'red';
@@ -447,7 +454,7 @@ async function startRecording() {
 
   if (!isValid) return;
 
-  setLoading(true);
+  setLoading(true, "⏺ Recording workflow...");
 
   log('Starting recording session...\n', 'info');
   log(`Environment: ${environment}\n`);
@@ -489,6 +496,17 @@ async function startRecording() {
 
       for (const line of lines) {
         log(line + '\n');
+        if (line.includes('RECORDER_LOGIN_FAILED:')) {
+          const cleanMessage = line
+            .replace('RECORDER_LOGIN_FAILED:', '')
+            .trim();
+          await window.electronAPI.showErrorDialog(
+            'Login Failed',
+            'Invalid username or password.\n\n' +
+            cleanMessage
+          );
+          throw new Error(cleanMessage);
+        }
       }
     }
     log('\nRecording completed successfully\n', 'success');
@@ -496,7 +514,11 @@ async function startRecording() {
       document.getElementById('environment').value;
     await loadTemplates(selectedEnv);
   } catch (err) {
-    log(`Recording failed: ${err.message}\n`, 'error');
+    const message =
+    err instanceof Error
+      ? err.message
+      : String(err);
+    log(`Recording failed: ${message}\n`, 'error');
   }
 
   setLoading(false);
@@ -510,10 +532,11 @@ function openSavedFolder() {
     console.log('No saved path found');
     return;
   }
-
+  setLoading(true, "📂 Opening folder...");
   window.electronAPI.openSavedTemplateFolder(
     lastSavedTemplatePath
   );
+  setTimeout(() => setLoading(false), 800);
 }
 
 function openSavedReportFolder() {
@@ -525,7 +548,9 @@ function openSavedReportFolder() {
     return;
   }
 
-  window.electronAPI.openSavedTemplateFolder(
+  setLoading(true, "📂 Opening report folder...");
+  window.electronAPI.openSavedReportFolder(
     lastSavedReportPath
   );
+  setTimeout(() => setLoading(false), 800);
 }

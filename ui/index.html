@@ -27,7 +27,7 @@
       top: 0;
       left: 0;
       width: 100%;
-      height: 84px;
+      height: 70px;
       background: #111;
       display: flex;
       align-items: center;
@@ -38,8 +38,7 @@
 
     .topbar-inner {
       width: 100%;
-      max-width: 1400px;
-      padding: 0 36px;
+      padding: 0 16px;
       display: flex;
       align-items: center;
       justify-content: space-between;
@@ -70,11 +69,38 @@
     .header-btn {
       border: none;
       border-radius: 18px;
-      padding: 14px 24px;
-      font-size: 15px;
+      padding: 10px 18px;
+      font-size: 14px;
       font-weight: 600;
       cursor: pointer;
       transition: 0.2s ease;
+    }
+    
+    /* ABOUT MODAL BUTTONS */
+
+    .about-action-btn {
+      margin-top: 18px;
+      height: 42px;
+      padding: 0 18px;
+      border: none;
+      border-radius: 10px;
+      background: #2f66f3;
+      color: white;
+      font-size: 14px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: 0.2s ease;
+    }
+
+    .about-action-btn:hover {
+      background: #1f56e3;
+    }
+
+    .about-btn-group {
+      display: flex;
+      justify-content: center;
+      gap: 12px;
+      margin-top: 18px;
     }
 
     #updateBtn {
@@ -99,7 +125,7 @@
     .container {
       width: 680px;
       background: #f7f7f7;
-      margin-top: 120px;
+      margin-top: 72px;
       border-radius: 22px;
       padding: 34px;
       box-shadow: 0 18px 50px rgba(0,0,0,0.35);
@@ -249,6 +275,30 @@
       width: auto;
       min-width: 240px;
     }
+
+    /* 🔥 ABOUT MODAL */
+    #aboutModal {
+      display: none;
+      position: fixed;
+      top: 0; left: 0;
+      width: 100%; height: 100%;
+      background: rgba(0,0,0,0.7);
+      justify-content: center;
+      align-items: center;
+      z-index: 9999;
+    }
+
+    #aboutModal .box {
+      background: #fff;
+      color: #000;
+      padding: 25px;
+      border-radius: 12px;
+      width: 650px;         
+      max-height: 80vh;      
+      overflow: hidden;
+      text-align: center;
+      box-shadow: 0 10px 40px rgba(0,0,0,0.5);
+    }
   </style>
 </head>
 
@@ -335,11 +385,144 @@
       📂 Open Saved Folder
     </button>
 
-    <div id="loader">⏳ Running test...</div>
+    <div id="loader"></div>
 
     <div id="output"></div>
+  </div>
+
+  <!-- 🔥 ABOUT MODAL -->
+  <div id="aboutModal">
+    <div class="box">
+      <!-- About View -->
+      <div id="aboutContent">
+        <h3>About Maextro Automation</h3>
+        <p id="aboutVersion"></p>
+        <div class="about-btn-group">
+          <button class="header-btn about-btn" onclick="showReadme()">📄 View Guide</button>
+          <button class="header-btn about-btn" onclick="closeAbout()">Close</button>
+        </div>
+
+      </div>
+
+      <!-- README View -->
+      <div id="readmeContent" style="display:none; text-align:left; max-height:60vh; overflow-y:auto;">
+
+        <h2>Maextro Automation Runner</h2>
+
+        <h3>📌 Overview</h3>
+        <p>
+          Maextro Automation Runner is a desktop application that allows users to <b>record and run workflows</b> quickly by using structured Excel templates.
+        </p>
+
+        <hr>
+
+        <h3>🖥️ How to Use</h3>
+
+        <h4>1. Enter Username and Password</h4>
+        <p>Provide your Maextro credentials:</p>
+        <ul>
+          <li>Username</li>
+          <li>Password</li>
+        </ul>
+        <p>⚠️ These credentials will be used to log in to the Maextro application during <b>recording and execution</b>.</p>
+
+        <h4>2. Select Environment</h4>
+        <p>Select the environment where you want to <b>record or run</b> the workflow:</p>
+        <ul>
+          <li>DEV</li>
+          <li>TEST</li>
+          <li>SHS</li>
+          <li>Others (if available)</li>
+        </ul>
+
+        <h4>3. Template Selection</h4>
+        <ul>
+          <li>Templates are displayed based on the selected environment</li>
+          <li>Select an existing template for execution</li>
+          <li>✅ Newly <b>recorded templates</b> will also appear in this list automatically</li>
+        </ul>
+
+        <h4>4. Download Template</h4>
+        <p>
+          Click <b>"Download Template"</b> to download the Excel file.
+        </p>
+        <p>
+          📂 The file can be saved <b>locally anywhere on your system</b>.
+        </p>
+
+        <h4>5. Fill or Modify Template</h4>
+        <ul>
+          <li>Open the downloaded Excel file</li>
+          <li>Enter or modify the required test data</li>
+          <li>Save the file after updating the values</li>
+        </ul>
+
+        <h4>6. Upload File</h4>
+        <ul>
+          <li>Upload the <b>data-filled or modified</b> Excel file</li>
+          <li>Ensure correct file selection before execution</li>
+        </ul>
+
+        <h4>7. Run Test</h4>
+        <p>Click <b>"Run Test"</b> to start execution.</p>
+        <ul>
+          <li>Workflow will run using uploaded data</li>
+          <li>Live execution logs will be displayed</li>
+        </ul>
+
+        <h4>8. View Latest Report</h4>
+        <ul>
+          <li>Once execution completes, click <b>"View Latest Report"</b></li>
+          <li>A dialog/save prompt will appear</li>
+          <li>✅ You can also <b>save a local copy</b> of the report if required</li>
+        </ul>
+
+        <h4>9. Record Workflow</h4>
+        <p>
+          The recording feature allows you to create new templates by capturing real user actions.
+        </p>
+        <ul>
+          <li>Enter Username, Password, and Environment</li>
+          <li>Click <b>"Record"</b> to begin recording</li>
+          <li>A browser will open and log in to the selected environment</li>
+          <li>Once the Maextro home page is visible, start performing actions manually</li>
+          <li>The recorder will capture:
+            <ul>
+              <li>Steps performed</li>
+              <li>Views/screens per step</li>
+              <li>Field inputs and data</li>
+              <li>Header data required for execution</li>
+            </ul>
+          </li>
+          <li>After completing the workflow, close the browser</li>
+          <li>A confirmation popup will appear indicating the template is recorded</li>
+          <li>✅ You can optionally <b>save the template locally</b></li>
+          <li>✅ The recorded template will automatically appear in the template dropdown for execution</li>
+        </ul>
+
+        <hr>
+
+        <h3>⚠️ Important Notes</h3>
+        <ul>
+          <li>All fields marked with * are mandatory</li>
+          <li>Ensure correct <b>environment selection</b> before recording or running</li>
+          <li>Do not modify the Excel template structure</li>
+          <li>Only valid Excel files should be uploaded</li>
+          <li>Only one recording or execution can run at a time</li>
+          <li>Close the browser properly after recording to save the workflow</li>
+          <li>Recorded templates will be automatically available for execution</li>
+          <li>Reports can be viewed immediately or saved locally</li>
+        </ul>
+
+        <br>
+
+        <button class="about-action-btn" onclick="backToAbout()">⬅ Back</button>
+
+      </div>
+    </div>
   </div>
 
   <script src="renderer.js"></script>
 </body>
 </html>
+

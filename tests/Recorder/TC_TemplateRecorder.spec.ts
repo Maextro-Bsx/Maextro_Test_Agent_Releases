@@ -31,7 +31,16 @@ test("TC_TemplateRecorder", async ({page,context}) => {
    * STEP 1 — Login automatically
    */
   await loginPage.goto(targetUrl);
-  await loginPage.login(username, password);
+  try {
+    await loginPage.login(username, password);
+  } catch (err) {
+    const message =
+      err instanceof Error
+        ? err.message
+        : String(err);
+    console.error(`RECORDER_LOGIN_FAILED:${message}`);
+    throw err;
+  }
 
   // await page.goto("https://shs-dev-x8j4td6e.launchpad.cfapps.eu10.hana.ondemand.com/site/Dev?sap-ushell-config=headerless#Maextro-Display?sap-ui-app-id-hint=saas_approuter_bsxc.maextrohubui&/Dashboard");
   await page.waitForSelector(".sapUShellApplicationContainer", {timeout: 60000})

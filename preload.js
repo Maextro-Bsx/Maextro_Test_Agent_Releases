@@ -9,6 +9,9 @@ contextBridge.exposeInMainWorld('electronAPI', {
   onUpdateDownloaded: (callback) =>
     ipcRenderer.on('update-downloaded', callback),
 
+  showErrorDialog: (title, message) => 
+  ipcRenderer.invoke('show-error-dialog',title,message),
+  
   getVersion: () => ipcRenderer.invoke('get-app-version'),
 
   saveRecordedTemplate: (fileName) =>

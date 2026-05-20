@@ -40,9 +40,21 @@ export class LoginPage extends BasePage {
    * @param password - Corresponding password
    */
   async login(username: string, password: string) {
+
     await this.fill(this.locators.username, username);
     await this.fill(this.locators.password, password);
     await this.click(this.locators.continue);
+    // ✅ Check for login failure
+    const isErrorVisible = await this.locators.errorMessage
+      .isVisible({ timeout: 5000 })
+      .catch(() => false);
+    if (isErrorVisible) {
+      const errorMessage =
+        await this.getErrorMessage();
+      throw new Error(
+        `Login failed: ${errorMessage}`
+      );
+    }
   }
 
   /**
