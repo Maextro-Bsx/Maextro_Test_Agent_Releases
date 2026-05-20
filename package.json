@@ -1,49 +1,67 @@
 {
   "build": {
-    "appId": "com.maextro.automation",
-    "productName": "Maextro-Automation",
-    "publish": {
-      "provider": "github",
-      "owner": "Tejavathi96",
-      "repo": "Maextro_Automation_Releases"
-    },
-    "asar": false,
-    "files": [
-      "**/*",
-      "!dist/*",
-      "!node_modules/.cache"
-    ],
-    "extraResources": [
-      {
-        "from": "test-data",
-        "to": "test-data"
-      }
-    ],
-    "extraFiles": [
-      {
-        "from": "node_modules",
-        "to": "node_modules"
-      },
-      {
-        "from": "tests",
-        "to": "tests"
-      }
-    ],
-    "npmRebuild": false,
-    "nodeGypRebuild": false,
-    "buildDependenciesFromSource": true,
-    "disableDefaultIgnoredFiles": true,
-    "mac": {
-      "target": [
-        "dmg",
-        "zip"
-      ],
-      "icon": "build/icon.icns"
-    },
-    "win": {
-      "target": "nsis"
-    }
+  "appId": "com.maextro.automation",
+  "productName": "Maextro-Automation",
+
+  "publish": {
+    "provider": "github",
+    "owner": "Tejavathi96",
+    "repo": "Maextro_Automation_Releases"
   },
+
+  "asar": false,
+
+  "files": [
+    "**/*",
+    "!dist/*",
+    "!node_modules/.cache"
+  ],
+
+  "extraResources": [
+    {
+      "from": "test-data",
+      "to": "test-data"
+    }
+  ],
+
+  "extraFiles": [
+    {
+      "from": "node_modules",
+      "to": "node_modules"
+    },
+    {
+      "from": "tests",
+      "to": "tests"
+    },
+    {
+      "from": "pages",
+      "to": "pages"
+    },
+    {
+      "from": "utils",
+      "to": "utils"
+    },
+    {
+      "from": "locators",
+      "to": "locators"
+    }
+  ],
+
+  "npmRebuild": false,
+  "nodeGypRebuild": false,
+  "buildDependenciesFromSource": true,
+
+  "disableDefaultIgnoredFiles": true,
+
+  "mac": {
+    "target": ["dmg", "zip"],
+    "icon": "build/icon.icns"
+  },
+
+  "win": {
+    "target": "nsis"
+  }
+},
   "name": "maextroautomationtests",
   "version": "1.0.5",
   "description": "Maextro Automation Test Scripts",

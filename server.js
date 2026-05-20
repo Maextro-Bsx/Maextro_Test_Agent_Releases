@@ -23,7 +23,7 @@ const isElectron = !!process.versions.electron;
 
 let uploadsBasePath;
 let baseAppPath;
-const isPackaged = !process.defaultApp;
+const isPackaged = electronApp.isPackaged;
 
 if (isPackaged) {
   baseAppPath = process.resourcesPath;

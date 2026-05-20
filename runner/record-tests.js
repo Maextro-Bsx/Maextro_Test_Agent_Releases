@@ -2,6 +2,7 @@ const { spawn } = require('child_process');
 const path = require('path');
 
 (async () => {
+
   const username = process.argv[2];
   const password = process.argv[3];
   const environment = process.argv[4];
@@ -18,7 +19,19 @@ URL: ${targetUrl}
 
   const projectRoot = path.resolve(__dirname, '..');
 
-  // Step 1 — Run Template Recorder Test
+  // ✅ FIXED: use actual Node binary
+  const nodePath = process.execPath;
+
+  // ✅ Playwright CLI path
+  const playwrightCli = path.join(
+    projectRoot,
+    'node_modules',
+    '@playwright',
+    'test',
+    'cli.js'
+  );
+
+  // ✅ Test paths
   const recorderTest = path.join(
     projectRoot,
     'tests',
@@ -26,7 +39,6 @@ URL: ${targetUrl}
     'TC_TemplateRecorder.spec.ts'
   );
 
-  // Step 2 — Run Excel Generator Test
   const excelGeneratorTest = path.join(
     projectRoot,
     'tests',
@@ -39,18 +51,18 @@ URL: ${targetUrl}
       console.log(`Running: ${testFile}`);
 
       const child = spawn(
-        'npx',
-        ['playwright', 'test', testFile],
+        nodePath, // ✅ FIXED (no npx)
+        [playwrightCli, 'test', testFile],
         {
           cwd: projectRoot,
-          shell: true,
           stdio: 'inherit',
           env: {
             ...process.env,
             RECORD_USERNAME: username,
             RECORD_PASSWORD: password,
             RECORD_ENVIRONMENT: environment,
-            RECORD_URL: targetUrl
+            RECORD_URL: targetUrl,
+            ELECTRON_RUN_AS_NODE: "1" // ✅ IMPORTANT
           }
         }
       );
@@ -68,14 +80,12 @@ URL: ${targetUrl}
         }
       });
 
-      child.on('error', (err) => {
-        reject(err);
-      });
+      child.on('error', reject);
     });
   }
 
   try {
-    // Run recorder flow
+    // ✅ recorder
     await runPlaywrightTest(recorderTest);
 
     console.log(`
@@ -85,7 +95,7 @@ Generating Excel...
 ====================================
 `);
 
-    // Generate Excel from JSON
+    // ✅ excel generation
     await runPlaywrightTest(excelGeneratorTest);
 
     console.log(`
@@ -104,7 +114,7 @@ Generating Excel...
 ${err.message}
 ====================================
 `);
-
     process.exit(1);
   }
+
 })();
