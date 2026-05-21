@@ -351,6 +351,7 @@ app.post('/record', (req, res) => {
         fs.unlinkSync(sourcePath);
       }
       res.write(`\nTemplate saved successfully → ${generatedFile}\n`);
+      res.write(`__SAVE_TEMPLATE__${generatedFile}\n`);
       res.write('\nRecording completed successfully\n');
 
       res.end();
@@ -490,6 +491,7 @@ app.post('/run', (req, res) => {
           res.write(
             `\nReport copy saved → ${finalReportPath}\n`
           );
+          res.write(`__SAVE_REPORT__${finalReportPath}\n`);
         }
       }
 

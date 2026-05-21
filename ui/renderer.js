@@ -205,23 +205,24 @@ async function runTest() {
 
       for (const line of lines) {
         log(line + '\n');
-
-        // Detect saved report path immediately
-        if (line.includes('Report copy saved →')) {
-          const savedPath = line
-            .replace('Report copy saved →', '')
+        // existing login failure logic
+        if (line.includes('RECORDER_LOGIN_FAILED:')) {
+          const cleanMessage = line
+            .replace('RECORDER_LOGIN_FAILED:', '')
             .trim();
 
-          if (savedPath) {
-            lastSavedReportPath = savedPath;
+          await window.electronAPI.showErrorDialog(
+            'Login Failed',
+            'Invalid username or password.\n\n' + cleanMessage
+          );
 
-            const reportOpenBtn =
-              document.getElementById('openReportFolderBtn');
+          throw new Error(cleanMessage);
+        }
 
-            if (reportOpenBtn) {
-              reportOpenBtn.style.display = 'block';
-            }
-          }
+        if (line.startsWith('__SAVE_REPORT__')) {
+          const savedPath = line.replace('__SAVE_REPORT__', '').trim();
+          lastSavedReportPath = savedPath;
+          document.getElementById('openReportFolderBtn').style.display = 'block';
         }
       }
     }
@@ -496,6 +497,20 @@ async function startRecording() {
 
       for (const line of lines) {
         log(line + '\n');
+        if (line.startsWith('__SAVE_TEMPLATE__')) {
+          const fileName = line.replace('__SAVE_TEMPLATE__', '').trim();
+
+          const result = await window.electronAPI.saveRecordedTemplate(fileName);
+
+          if (result.success) {
+            lastSavedTemplatePath = result.savedPath;
+
+            const openBtn = document.getElementById('openDownloadsBtn');
+            if (openBtn) {
+              openBtn.style.display = 'block';
+            }
+          }
+        }
         if (line.includes('RECORDER_LOGIN_FAILED:')) {
           const cleanMessage = line
             .replace('RECORDER_LOGIN_FAILED:', '')
@@ -512,7 +527,9 @@ async function startRecording() {
     log('\nRecording completed successfully\n', 'success');
     const selectedEnv =
       document.getElementById('environment').value;
-    await loadTemplates(selectedEnv);
+    setTimeout(async () => {
+      await loadTemplates(selectedEnv);
+    }, 1000); 
   } catch (err) {
     const message =
     err instanceof Error
@@ -524,8 +541,8 @@ async function startRecording() {
   setLoading(false);
 }
 
-function openSavedFolder() {
-  console.log('Clicked Open Saved Folder');
+function openSavedTemplateFolder() {
+  console.log('Clicked Open Saved Template Folder');
   console.log('Saved path:', lastSavedTemplatePath);
 
   if (!lastSavedTemplatePath) {

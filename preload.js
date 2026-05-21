@@ -28,6 +28,8 @@ contextBridge.exposeInMainWorld('electronAPI', {
   checkTemplateOverwrite: (filePath) =>
   ipcRenderer.invoke('check-template-overwrite', filePath),
 
+  openSavedReportFolder: (filePath) =>
+  ipcRenderer.send('open-saved-template-folder', filePath),
 
 
 });
