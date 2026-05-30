@@ -1,12 +1,12 @@
 {
   "build": {
-  "appId": "com.maextro.automation",
-  "productName": "Maextro-Automation",
+  "appId": "com.maextro.testagent",
+  "productName": "Maextro-Test-Agent",
 
   "publish": {
     "provider": "github",
     "owner": "Tejavathi96",
-    "repo": "Maextro_Automation_Releases"
+    "repo": "Maextro_Test_Agent_Releases"
   },
 
   "asar": false,
@@ -66,9 +66,9 @@
   "afterPack": "./fix-frameworks.js"
 },
   
-  "name": "maextroautomationtests",
-  "version": "1.0.5",
-  "description": "Maextro Automation Test Scripts",
+  "name": "maextrotestagent",
+  "version": "1.0.6",
+  "description": "Maextro Test Agent",
   "main": "main.js",
   "engines": {
     "node": "20.x"

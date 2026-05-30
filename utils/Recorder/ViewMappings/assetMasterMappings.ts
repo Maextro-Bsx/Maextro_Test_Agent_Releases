@@ -40,6 +40,6 @@ export const assetMasterMappings: ViewMapping[] = [
     matchText: "Takeover values", //Intergattion Asset \ Equip
     cleanName: "Takeover values",
     viewCode: "AM07",
-  },
+  }
   
 ];

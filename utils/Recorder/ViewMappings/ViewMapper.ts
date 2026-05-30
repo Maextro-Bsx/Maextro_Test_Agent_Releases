@@ -1,7 +1,7 @@
 import {
   ViewMapping,
   commonMappings,
-  materialMappings,
+  materialBOMRoutingsMappings,
   assetMasterMappings,
   businessPartnerMappings,
   costCenterMappings,
@@ -13,6 +13,7 @@ import {
   profitCentreMappings,
   projectSystemsMappings,
   quotesProcessMappings,
+  invoiceReceiptMappings,
 } from "./index";
 
 export class ViewMapper {
@@ -39,7 +40,7 @@ export class ViewMapper {
     if (object.includes("material")) {
       return [
         ...commonMappings,
-        ...materialMappings
+        ...materialBOMRoutingsMappings
       ];
     }
 
@@ -176,6 +177,18 @@ export class ViewMapper {
       ];
     }
 
+     /**
+     * Invoice Receipt
+     */
+    if (
+      object.includes("invoice receipt") ||
+      object.includes("invoice ")
+    ) {
+      return [
+        ...commonMappings,
+        ...invoiceReceiptMappings
+      ];
+    }
     /**
      * Fallback
      */

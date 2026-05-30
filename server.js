@@ -1,3 +1,4 @@
+module.exports = function (mainWindow) {
 const express = require('express');
 const bodyParser = require('body-parser');
 const { spawn } = require('child_process');
@@ -109,7 +110,7 @@ app.get('/templates/:env', (req, res) => {
 
   // User recorded templates
   const userTemplatePath = path.join(
-    process.cwd(),
+    electronApp.getPath('userData'),
     'user-templates',
     env
   );
@@ -229,10 +230,7 @@ app.post('/record', (req, res) => {
     }
 
     try {
-      const tempFolderPath = path.join(
-        process.cwd(),
-        'temp'
-      );
+      const tempFolderPath = path.join(appRoot, 'temp');
 
       if (!fs.existsSync(tempFolderPath)) {
         res.write('\nTemp folder not found\n');
@@ -240,11 +238,13 @@ app.post('/record', (req, res) => {
         return;
       }
 
-      const jsonPath = path.resolve(
+      const jsonPath = path.join(
+        appRoot,
         'test-data',
         'recorded-template.json'
       );
-
+      console.log('Looking for JSON at:', jsonPath);
+      console.log('Exists:', fs.existsSync(jsonPath));
       if (!fs.existsSync(jsonPath)) {
         res.write('\nrecorded-template.json not found\n');
         res.end();
@@ -270,7 +270,7 @@ app.post('/record', (req, res) => {
       );
 
       const finalFolderPath = path.join(
-        process.cwd(),
+        electronApp.getPath('userData'),
         'user-templates',
         environment
       );
@@ -289,9 +289,10 @@ app.post('/record', (req, res) => {
       let shouldReplace = true;
 
       if (fs.existsSync(finalPath)) {
+        console.log('Template already exists, asking user for confirmation to replace');
         const { dialog } = require('electron');
 
-        const result = await dialog.showMessageBox({
+        const result = await dialog.showMessageBox(mainWindow, {
           type: 'warning',
           buttons: ['Replace', 'Cancel'],
           defaultId: 0,
@@ -311,47 +312,12 @@ app.post('/record', (req, res) => {
       }
 
       fs.copyFileSync(sourcePath, finalPath);
-      
-      const { dialog } = require('electron');
-
-      const saveCopyResult = await dialog.showMessageBox({
-        type: 'question',
-        buttons: ['Save Copy', 'Skip'],
-        defaultId: 0,
-        cancelId: 1,
-        title: 'Save Personal Copy',
-        message: 'Template saved successfully.',
-        detail: 'Would you also like to save a copy?'
-      });
-
-      if (saveCopyResult.response === 0) {
-        const saveDialog = await dialog.showSaveDialog({
-          title: 'Save Personal Copy',
-          defaultPath: generatedFile,
-          filters: [
-            {
-              name: 'Excel Files',
-              extensions: ['xlsx']
-            }
-          ]
-        });
-
-        if (!saveDialog.canceled && saveDialog.filePath) {
-          fs.copyFileSync(
-            sourcePath,
-            saveDialog.filePath
-          );
-
-          res.write(`\nPersonal copy saved → ${saveDialog.filePath}\n`);
-        }
-      }
-
-      // cleanup temp file after all saves are done
+      console.log('✅ Sending ASK_SAVE_TEMPLATE event');
+      res.write(`__ASK_SAVE_TEMPLATE__${sourcePath}::${finalPath}\n`);
       if (fs.existsSync(sourcePath)) {
         fs.unlinkSync(sourcePath);
       }
       res.write(`\nTemplate saved successfully → ${generatedFile}\n`);
-      res.write(`__SAVE_TEMPLATE__${generatedFile}\n`);
       res.write('\nRecording completed successfully\n');
 
       res.end();
@@ -458,7 +424,7 @@ app.post('/run', (req, res) => {
 
       const { dialog } = require('electron');
 
-      const saveCopyResult = await dialog.showMessageBox({
+      const saveCopyResult = await dialog.showMessageBox(mainWindow, {
         type: 'question',
         buttons: ['Save Copy', 'Skip'],
         defaultId: 0,
@@ -514,3 +480,6 @@ app.post('/run', (req, res) => {
 app.listen(PORT, () => {
   console.log(`UI running at http://localhost:${PORT}`);
 });
+
+
+}

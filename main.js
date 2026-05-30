@@ -3,8 +3,7 @@ const path = require('path');
 const { autoUpdater } = require('electron-updater');
 const { shell } = require('electron');
 const os = require('os');
-// 🔥 Start Express server
-require('./server');
+
 
 let mainWindow;
 
@@ -22,7 +21,7 @@ function createWindow() {
 
 app.whenReady().then(() => {
   createWindow();
-
+  require('./server')(mainWindow);  
   autoUpdater.autoInstallOnAppQuit = false;
 });
 
@@ -109,35 +108,34 @@ ipcMain.on('open-downloads-folder', () => {
 });
 
 ipcMain.on('open-saved-template-folder', (_, filePath) => {
-  const path = require('path');
-  console.log('Received filePath:', filePath);
-  if (!filePath) return;
-
-  const folderPath = path.dirname(filePath);
-
-  console.log('Opening saved folder:', folderPath);
-
-  shell.openPath(folderPath);
+  const fs = require('fs');
+  if (!filePath) {
+    console.log('No path received');
+    return;
+  }
+  console.log('Opening path:', filePath);
+  let folderPath = filePath;
+  if (fs.existsSync(filePath) && fs.lstatSync(filePath).isFile()) {
+    const path = require('path');
+    folderPath = path.dirname(filePath);
+  }
+  console.log('Resolved folder path:', folderPath);
+  require('electron').shell.openPath(folderPath);
 });
 
-ipcMain.handle('save-recorded-template', async (_, fileName) => {
+ipcMain.handle('save-recorded-template', async (_, sourcePath) => {
   const fs = require('fs');
   const path = require('path');
-
-  const sourcePath = path.join(
-    __dirname,
-    'test-data',
-    fileName
-  );
-
+  console.log('Checking source path:', sourcePath);
+  console.log('Exists:', fs.existsSync(sourcePath));
   if (!fs.existsSync(sourcePath)) {
-    return {
-      success: false,
-      error: 'Generated Excel file not found'
-    };
+    return { success: false };
   }
 
-  const result = await dialog.showSaveDialog({
+  // ✅ FIX: define fileName properly
+  const fileName = path.basename(sourcePath);
+
+  const result = await dialog.showSaveDialog(mainWindow,{
     title: 'Save Recorded Template',
     defaultPath: fileName,
     filters: [
@@ -149,10 +147,7 @@ ipcMain.handle('save-recorded-template', async (_, fileName) => {
   });
 
   if (result.canceled || !result.filePath) {
-    return {
-      success: false,
-      error: 'Save cancelled by user'
-    };
+    return { success: false };
   }
 
   fs.copyFileSync(sourcePath, result.filePath);
@@ -208,7 +203,7 @@ ipcMain.handle('download-template-with-dialog', async (_, data) => {
   // If not found, check user templates
   if (!fs.existsSync(sourcePath)) {
     sourcePath = path.join(
-      process.cwd(),
+      app.getPath('userData'),
       'user-templates',
       env,
       `${templateId}.xlsx`
@@ -222,7 +217,7 @@ ipcMain.handle('download-template-with-dialog', async (_, data) => {
     };
   }
 
-  const result = await dialog.showSaveDialog({
+  const result = await dialog.showSaveDialog(mainWindow,{
     title: 'Save Template',
     defaultPath: `${templateId}.xlsx`,
     filters: [
@@ -257,3 +252,17 @@ ipcMain.handle('show-error-dialog',async (_, title, message) => {
     });
   }
 );
+
+ipcMain.handle('ask-save-copy', async () => {
+  const result = await dialog.showMessageBox(mainWindow, {
+    type: 'question',
+    buttons: ['Save Copy', 'Skip'],
+    defaultId: 0,
+    cancelId: 1,
+    title: 'Save Template Copy',
+    message: 'Template recorded successfully.',
+    detail: 'Would you like to save a copy locally?'
+  });
+
+  return result.response === 0;
+});

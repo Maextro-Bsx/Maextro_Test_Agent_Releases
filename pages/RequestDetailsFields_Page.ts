@@ -395,34 +395,39 @@ async getFieldValue(rowIndex: number, fieldName: string): Promise<string> {
 
 private async checkForStatusCompleteErrors(): Promise<void> {
 
-  const hasErrors = await this.locators.errorItems
-    .first()
-    .isVisible({ timeout: 5000 })
+  // ✅ 1. Check LIST errors (existing logic)
+  const listErrorCount = await this.locators.errorItems.count();
+  if (listErrorCount > 0) {
+    logger.error(`Detected ${listErrorCount} error message(s)`);
+    const errors: string[] = [];
+    for (let i = 0; i < listErrorCount; i++) {
+      const item = this.locators.errorItems.nth(i);
+      const title = (await this.locators.errorTitle(item).textContent()) || '';
+      const description = (await this.locators.errorDescription(item).textContent()) || '';
+      const message = `${title.trim()} ${description.trim()}`.trim();
+      errors.push(message);
+      logger.error(message);
+    }
+    throw new Error(
+      `Status Complete failed with error:\n${errors.join('\n')}`
+    );
+  }
+
+  // ✅ 2. Check DETAILS page error (NEW)
+  const detailsVisible = await this.locators.errorDetailsPage
+    .isVisible()
     .catch(() => false);
-
-  if (!hasErrors) {
-    return;
-  }
-  const errorCount = await this.locators.errorItems.count();
-  logger.error(`Detected ${errorCount} error message(s)`);
-  const errors: string[] = [];
-  for (let i = 0; i < errorCount; i++) {
-    const item = this.locators.errorItems.nth(i);
-    const title =
-      await this.locators.errorTitle(item).textContent() || '';
-    const description =
-      await this.locators.errorDescription(item).textContent() || '';
-    const message =
-      `${title.trim()} ${description.trim()}`.trim();
-    errors.push(message);
+  if (detailsVisible) {
+    const title =(await this.locators.errorDetailsTitle.textContent()) || '';
+    const description =(await this.locators.errorDetailsDescription.textContent()) || '';
+    const message = `${title.trim()} ${description.trim()}`.trim();
+    logger.error(`Detected Message Details error`);
     logger.error(message);
+    throw new Error(
+      `Status Complete failed (Details Page):\n${message}`
+    );
   }
-  // ❌ FAIL TEST
-  throw new Error(
-    `Status Complete failed with error:\n${errors.join('\n')}`
-  );
 }
-
 
 async clickStatusComplete(): Promise<void> {
 
@@ -436,14 +441,12 @@ async clickStatusComplete(): Promise<void> {
   logger.info('Clicking Status Complete...');
   await this.page.waitForTimeout(500);
   await statusBtn.click();
-  await this.page.waitForTimeout(1000);
-  await this.checkForStatusCompleteErrors();
   let incremented = false;
 
   // ✅ Simple retry loop (your style)
   for (let i = 0; i < 60; i++) {
     await this.page.waitForTimeout(1000); // wait 1 sec between retries
-
+    await this.checkForStatusCompleteErrors();
     const afterText = await statusTextLocator.textContent() || '';
     const current = parseInt(afterText.match(/\d+/)?.[0] || '0');
 

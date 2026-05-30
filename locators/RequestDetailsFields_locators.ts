@@ -61,6 +61,9 @@ return {
   errorItems: frame.locator("li.sapMMsgViewItemError"),
   errorTitle: (item: Locator) => item.locator(".sapMSLITitle span"),
   errorDescription: (item: Locator) => item.locator(".sapMSLIDescription span"),
+  errorDetailsPage: frame.locator(".sapMMsgViewDetailsPage"),
+  errorDetailsTitle: frame.locator( ".sapMMsgViewTitleText"),
+  errorDetailsDescription: frame.locator(".sapMMsgViewDescriptionText"),
   readOnlyFieldWrapper: (rowIndex: number, colIndex: number) =>frame.locator('tr[id^="__table"][id*="rows-row"]')
     .nth(rowIndex).locator('td.sapUiTableContentCell').nth(colIndex).locator('.sapMInputBase'),
   // tableRowSelectionCheckbox: (rowIndex: number) => `div[role="row"]:nth-child(${rowIndex + 1}) div[role="gridcell"].sapUiTableRowSelectionCell`,

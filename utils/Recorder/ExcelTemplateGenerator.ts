@@ -189,7 +189,7 @@ export class ExcelTemplateGenerator {
         type: "list",
         allowBlank: false,
         formulae: [
-          '"Save,Skip,Approve,Approve -> Reject"'
+          '"Save,Skip,Approve,Skip -> Save,Skip -> Approve,Reject -> Approve"'
         ]
       };
 

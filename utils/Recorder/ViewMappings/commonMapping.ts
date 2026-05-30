@@ -10,5 +10,5 @@ export const commonMappings: ViewMapping[] = [
     matchText: "Views",
     cleanName: "SYSTEM_IGNORE",
     viewCode: "IGNORE",
-  },
+  }
 ];

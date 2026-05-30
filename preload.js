@@ -14,6 +14,9 @@ contextBridge.exposeInMainWorld('electronAPI', {
   
   getVersion: () => ipcRenderer.invoke('get-app-version'),
 
+  askSaveCopy: () =>
+  ipcRenderer.invoke('ask-save-copy'),
+
   saveRecordedTemplate: (fileName) =>
   ipcRenderer.invoke('save-recorded-template', fileName),
 

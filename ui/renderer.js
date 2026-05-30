@@ -60,34 +60,37 @@ function clearFileError() {
 function validateInputs(templateId, username, password, environment) {
   let isValid = true;
   if (!username) {
-    showError('username', 'Username is required');
+    showError('runUsername', 'Username is required');
     isValid = false;
   }
   if (!password) {
-    showError('password', 'Password is required');
+    showError('runPassword', 'Password is required');
     isValid = false;
   }
   if (!environment) {
-    showError('environment', 'Environment is required');
+    showError('runEnvironment', 'Environment is required');
     isValid = false;
   }
   if (!templateId) {
-    showError('templateId', 'Template is required');
+    showError('runTemplateId', 'Template is required');
     isValid = false;
   }
   return isValid;
 }
 
 function checkFormValidity() {
-  const username = document.getElementById('username').value.trim();
-  const password = document.getElementById('password').value.trim();
-  const environment = document.getElementById('environment').value.trim();
-  const templateId = document.getElementById('templateId').value.trim();
+  const username = document.getElementById('runUsername').value.trim();
+  const password = document.getElementById('runPassword').value.trim();
+  const environment = document.getElementById('runEnvironment').value.trim();
+  const templateId = document.getElementById('runTemplateId').value.trim();
   const fileInput = document.getElementById('excelFile');
   const hasFile = fileInput.files && fileInput.files.length > 0;
   const runBtn = document.getElementById('runBtn');
   const recordBtn = document.getElementById('recordBtn');
   const downloadBtn = document.getElementById('downloadBtn');
+  const recordUsername = document.getElementById('recordUsername').value.trim();
+  const recordPassword = document.getElementById('recordPassword').value.trim();
+  const recordEnvironment = document.getElementById('recordEnvironment').value.trim();
   runBtn.disabled = !(
     username &&
     password &&
@@ -97,9 +100,9 @@ function checkFormValidity() {
   );
 
   recordBtn.disabled = !(
-    username &&
-    password &&
-    environment
+    recordUsername &&
+    recordPassword &&
+    recordEnvironment
   );
 
   downloadBtn.disabled = !(
@@ -118,6 +121,11 @@ async function update() {
   setLoading(true, "🔄 Checking for updates...");
   try {
     window.electronAPI.checkForUpdates();
+    setTimeout(() => {
+          setLoading(false);
+          isCheckingUpdate = false;
+        }, 3000)
+
   } catch (err) {
     log('Update failed: ' + err.message + '\n', 'error');
     setLoading(false);
@@ -126,10 +134,10 @@ async function update() {
 }
 
 async function runTest() {
-  const templateId = document.getElementById('templateId').value.trim();
-  const username = document.getElementById('username').value.trim();
-  const password = document.getElementById('password').value.trim();
-  const environment = document.getElementById('environment').value.trim();
+  const templateId = document.getElementById('runTemplateId').value.trim();
+  const username = document.getElementById('runUsername').value.trim();
+  const password = document.getElementById('runPassword').value.trim();
+  const environment = document.getElementById('runEnvironment').value.trim();
   const fileInput = document.getElementById('excelFile');
   const output = document.getElementById('output');
 
@@ -146,11 +154,17 @@ async function runTest() {
 
   const fileName = fileInput.files[0].name;
   const expectedFileName = `${templateId}.xlsx`;
+  
+  const fileNameLower = fileName.toLowerCase();
+  const templateLower = templateId.toLowerCase();
 
-  if (fileName !== expectedFileName) {
-    showFileError(`Wrong file selected. Expected: ${expectedFileName}`);
+  if (!fileNameLower.includes(templateLower)) {
+    showFileError(
+      `Invalid file. File name must contain template name: ${templateId}`
+    );
     return;
   }
+
   clearFileError();
 
   document.getElementById('reportBtn').disabled = true;
@@ -239,7 +253,7 @@ async function runTest() {
 }
 
 async function loadTemplates(env) {
-  const dropdown = document.getElementById('templateId');
+  const dropdown = document.getElementById('runTemplateId');
 
   // Reset dropdown
   dropdown.innerHTML = '<option value="">-- Select Template --</option>';
@@ -270,7 +284,7 @@ async function loadTemplates(env) {
   }
 }
 
-document.getElementById('environment').addEventListener('change', function () {
+document.getElementById('runEnvironment').addEventListener('change', function () {
   const env = this.value;
   loadTemplates(env);
   checkFormValidity();
@@ -283,8 +297,8 @@ function openReport() {
 }
 
 function downloadTemplate() {
-  const templateId = document.getElementById('templateId').value;
-  const environment = document.getElementById('environment').value;
+  const templateId = document.getElementById('runTemplateId').value;
+  const environment = document.getElementById('runEnvironment').value;
 
   const msgEl = document.getElementById('downloadMsg');
   const openBtn = document.getElementById('openDownloadsBtn');
@@ -346,7 +360,15 @@ document.addEventListener('DOMContentLoaded', async () => {
       checkFormValidity();
     }
   });
-  const fields = ['username', 'password', 'environment', 'templateId'];
+  const fields = [
+    'runUsername',
+    'runPassword',
+    'runEnvironment',
+    'runTemplateId',
+    'recordUsername',
+    'recordPassword',
+    'recordEnvironment'
+  ];
 
   fields.forEach(id => {
       const el = document.getElementById(id);
@@ -367,14 +389,14 @@ document.addEventListener('DOMContentLoaded', async () => {
 
   const downloadMsg = document.getElementById('downloadMsg');
   const openBtn = document.getElementById('openDownloadsBtn');
-  ['environment', 'templateId'].forEach(id => {
+  ['runEnvironment', 'runTemplateId'].forEach(id => {
     document.getElementById(id).addEventListener('change', () => {
       downloadMsg.style.display = 'none';
       openBtn.style.display = 'none';
     });
   });
 
-  document.getElementById('templateId')
+  document.getElementById('runTemplateId')
   .addEventListener('change', checkFormValidity);
 
   document.getElementById('aboutModal').addEventListener('click', (e) => {
@@ -429,9 +451,9 @@ function backToAbout() {
 }
 
 async function startRecording() {
-  const username = document.getElementById('username').value.trim();
-  const password = document.getElementById('password').value.trim();
-  const environment = document.getElementById('environment').value.trim();
+  const username = document.getElementById('recordUsername').value.trim();
+  const password = document.getElementById('recordPassword').value.trim();
+  const environment = document.getElementById('recordEnvironment').value.trim();
   const output = document.getElementById('output');
 
   output.innerText = '';
@@ -439,17 +461,17 @@ async function startRecording() {
   let isValid = true;
 
   if (!username) {
-    showError('username', 'Username is required');
+    showError('recordUsername', 'Username is required');
     isValid = false;
   }
 
   if (!password) {
-    showError('password', 'Password is required');
+    showError('recordPassword', 'Password is required');
     isValid = false;
   }
 
   if (!environment) {
-    showError('environment', 'Environment is required');
+    showError('recordEnvironment', 'Environment is required');
     isValid = false;
   }
 
@@ -497,18 +519,25 @@ async function startRecording() {
 
       for (const line of lines) {
         log(line + '\n');
-        if (line.startsWith('__SAVE_TEMPLATE__')) {
-          const fileName = line.replace('__SAVE_TEMPLATE__', '').trim();
-
-          const result = await window.electronAPI.saveRecordedTemplate(fileName);
-
-          if (result.success) {
-            lastSavedTemplatePath = result.savedPath;
-
-            const openBtn = document.getElementById('openDownloadsBtn');
-            if (openBtn) {
-              openBtn.style.display = 'block';
+        if (line.startsWith('__ASK_SAVE_TEMPLATE__')) {
+          const data = line.replace('__ASK_SAVE_TEMPLATE__', '').trim();
+          const [sourcePath, finalPath] = data.split('::');
+          // ✅ Step 1: Ask user
+          const shouldSave = await window.electronAPI.askSaveCopy();
+          let selectedPath = finalPath;
+          if (shouldSave) {
+            // ✅ Step 2: Save dialog
+            const result = await window.electronAPI.saveRecordedTemplate(finalPath);
+            if (result && result.success && result.savedPath) {
+              selectedPath = result.savedPath;
             }
+          }
+          // ✅ Step 3: store path
+          lastSavedTemplatePath = selectedPath;
+          // ✅ Step 4: show button
+          const openBtn = document.getElementById('openDownloadsBtn');
+          if (openBtn) {
+            openBtn.style.display = 'block';
           }
         }
         if (line.includes('RECORDER_LOGIN_FAILED:')) {
@@ -526,7 +555,7 @@ async function startRecording() {
     }
     log('\nRecording completed successfully\n', 'success');
     const selectedEnv =
-      document.getElementById('environment').value;
+      document.getElementById('recordEnvironment').value;
     setTimeout(async () => {
       await loadTemplates(selectedEnv);
     }, 1000); 
@@ -571,3 +600,29 @@ function openSavedReportFolder() {
   );
   setTimeout(() => setLoading(false), 800);
 }
+
+function switchTab(tab) {
+  const recordTab = document.getElementById("recordTab");
+  const runTab = document.getElementById("runTab");
+
+  const recordBtn = document.getElementById("recordTabBtn");
+  const runBtn = document.getElementById("runTabBtn");
+
+  // Remove active state
+  recordTab.classList.remove("active");
+  runTab.classList.remove("active");
+  recordBtn.classList.remove("active");
+  runBtn.classList.remove("active");
+
+  // Add active state
+  if (tab === "record") {
+    recordTab.classList.add("active");
+    recordBtn.classList.add("active");
+  } else {
+    runTab.classList.add("active");
+    runBtn.classList.add("active");
+  }
+}
+
+
+

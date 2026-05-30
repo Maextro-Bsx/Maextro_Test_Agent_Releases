@@ -1,6 +1,6 @@
 export * from "./types";
 export * from "./commonMapping";
-export * from "./materialMappings";
+export * from "./materialBOMRoutingsMappings";
 export * from "./assetMasterMappings";
 export * from "./businessPartnersMappings";
 export * from "./costCenterMappings";
@@ -12,3 +12,4 @@ export * from "./plantMaintenanceMappings";
 export * from "./profitCentreMappings";
 export * from "./projectSystemsMappings";
 export * from "./quotesProcessMappings";
+export * from "./invoiceReceiptMappings";
