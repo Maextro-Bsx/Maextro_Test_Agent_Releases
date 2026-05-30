@@ -1,6 +1,6 @@
 {
   "build": {
-  "appId": "com.maextro.testagent",
+  "appId": "com.maextro.test.agent",
   "productName": "Maextro-Test-Agent",
 
   "publish": {

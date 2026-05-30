@@ -60,7 +60,7 @@ autoUpdater.on('checking-for-update', () => {
 
 autoUpdater.on('update-available', async () => {
 
-  const url = 'https://github.com/Tejavathi96/Maextro_Automation_Releases/releases/latest';
+  const url = 'https://github.com/Tejavathi96/Maextro_Test_Agent_Releases/releases/latest';
 
   const result = await dialog.showMessageBox(mainWindow, {
     type: 'info',
@@ -69,7 +69,7 @@ autoUpdater.on('update-available', async () => {
     cancelId: 1,
     title: 'Update Available',
     message: 'A new version is available.',
-    detail: 'The app will be downloaded from GitHub. Please install it manually.'
+    detail: 'You will be taken to the GitHub release page. Please download the "Maextro-Test-Agent.dmg" file and install the update.'
   });
 
   if (result.response === 0) {
