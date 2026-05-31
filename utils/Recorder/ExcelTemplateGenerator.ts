@@ -29,7 +29,31 @@ export class ExcelTemplateGenerator {
 
     const stepGroups: Record<string, Record<string, RecordedField[]>> =
       parsed.groupedData || {};
+    // ✅ Build Workflow Action Map from recorded data
+    const workflowActionMap: Record<string, string> = {};
 
+    Object.entries(stepGroups).forEach(([step, stepData]) => {
+      const allFields = ([] as RecordedField[]).concat(
+        ...Object.values(stepData)
+      );
+
+      const wfActions = allFields
+        .filter((f) => f.field === "__WORKFLOW_ACTION__")
+        .map((f) => (f.value || "").toUpperCase().trim());
+
+      if (wfActions.length) {
+        // ✅ RULE: prioritize SAVE first (YOUR REQUIREMENT)
+        if (wfActions.every((x) => x === "SAVE")) {
+          workflowActionMap[step] = "Save";
+        } else if (wfActions.every((x) => x === "APPROVE")) {
+          workflowActionMap[step] = "Approve";
+        } else if (wfActions.includes("SAVE")) {
+          workflowActionMap[step] = "Save";
+        } else {
+          workflowActionMap[step] = "Approve";
+        }
+      }
+    });
     const stepRows =
       parsed.stepRows || RecorderStorage.buildStepRows();
 
@@ -78,17 +102,31 @@ export class ExcelTemplateGenerator {
       const stepNumber = Number(
         row.stepNo.replace("Step ", "")
       );
+      
+      let workflowAction =
+        workflowActionMap[row.stepNo] ||
+        (stepNumber === 0 ? "Save" : "Approve");
+      
+      if (stepNumber === 0) {
+        workflowAction = "Save";
+      }
 
-      const taskType =
-        stepNumber === 0
-          ? "Create Request"
-          : "Data Approval";
+      let taskType = "";
+      if (stepNumber === 0) {
+        taskType = "Create Request";
+      } else if (workflowAction === "Save") {
+        taskType = "Data Collection";
+      } else if (workflowAction === "Approve") {
+        taskType = "Data Approval";
+      } else {
+        taskType = "Data Approval"; 
+      }
 
       headerRows.push([
         stepNumber,
         taskType,
         row.views,
-        "",
+        workflowAction,
         ""
       ]);
     }
@@ -165,7 +203,35 @@ export class ExcelTemplateGenerator {
        */
       const taskTypeCell =
         headerSheet.getCell(`B${i}`);
+      const workflowActionCell = headerSheet.getCell(`D${i}`);
+      const stepKey = `Step ${stepNo}`;
+      const capturedAction = workflowActionMap[stepKey];
 
+      let finalAction =
+        capturedAction ||
+        (stepNo === 0 ? "Save" : "Approve");
+
+      // ✅ STEP 0 override
+      if (stepNo === 0) {
+        finalAction = "Save";
+      }
+
+      // ✅ Derive Task Type
+      let derivedTaskType = "";
+
+      if (stepNo === 0) {
+        derivedTaskType = "Create Request";
+      } else if (finalAction === "Save") {
+        derivedTaskType = "Data Collection";
+      } else if (finalAction === "Approve") {
+        derivedTaskType = "Data Approval";
+      } else {
+        derivedTaskType = "Data Approval";
+      }
+
+      /**
+       * Dropdown
+       */
       if (stepNo !== 0) {
         taskTypeCell.dataValidation = {
           type: "list",
@@ -174,17 +240,13 @@ export class ExcelTemplateGenerator {
             '"Data Collection,Data Approval"'
           ]
         };
-
-        taskTypeCell.value =
-          "Data Approval";
       }
+
+      taskTypeCell.value = derivedTaskType;
 
       /**
        * Workflow Action
        */
-      const workflowActionCell =
-        headerSheet.getCell(`D${i}`);
-
       workflowActionCell.dataValidation = {
         type: "list",
         allowBlank: false,
@@ -192,11 +254,7 @@ export class ExcelTemplateGenerator {
           '"Save,Skip,Approve,Skip -> Save,Skip -> Approve,Reject -> Approve"'
         ]
       };
-
-      workflowActionCell.value =
-        stepNo === 0
-          ? "Save"
-          : "Approve";
+      workflowActionCell.value = finalAction;
     }
 
     /**
@@ -231,6 +289,10 @@ export class ExcelTemplateGenerator {
           Record<string, RecordedField[]>
         > = {};
 
+        const IGNORE_FIELDS = [
+          "__WORKFLOW_ACTION__",
+          "Search for request"
+        ];
         for (const item of stepArray) {
           if (
             item.viewName === "SYSTEM_IGNORE" ||
@@ -248,6 +310,10 @@ export class ExcelTemplateGenerator {
 
           if (!tempMap[item.viewCode][uniqueKey]) {
             tempMap[item.viewCode][uniqueKey] = [];
+          }
+                    
+          if (!item.field || IGNORE_FIELDS.includes(item.field)) {
+            continue;
           }
 
           if (!item.field) {

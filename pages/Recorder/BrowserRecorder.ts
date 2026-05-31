@@ -294,6 +294,38 @@ export class BrowserRecorder {
       /* =========================
         ✅ CORE CAPTURE ENGINE
         ========================= */
+      const getWorkflowAction = () => {
+        const buttons = Array.from(document.querySelectorAll("button"));
+
+        let foundSave = false;
+
+        for (const btn of buttons) {
+          // ✅ Ignore hidden / inactive buttons
+          if (!(btn as HTMLElement).offsetParent) continue;
+
+          const label = btn
+            .querySelector("bdi")
+            ?.textContent?.trim()
+            .toLowerCase() || "";
+
+          // ✅ STRICT match for Submit Task
+          if (label === "submit task") {
+            return "Approve"; // ✅ your requirement
+          }
+
+          // ✅ STRICT match for Save (ONLY toolbar button)
+          if (label === "save") {
+            foundSave = true;
+          }
+        }
+
+        // ✅ fallback only if Submit not found
+        if (foundSave) {
+          return "Save";
+        }
+
+        return "";
+      };
 
       const captureAllFields = async () => {
         if (!(window as any).__CAPTURE_ENABLED__) return;
@@ -303,6 +335,22 @@ export class BrowserRecorder {
         console.log("Capturing fields, total found →", inputs.length);
         const step = utils.getStep();
         const viewName = utils.getViewName();
+
+        // ✅ Capture workflow action (SAFE - once per cycle)
+        const workflowAction = getWorkflowAction();
+
+        if (workflowAction) {
+          await (window as any).captureField({
+            view: viewName,
+            record: 0, // synthetic record
+            field: "__WORKFLOW_ACTION__",
+            value: workflowAction,
+            mode: "INPUT",
+            mandatory: false,
+            step: step
+          });
+        }
+
         console.log("Using ViewName →", viewName);
         console.log("Using Step →", step);
 
