@@ -12,6 +12,11 @@ export const projectSystemsMappings: ViewMapping[] = [
     viewCode: "PRJO",
   },
   {
+    matchText: "Project definition & WBS defaults",  //Project definition & WBS defaults
+    cleanName: "Project definition & WBS defaults",
+    viewCode: "PRJO",
+  },
+  {
     matchText: "SOrd. billing Plan",
     cleanName: "SOrd. billing Plan",
     viewCode: "SBPL",

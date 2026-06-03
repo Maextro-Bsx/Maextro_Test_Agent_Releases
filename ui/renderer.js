@@ -376,7 +376,7 @@ document.addEventListener('DOMContentLoaded', async () => {
       el.addEventListener('change', checkFormValidity);
       el.addEventListener('blur', () => {
         if (!el.value.trim()) {
-          showError(id, `${id.charAt(0).toUpperCase() + id.slice(1)} is required`);
+          showError(id, document.getElementById(id + 'Error').innerText);
         }
       });
       el.addEventListener('input', () => {

@@ -42,6 +42,11 @@ export const generalLedgerAccountMappings: ViewMapping[] = [
     viewCode: "HDR",
   },
   {
+    matchText: "Header data",
+    cleanName: "Header data",
+    viewCode: "HDR",
+  },
+  {
     matchText: "Interest calcs",
     cleanName: "Interest calcs",
     viewCode: "INTR",
@@ -62,6 +67,11 @@ export const generalLedgerAccountMappings: ViewMapping[] = [
     viewCode: "ORG2",
   },
   {
+    matchText: "Company code data",
+    cleanName: "Company code data",
+    viewCode: "ORG2",
+  },
+  {
     matchText: "Org lvl COArea",
     cleanName: "Org lvl COArea",
     viewCode: "ORG3",
@@ -69,6 +79,11 @@ export const generalLedgerAccountMappings: ViewMapping[] = [
   {
     matchText: "Ccodes for MASS",
     cleanName: "Ccodes for MASS",
+    viewCode: "ORG4",
+  },
+  {
+    matchText: "Company codes",
+    cleanName: "Company codes",
     viewCode: "ORG4",
   },
   {
@@ -84,6 +99,11 @@ export const generalLedgerAccountMappings: ViewMapping[] = [
   {
     matchText: "Account type/desc",
     cleanName: "Account type/desc",
+    viewCode: "TYPE",
+  },
+  {
+    matchText: "Account data",
+    cleanName: "Account data",
     viewCode: "TYPE",
   },
   {

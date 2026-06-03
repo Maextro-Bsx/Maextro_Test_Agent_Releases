@@ -2,8 +2,8 @@ import { ViewMapping } from "./types";
 
 export const businessPartnerMappings: ViewMapping[] = [
   {
-    matchText: " BP :R/Account Groups",
-    cleanName: " BP :R/Account Groups",
+    matchText: "BP :R/Account Groups",
+    cleanName: "BP :R/Account Groups",
     viewCode: "BOR1",
   },
   {
@@ -14,6 +14,11 @@ export const businessPartnerMappings: ViewMapping[] = [
   {
     matchText: "BP : Contact persons",
     cleanName: "BP : Contact persons",
+    viewCode: "BP14",
+  },
+  {
+    matchText: "Contacts persons",
+    cleanName: "Contacts persons",
     viewCode: "BP14",
   },
   {
@@ -62,6 +67,11 @@ export const businessPartnerMappings: ViewMapping[] = [
     viewCode: "BP27",
   },
   {
+    matchText: "Ensure all attachments requested have been provided",
+    cleanName: "Ensure all attachments requested have been provided",
+    viewCode: "BP27",
+  },
+  {
     matchText: "BP : Add(Intl' vers)",
     cleanName: "BP : Add(Intl' vers)",
     viewCode: "BP28",
@@ -74,6 +84,11 @@ export const businessPartnerMappings: ViewMapping[] = [
   {
     matchText: "BP : Classif Org",
     cleanName: "BP : Classif Org",
+    viewCode: "BOR3",
+  },
+  {
+    matchText: "Class type/class number",
+    cleanName: "Class type/class number",
     viewCode: "BOR3",
   },
   {
@@ -127,6 +142,11 @@ export const businessPartnerMappings: ViewMapping[] = [
     viewCode: "BP12",
   },
   {
+    matchText: "BP:  Tax classification",
+    cleanName: "BP:  Tax classification",
+    viewCode: "BP12",
+  },
+  {
     matchText: "BP : Industry sector",
     cleanName: "BP : Industry sector",
     viewCode: "BP09",
@@ -142,8 +162,18 @@ export const businessPartnerMappings: ViewMapping[] = [
     viewCode: "BP07",
   },
   {
+    matchText: "Bank details",
+    cleanName: "Bank details",
+    viewCode: "BP07",
+  },
+  {
     matchText: "BP : Header",
     cleanName: "BP : Header",
+    viewCode: "BHDR",
+  },
+  {
+    matchText: "Header details",
+    cleanName: "Header details",
     viewCode: "BHDR",
   },
   {
@@ -157,8 +187,18 @@ export const businessPartnerMappings: ViewMapping[] = [
     viewCode: "BP06",
   },
   {
+    matchText: "Control data",
+    cleanName: "Control data",
+    viewCode: "BP06",
+  },
+  {
     matchText: "BP : Classif Org",
     cleanName: "BP : Classif Org",
+    viewCode: "CORG",
+  },
+  {
+    matchText: "Class type/class number",
+    cleanName: "Class type/class number",
     viewCode: "CORG",
   },
   {
@@ -207,6 +247,11 @@ export const businessPartnerMappings: ViewMapping[] = [
     viewCode: "KN13",
   },
   {
+    matchText: "Company Code data",
+    cleanName: "Company Code data",
+    viewCode: "KN13",
+  },
+  {
     matchText: "Cust : CCode Text",
     cleanName: "Cust : CCode Text",
     viewCode: "KN14",
@@ -214,11 +259,11 @@ export const businessPartnerMappings: ViewMapping[] = [
   {
     matchText: "Cust Hierarchy",
     cleanName: "Cust Hierarchy",
-    viewCode: "Z001",
+    viewCode: "KN19",
   },
   {
-    matchText: "Customer Hierachy",
-    cleanName: "Customer Hierachy",
+    matchText: "Customer Hierarchy",
+    cleanName: "Customer Hierarchy",
     viewCode: "KN19",
   },
   {
@@ -287,6 +332,11 @@ export const businessPartnerMappings: ViewMapping[] = [
     viewCode: "KN08",
   },
   {
+    matchText: "Sales data",
+    cleanName: "Sales data",
+    viewCode: "KN08",
+  },
+  {
     matchText: "Vend : Central text",
     cleanName: "Vend : Central text",
     viewCode: "LF02",
@@ -302,6 +352,11 @@ export const businessPartnerMappings: ViewMapping[] = [
     viewCode: "LF04",
   },
   {
+    matchText: ": Purchasing data",
+    cleanName: ": Purchasing data",
+    viewCode: "LF04",
+  },
+  {
     matchText: "Vend: Purchasing Txt",
     cleanName: "Vend: Purchasing Txt",
     viewCode: "LF05",
@@ -309,6 +364,11 @@ export const businessPartnerMappings: ViewMapping[] = [
   {
     matchText: "Vend: Partner Func.",
     cleanName: "Vend: Partner Func.",
+    viewCode: "LF06",
+  },
+  {
+    matchText: " ; Add/remove Partner details using +/-",
+    cleanName: " ; Add/remove Partner details using +/-",
     viewCode: "LF06",
   },
   {
@@ -324,6 +384,11 @@ export const businessPartnerMappings: ViewMapping[] = [
   {
     matchText: "Vend : Company data",
     cleanName: "Vend : Company data",
+    viewCode: "LF10",
+  },
+  {
+    matchText: "Company-code data",
+    cleanName: "Company-code data",
     viewCode: "LF10",
   },
   {
@@ -347,6 +412,11 @@ export const businessPartnerMappings: ViewMapping[] = [
     viewCode: "LF14",
   },
   {
+    matchText: "Vendor's Withholding Tax",
+    cleanName: "Vendor's Withholding Tax",
+    viewCode: "LF14",
+  },
+  {
     matchText: "Vend : Custom tarrif",
     cleanName: "Vend : Custom tarrif",
     viewCode: "LF15",
@@ -367,8 +437,18 @@ export const businessPartnerMappings: ViewMapping[] = [
     viewCode: "LOR1",
   },
   {
+    matchText: "Company codes per vendor (use +/- to add/remove)",
+    cleanName: "Company codes per vendor (use +/- to add/remove)",
+    viewCode: "LOR1",
+  },
+  {
     matchText: "Vend : POrg Orglvl",
     cleanName: "Vend : POrg Orglvl",
+    viewCode: "LOR2",
+  },
+  {
+    matchText: "Purchase orgs per vendor (use +/- to add/remove)",
+    cleanName: "Purchase orgs per vendor (use +/- to add/remove)",
     viewCode: "LOR2",
   },
   

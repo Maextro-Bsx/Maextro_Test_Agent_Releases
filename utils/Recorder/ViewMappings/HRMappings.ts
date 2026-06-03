@@ -67,6 +67,11 @@ export const HRMappings: ViewMapping[] = [
     viewCode: "H013",
   },
   {
+    matchText: "ATR - Justification for Recruitment",
+    cleanName: "ATR - Justification for Recruitment",
+    viewCode: "H013",
+  },
+  {
     matchText: "ATR - Job Details",
     cleanName: "ATR - Job Details",
     viewCode: "H014",
@@ -85,6 +90,11 @@ export const HRMappings: ViewMapping[] = [
     matchText: "ATR - Board Review",
     cleanName: "ATR - Board Review",
     viewCode: "H017",
+  },
+  {
+    matchText: "ATR - BusinessCase View",
+    cleanName: "ATR - BusinessCase View",
+    viewCode: "H020",
   },
   {
     matchText: "ATR - BusinessCase",

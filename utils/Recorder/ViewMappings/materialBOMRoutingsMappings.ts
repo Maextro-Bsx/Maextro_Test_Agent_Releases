@@ -7,13 +7,28 @@ export const materialBOMRoutingsMappings: ViewMapping[] = [
       viewCode: "ALHD",
     },
     {
+      matchText: "Material Align Header",
+      cleanName: "Material Align Header",
+      viewCode: "ALHD",
+    },
+    {
       matchText: "Basic Data 1 View",
       cleanName: "Basic Data 1 View",
       viewCode: "BD1",
     },
     {
+      matchText: "Please enter your 'Basic data' material details",
+      cleanName: "Please enter your 'Basic data' material details",
+      viewCode: "BD1",
+    },
+    {
       matchText: "Sales Org./Dist. Ch.",
       cleanName: "Sales Org./Dist. Ch.",
+      viewCode: "ORG2",
+    },
+    {
+      matchText: "Sales org /distributn channels",
+      cleanName: "Sales org /distributn channels",
       viewCode: "ORG2",
     },
     {
@@ -31,9 +46,24 @@ export const materialBOMRoutingsMappings: ViewMapping[] = [
       cleanName: "WM/Storage Types",
       viewCode: "ORG3",
     },
+     {
+      matchText: "Please enter your Plant information",
+      cleanName: "Please enter your Plant information",
+      viewCode: "ORG1",
+    },
+    {
+      matchText: "Please enter your WM information",
+      cleanName: "Please enter your WM information",
+      viewCode: "ORG3",
+    },
     {
       matchText: "Unit of Measure Data",
       cleanName: "Unit of Measure Data",
+      viewCode: "UOM",
+    },
+    {
+      matchText: "Please enter your Unit of Measure details",
+      cleanName: "Please enter your Unit of Measure details",
       viewCode: "UOM",
     },
     {
@@ -47,8 +77,18 @@ export const materialBOMRoutingsMappings: ViewMapping[] = [
       viewCode: "SGP",
     },
     {
+      matchText: "Plant Number specific Sales details",
+      cleanName: "Plant Number specific Sales details",
+      viewCode: "SGP",
+    },
+    {
       matchText: "Purchasing Data View",
       cleanName: "Purchasing Data View",
+      viewCode: "PUR",
+    },
+    {
+      matchText: "Please enter your Purchasing Data View",
+      cleanName: "Please enter your Purchasing Data View",
       viewCode: "PUR",
     },
     {
@@ -67,6 +107,11 @@ export const materialBOMRoutingsMappings: ViewMapping[] = [
       viewCode: "ZX01",
     },
     {
+      matchText: "Basic info of the interview candidate",
+      cleanName: "Basic info of the interview candidate",
+      viewCode: "ZX01",
+    },
+    {
       matchText: "Work Scheduling Data",
       cleanName: "Work Scheduling Data",
       viewCode: "WSCH",
@@ -77,6 +122,11 @@ export const materialBOMRoutingsMappings: ViewMapping[] = [
       viewCode: "QM",
     },
     {
+      matchText: "Please enter your QM Data View",
+      cleanName: "Please enter your QM Data View",
+      viewCode: "QM",
+    },
+    {
       matchText: "Accounting View",
       cleanName: "Accounting View",
       viewCode: "ACC",
@@ -84,6 +134,11 @@ export const materialBOMRoutingsMappings: ViewMapping[] = [
     {
       matchText: "MRP Data View",
       cleanName: "MRP Data View",
+      viewCode: "MRP",
+    },
+    {
+      matchText: "Please enter your MRP Data View details",
+      cleanName: "Please enter your MRP Data View details",
       viewCode: "MRP",
     },
     {
@@ -132,6 +187,11 @@ export const materialBOMRoutingsMappings: ViewMapping[] = [
       viewCode: "BMAS",
     },
     {
+      matchText: "BOM Mass Selection.",
+      cleanName: "BOM Mass Selection.",
+      viewCode: "BMAS",
+    },
+    {
       matchText: "BOM Initial Data",
       cleanName: "BOM Initial Data",
       viewCode: "BHDR",
@@ -142,8 +202,18 @@ export const materialBOMRoutingsMappings: ViewMapping[] = [
       viewCode: "BD2",
     },
     {
+      matchText: "Please enter additional details for your material",
+      cleanName: "Please enter additional details for your material",
+      viewCode: "BD2",
+    },
+    {
       matchText: "Basic Data Text",
       cleanName: "Basic Data Text",
+      viewCode: "BTXT",
+    },
+    {
+      matchText: "Please enter your Basic Data Text",
+      cleanName: "Please enter your Basic Data Text",
       viewCode: "BTXT",
     },
     {
@@ -152,13 +222,28 @@ export const materialBOMRoutingsMappings: ViewMapping[] = [
       viewCode: "CL01",
     },
     {
+      matchText: "Characteristics range values",
+      cleanName: "Characteristics range values",
+      viewCode: "CL01",
+    },
+    {
       matchText: "Classification View",
       cleanName: "Classification View",
       viewCode: "CLAS",
     },
     {
+      matchText: "Please enter Classification data.",
+      cleanName: "Please enter Classification data.",
+      viewCode: "CLAS",
+    },
+    {
       matchText: "PIR: Cond. Records",
       cleanName: "PIR: Cond. Records",
+      viewCode: "CND1",
+    },
+    {
+      matchText: "Enter details for Purch.Pricing Condition Record",
+      cleanName: "Enter details for Purch.Pricing Condition Record",
       viewCode: "CND1",
     },
     {
@@ -187,8 +272,18 @@ export const materialBOMRoutingsMappings: ViewMapping[] = [
       viewCode: "FCST",
     },
     {
+      matchText: "Please confirm your Forecasting data",
+      cleanName: "Please confirm your Forecasting data",
+      viewCode: "FCST",
+    },
+    {
       matchText: "FT Export Data View",
       cleanName: "FT Export Data View",
+      viewCode: "FTE",
+    },
+    {
+      matchText: "Foreign Trade Export details",
+      cleanName: "Foreign Trade Export details",
       viewCode: "FTE",
     },
     {
@@ -232,6 +327,11 @@ export const materialBOMRoutingsMappings: ViewMapping[] = [
       viewCode: "ITXT",
     },
     {
+      matchText: "Please enter your Inspection text",
+      cleanName: "Please enter your Inspection text",
+      viewCode: "ITXT",
+    },
+    {
       matchText: "Legal control",
       cleanName: "Legal control",
       viewCode: "MAEX",
@@ -251,14 +351,29 @@ export const materialBOMRoutingsMappings: ViewMapping[] = [
       cleanName: "Addl EANS",
       viewCode: "MEAN",
     },
+     {
+      matchText: "Please enter any additional EANs",
+      cleanName: "Please enter any additional EANs",
+      viewCode: "MEAN",
+    },
     {
       matchText: "MRP Areas",
       cleanName: "MRP Areas",
       viewCode: "MRPA",
     },
     {
+      matchText: "Please enter your MRP Areas",
+      cleanName: "Please enter your MRP Areas",
+      viewCode: "MRPA",
+    },
+    {
       matchText: "Pricing Conditions",
       cleanName: "Pricing Conditions",
+      viewCode: "ORG7",
+    },
+    {
+      matchText: "Sales Pricing conditions",
+      cleanName: "Sales Pricing conditions",
       viewCode: "ORG7",
     },
     {
@@ -272,8 +387,18 @@ export const materialBOMRoutingsMappings: ViewMapping[] = [
       viewCode: "PIR2",
     },
     {
+      matchText: "Enter PIR details for Purchasing Orgn.",
+      cleanName: "Enter PIR details for Purchasing Orgn.",
+      viewCode: "PIR2",
+    },
+    {
       matchText: "PIR: General data",
       cleanName: "PIR: General data",
+      viewCode: "PIRH",
+    },
+    {
+      matchText: "Enter details for PIR General Data",
+      cleanName: "Enter details for PIR General Data",
       viewCode: "PIRH",
     },
     {
@@ -297,6 +422,21 @@ export const materialBOMRoutingsMappings: ViewMapping[] = [
       viewCode: "PR03",
     },
     {
+      matchText: "Purchase Requestion Header Details",
+      cleanName: "Purchase Requestion Header Details",
+      viewCode: "PR01",
+    },
+    {
+      matchText: "Purchase Requestion Item Details",
+      cleanName: "Purchase Requestion Item Details",
+      viewCode: "PR02",
+    },
+    {
+      matchText: "Purchase Req Address Details",
+      cleanName: "Purchase Req Address Details",
+      viewCode: "PR03",
+    },
+    {
       matchText: "Prod. Version",
       cleanName: "Prod. Version",
       viewCode: "PRDV",
@@ -314,6 +454,11 @@ export const materialBOMRoutingsMappings: ViewMapping[] = [
     {
       matchText: "Condition type",
       cleanName: "Condition type",
+      viewCode: "SP01",
+    },
+    {
+      matchText: "Enter Condition Type and Key Combination",
+      cleanName: "Enter Condition Type and Key Combination",
       viewCode: "SP01",
     },
     {
@@ -342,6 +487,11 @@ export const materialBOMRoutingsMappings: ViewMapping[] = [
       viewCode: "VB02",
     },
     {
+      matchText: "Determination Condition Key",
+      cleanName: "Determination Condition Key",
+      viewCode: "VB02",
+    },
+    {
       matchText: "Material Determin",
       cleanName: "Material Determin",
       viewCode: "VB11",
@@ -357,6 +507,21 @@ export const materialBOMRoutingsMappings: ViewMapping[] = [
       viewCode: "VC01",
     },
     {
+      matchText: "Materail Determination",
+      cleanName: "Materail Determination",
+      viewCode: "VB11",
+    },
+    {
+      matchText: "material Condition Key",
+      cleanName: "material Condition Key",
+      viewCode: "VB12",
+    },
+    {
+      matchText: "Cross Plant Variant configuration",
+      cleanName: "Cross Plant Variant configuration",
+      viewCode: "VC01",
+    },
+    {
       matchText: "Plant Variant",
       cleanName: "Plant Variant",
       viewCode: "VC02",
@@ -364,6 +529,11 @@ export const materialBOMRoutingsMappings: ViewMapping[] = [
     {
       matchText: "Planning Variant",
       cleanName: "Planning Variant",
+      viewCode: "VC03",
+    },
+    {
+      matchText: "Plant Planning Variant",
+      cleanName: "Plant Planning Variant",
       viewCode: "VC03",
     },
     {
@@ -392,6 +562,11 @@ export const materialBOMRoutingsMappings: ViewMapping[] = [
       viewCode: "ZX04",
     },
     {
+      matchText: "ZX04 View",
+      cleanName: "ZX04 View",
+      viewCode: "ZX04",
+    },
+    {
       matchText: "Z view 5",
       cleanName: "Z view 5",
       viewCode: "ZX05",
@@ -404,6 +579,21 @@ export const materialBOMRoutingsMappings: ViewMapping[] = [
     {
       matchText: "Z view 7",
       cleanName: "Z view 7",
+      viewCode: "ZX07",
+    },
+    {
+      matchText: "ZX05 View",
+      cleanName: "ZX05 View",
+      viewCode: "ZX05",
+    },
+    {
+      matchText: "ZX06 View",
+      cleanName: "ZX06 View",
+      viewCode: "ZX06",
+    },
+    {
+      matchText: "ZX07 View",
+      cleanName: "ZX07 View",
       viewCode: "ZX07",
     },
     {
@@ -422,6 +612,11 @@ export const materialBOMRoutingsMappings: ViewMapping[] = [
       viewCode: "ZX11",
     },
     {
+      matchText: "ZX11",
+      cleanName: "ZX11",
+      viewCode: "ZX11",
+    },
+    {
       matchText: "Embargoes",
       cleanName: "Embargoes",
       viewCode: "ZX13",
@@ -429,6 +624,11 @@ export const materialBOMRoutingsMappings: ViewMapping[] = [
     {
       matchText: "Trigger child CRs",
       cleanName: "Trigger child CRs",
+      viewCode: "ZX14",
+    },
+     {
+      matchText: "Trigger child CR",
+      cleanName: "Trigger child CR",
       viewCode: "ZX14",
     },
     {
@@ -447,13 +647,38 @@ export const materialBOMRoutingsMappings: ViewMapping[] = [
       viewCode: "ZX57",
     },
     {
+      matchText: "teST",
+      cleanName: "teST",
+      viewCode: "ZX55",
+    },
+    {
+      matchText: "Test Item View",
+      cleanName: "Test Item View",
+      viewCode: "ZX56",
+    },
+    {
+      matchText: "Information filled in for the candidate",
+      cleanName: "Information filled in for the candidate",
+      viewCode: "ZX57",
+    },
+    {
       matchText: "Sales Org./Dist. data",
       cleanName: "Sales Org./Dist. data",
       viewCode: "SO",
     },
     {
+      matchText: "Sales Organisation/ distributn channel data",
+      cleanName: "Sales Organisation/ distributn channel data",
+      viewCode: "SO",
+    },
+    {
       matchText: "Class Types",
       cleanName: "Class Types",
+      viewCode: "ORG4",
+    },
+    {
+      matchText: "Please enter your Class types",
+      cleanName: "Please enter your Class types",
       viewCode: "ORG4",
     },
     {
@@ -472,8 +697,18 @@ export const materialBOMRoutingsMappings: ViewMapping[] = [
       viewCode: "DESC",
     },
     {
+      matchText: "Please enter your Material Description details",
+      cleanName: "Please enter your Material Description details",
+      viewCode: "DESC",
+    },
+    {
       matchText: "BOM Components",
       cleanName: "BOM Components",
+      viewCode: "ZX02",
+    },
+    {
+      matchText: "Enter details of your BOM components",
+      cleanName: "Enter details of your BOM components",
       viewCode: "ZX02",
     },
     {
@@ -502,6 +737,11 @@ export const materialBOMRoutingsMappings: ViewMapping[] = [
       viewCode: "CORG",
     },
     {
+      matchText: "Please enter your Class types",
+      cleanName: "Please enter your Class types",
+      viewCode: "CORG",
+    },
+    {
       matchText: "WM/Storage Types Org.view",
       cleanName: "WM/Storage Types Org.view",
       viewCode: "ORG3",
@@ -509,6 +749,11 @@ export const materialBOMRoutingsMappings: ViewMapping[] = [
     {
       matchText: "Purchasing Org view ORG6",
       cleanName: "Purchasing Org view ORG6",
+      viewCode: "ORG6",
+    },
+    {
+      matchText: "Enter PIR header details",
+      cleanName: "Enter PIR header details",
       viewCode: "ORG6",
     },
     {
@@ -527,8 +772,18 @@ export const materialBOMRoutingsMappings: ViewMapping[] = [
       viewCode: "S002",
     },
     {
+      matchText: "Enter Sales pricing condition details",
+      cleanName: "Enter Sales pricing condition details",
+      viewCode: "S002",
+    },
+    {
       matchText: "Req. Header Details",
       cleanName: "Req. Header Details",
+      viewCode: "HDR",
+    },
+    {
+      matchText: "Request header",
+      cleanName: "Request header",
       viewCode: "HDR",
     },
     {
@@ -607,6 +862,11 @@ export const materialBOMRoutingsMappings: ViewMapping[] = [
       viewCode: "CPRT",
     },
     {
+      matchText: "Productionr Resource tools",
+      cleanName: "Productionr Resource tools",
+      viewCode: "CPRT",
+    },
+    {
       matchText: "Routing Milestone(s)",
       cleanName: "Routing Milestone(s)",
       viewCode: "MILE",
@@ -624,6 +884,11 @@ export const materialBOMRoutingsMappings: ViewMapping[] = [
     {
       matchText: "Grp. Ctr. & Seq.",
       cleanName: "Grp. Ctr. & Seq.",
+      viewCode: "RGRP",
+    },
+    {
+      matchText: "Group counters and sequences",
+      cleanName: "Group counters and sequences",
       viewCode: "RGRP",
     },
     {

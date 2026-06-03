@@ -8,6 +8,11 @@ export const invoiceReceiptMappings: ViewMapping[] = [
     viewCode: "I001",
   },
   {
+    matchText: "Invoice Reciept - Header Data",
+    cleanName: "Invoice Reciept - Header Data",
+    viewCode: "I001",
+  },
+  {
     matchText: "Invoice Reciept - Line Items Data",
     cleanName: "Invoice Reciept - Line Items Data",
     viewCode: "I002",

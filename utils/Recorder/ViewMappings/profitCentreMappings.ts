@@ -22,6 +22,11 @@ export const profitCentreMappings: ViewMapping[] = [
     viewCode: "HDR",
   },
   {
+    matchText: "Header Data",
+    cleanName: "Header Data",
+    viewCode: "HDR",
+  },
+  {
     matchText: "Valid company codes",
     cleanName: "Valid company codes",
     viewCode: "COCD",

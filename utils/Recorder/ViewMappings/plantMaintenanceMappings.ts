@@ -107,6 +107,11 @@ export const plantMaintenanceMappings: ViewMapping[] = [
     viewCode: "FL01",
   },
   {
+    matchText: "Functional Location Header Data",
+    cleanName: "Functional Location Header Data",
+    viewCode: "FL01",
+  },
+  {
     matchText: "General",
     cleanName: "General",
     viewCode: "FL02",
