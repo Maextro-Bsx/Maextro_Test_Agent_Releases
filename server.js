@@ -8,8 +8,9 @@ const ENV_URLS = {
   DEV: 'https://maextro-tdd.launchpad.cfapps.eu10.hana.ondemand.com/site/Maextro?sap-ushell-config=headerless#Maextro-Display?sap-ui-app-id-hint=saas_approuter_bsxc.maextrohubui&/Dashboard',
   TEST: 'https://maextro-cloud-test.launchpad.cfapps.eu10.hana.ondemand.com/site/Maextro?sap-ushell-config=headerless#Maextro-Display?sap-ui-app-id-hint=saas_approuter_bsxc.maextrohubui&/Dashboard',
   SHS: 'https://shs-dev-x8j4td6e.launchpad.cfapps.eu10.hana.ondemand.com/site/Dev?sap-ushell-config=headerless#Maextro-Display?sap-ui-app-id-hint=saas_approuter_bsxc.maextrohubui&/Dashboard',
-  RS: '',
-  Glanbia:'',
+  McBride_Dev: 'https://mcbride-central-services-development-o7ue3478.launchpad.cfapps.eu10.hana.ondemand.com/site/Dev#Maextro-Display?sap-ui-app-id-hint=saas_approuter_bsxc.maextrohubui&/Dashboard',
+  Glanbia:'https://glanbia-dev-nrenwr1j.launchpad.cfapps.eu10.hana.ondemand.com/site/Dev?sap-ushell-config=headerless#Maextro-Display?sap-ui-app-id-hint=saas_approuter_bsxc.maextrohubui&/Dashboard',
+  Waterwipes_QA : 'https://waterwipes-quality-7al3en4g.launchpad.cfapps.eu10.hana.ondemand.com/site/UAT#Shell-home?sap-ui-app-id-hint=saas_approuter_bsxc.maextrohubui&/Dashboard',
 };
 const app = express();
 const fs = require('fs');

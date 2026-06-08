@@ -2,7 +2,7 @@ import { Page } from "@playwright/test";
 import { ViewMapper } from "./ViewMapper";
 import { BrowserRecorder } from "../../pages/Recorder/BrowserRecorder";
 import { Logger } from "../../utils/Recorder/Logger";
-
+import { RecorderStorage } from "../../utils/Recorder/RecorderStorage";
 export class RecorderViewTracker {
   constructor(private page: Page) {}
 
@@ -135,15 +135,19 @@ export class RecorderViewTracker {
       const currentView = await this.getCurrentViewName();
       const currentMapped = ViewMapper.resolve(this.normalizeView(currentView));
       Logger.tracker(`Checking next view`);
-      const isSameLogicalView =currentMapped.viewCode === beforeMapped.viewCode;
-      const isDifferentInstance =currentView !== beforeView;
-
+      const isSameLogicalView = currentMapped.viewCode === beforeMapped.viewCode;
+      const isDifferentInstance = currentView !== beforeView;
       /**
-       * ✅✅ PRIORITY: MULTI-ORG DETECTION (MUST COME FIRST)
+       * ✅ STEP 1 FIX: MULTI-ORG DETECTION (ROBUST)
+       * Detect even if UI view name does NOT change
        */
-      if (isSameLogicalView && isDifferentInstance) {
+      if (isSameLogicalView && (updated || isDifferentInstance) && i>2) {
         Logger.tracker(`MultiOrg detected → ${beforeMapped.viewCode}`);
-        BrowserRecorder.markViewReopened(beforeMapped.viewCode);
+
+        if (!RecorderStorage.isViewReopened(beforeMapped.viewCode)) {
+          BrowserRecorder.markViewReopened(beforeMapped.viewCode);
+        }
+
         afterView = currentView;
         isSameView = true;
         break;

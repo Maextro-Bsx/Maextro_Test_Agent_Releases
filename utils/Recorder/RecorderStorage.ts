@@ -11,7 +11,8 @@ export type RecordedField = {
   value: string;
   mode: "INPUT" | "VALIDATION";
   mandatory: boolean;
-  step: string
+  step: string ;
+  isReadonly?: boolean;
 };
 
 type HeaderData = {
@@ -43,19 +44,7 @@ export class RecorderStorage {
   private static appearances: Record<string, number> = {};
 
   private static multiOrgViews: Record<string, boolean> = {};
-
-  /**"UNKNOWN_VIEW"
-   * Final record counter per view
-   */
-  private static maxRecordPerView: Record<string, number> = {};
-
-  /**
-   * Stable row signature mapping
-   *
-   * Example:
-   * SO_2_GB01|30 -> 2
-   */
-  private static stableRecordMap: Record<string, number> = {};
+  private static rowTracker: Record<string, number> = {};
 
   static headerData: HeaderData = {
     object: "",
@@ -84,6 +73,12 @@ export class RecorderStorage {
     };
   }
 
+
+  static getRecords() {
+    return this.records;
+  }
+
+
   static add(record: any) {
     
     const existingIndex = this.records.findIndex(
@@ -99,7 +94,6 @@ export class RecorderStorage {
       this.records[existingIndex] = record;
       return;
     }
-
     this.records.push(record);
   }
 
@@ -140,19 +134,22 @@ export class RecorderStorage {
     appearance: number,
     localRecord: number
   ): number {
-    const stableKey = `${viewCode}_${appearance}_${localRecord}`;
 
-    if (!this.stableRecordMap[stableKey]) {
-      const newRecord =
-        (this.maxRecordPerView[viewCode] || 0) + 1;
+    // ✅ find if any record already exists for this row
+    const existing = this.records.find(
+      (r) =>
+        r.viewCode === viewCode &&
+        r.appearance === appearance &&
+        r.record === localRecord
+    );
 
-      this.stableRecordMap[stableKey] = newRecord;
-      this.maxRecordPerView[viewCode] = newRecord;
+    if (existing) {
+      return existing.record; // ✅ reuse
     }
 
-    return this.stableRecordMap[stableKey];
+    // ✅ otherwise use localRecord directly
+    return localRecord;
   }
-
 
   static isMultiOrg(viewCode: string): boolean {
     return this.isViewReopened(viewCode);
@@ -175,8 +172,7 @@ export class RecorderStorage {
     this.records = [];
     this.appearances = {};
     this.multiOrgViews = {};
-    this.maxRecordPerView = {};
-    this.stableRecordMap = {};
+    this.rowTracker = {};
     this.headerData = {
       object: "",
       templateId: "",

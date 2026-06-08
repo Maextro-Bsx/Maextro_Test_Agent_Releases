@@ -14,6 +14,7 @@ type RecordedField = {
   mode: "INPUT" | "VALIDATION";
   mandatory: boolean;
   step: string;
+  isReadonly?: boolean;
 };
 
 export class ExcelTemplateGenerator {
@@ -284,10 +285,7 @@ export class ExcelTemplateGenerator {
           }
         > = {};
 
-        const tempMap: Record<
-          string,
-          Record<string, RecordedField[]>
-        > = {};
+        const tempMap: Record<string,Map<string, RecordedField[]>> = {};
 
         const IGNORE_FIELDS = [
           "__WORKFLOW_ACTION__",
@@ -302,21 +300,17 @@ export class ExcelTemplateGenerator {
           }
 
           if (!tempMap[item.viewCode]) {
-            tempMap[item.viewCode] = {};
+            tempMap[item.viewCode] = new Map<string, RecordedField[]>();
           }
 
           const uniqueKey =
             `${item.viewCode}_${item.appearance}_${item.record}`;
 
-          if (!tempMap[item.viewCode][uniqueKey]) {
-            tempMap[item.viewCode][uniqueKey] = [];
-          }
-                    
-          if (!item.field || IGNORE_FIELDS.includes(item.field)) {
-            continue;
+          if (!tempMap[item.viewCode].has(uniqueKey)) {
+            tempMap[item.viewCode].set(uniqueKey, []);
           }
 
-          if (!item.field) {
+          if (!item.field || IGNORE_FIELDS.includes(item.field)) {
             continue;
           }
 
@@ -326,21 +320,25 @@ export class ExcelTemplateGenerator {
               .trim()
               .toLowerCase();
 
-          const existingIndex =
-            tempMap[item.viewCode][uniqueKey].findIndex(
-              (x) => normalize(x.field) === normalize(item.field)
-            );
+          const currentFields = tempMap[item.viewCode].get(uniqueKey)!;
+
+          const existingIndex = currentFields.findIndex(
+            (x) => normalize(x.field) === normalize(item.field)
+          );
 
           if (existingIndex === -1) {
-            tempMap[item.viewCode][uniqueKey].push(item);
+            currentFields.push(item);  // ✅ preserves order
           } else {
-            tempMap[item.viewCode][uniqueKey][existingIndex] = item;
+            // ✅ update WITHOUT changing position
+            currentFields[existingIndex].value = item.value;
+            currentFields[existingIndex].mode = item.mode;
+            currentFields[existingIndex].mandatory = item.mandatory;
           }
         }
 
         for (const viewCode of Object.keys(tempMap)) {
-          const groupedEntries = Object.entries(
-            tempMap[viewCode]
+          const groupedEntries = Array.from(
+            tempMap[viewCode].entries()
           ).filter(([_, fields]) => fields && fields.length > 0);
 
           if (!groupedEntries.length) {
@@ -379,16 +377,16 @@ export class ExcelTemplateGenerator {
               x.multiOrg === "YES"
           );
 
-          const headers: string[] = [];
+          // const headers: string[] = [];
 
-          for (const record of records) {
-            for (const f of record.fields) {
-              if (!headers.includes(f.field)) {
-                headers.push(f.field);
-              }
-            }
-          }
-
+          // for (const record of records) {
+          //   for (const f of record.fields) {
+          //     if (!headers.includes(f.field)) {
+          //       headers.push(f.field);
+          //     }
+          //   }
+          // }
+          const headers: string[] = records[0].fields.map(f => f.field);
           /**
            * View header row
            */
@@ -473,7 +471,8 @@ export class ExcelTemplateGenerator {
              * Validation fields → grey fill
              */
             record.fields.forEach((field) => {
-              if (field.mode !== "VALIDATION") {
+              // ✅ Only grey readonly fields
+              if (field.mode !== "VALIDATION" || !field.isReadonly) {
                 return;
               }
 

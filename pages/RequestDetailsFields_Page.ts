@@ -9,7 +9,7 @@ import { logger } from '@utils/logger';
 export class RequestDetailsFieldsPage extends BasePage {
 
   private locators;
-
+  private columnIndexCache = new Map<string, number>();
   constructor(page: Page) {
     super(page);
     this.locators = requestDetailsFieldsLocators(page);
@@ -29,16 +29,41 @@ export class RequestDetailsFieldsPage extends BasePage {
  * Example usage:
  * const index = await MaterialDetailsPage.getColumnIndex('Material Type');
  */
+// private async getColumnIndex(columnName: string): Promise<number> {
+//   const headers = this.locators.tableGrid.locator('td[role="columnheader"]');
+//   await headers.first().waitFor({ state: 'visible' , timeout: 10000});
+//   const count = await headers.count();
+//   for (let i = 0; i < count; i++) {
+//     const text = (await headers.nth(i).locator('bdi').textContent())?.trim();
+//     if (text?.toLowerCase() === columnName.toLowerCase()) {
+//       return i;
+//     }
+//   }
+//   throw new Error(`Column "${columnName}" not found`);
+// }
+
 private async getColumnIndex(columnName: string): Promise<number> {
+  // ✅ Check cache first
+  console.log("Cache hit:", columnName);
+  if (this.columnIndexCache.has(columnName)) {
+    return this.columnIndexCache.get(columnName)!;
+  }
+
   const headers = this.locators.tableGrid.locator('td[role="columnheader"]');
-  await headers.first().waitFor({ state: 'visible' , timeout: 10000});
+  await headers.first().waitFor({ state: 'visible', timeout: 10000 });
+
   const count = await headers.count();
+
   for (let i = 0; i < count; i++) {
     const text = (await headers.nth(i).locator('bdi').textContent())?.trim();
+
     if (text?.toLowerCase() === columnName.toLowerCase()) {
+      // ✅ Save in cache
+      this.columnIndexCache.set(columnName, i);
       return i;
     }
   }
+
   throw new Error(`Column "${columnName}" not found`);
 }
 
@@ -2200,7 +2225,7 @@ private async scrollTableToRow(targetRow: number): Promise<void> {
     },
     { scrollTopValue }
   );
-  await this.page.waitForTimeout(2000);
+  await this.page.waitForTimeout(200);
   logger.info(`Scrolled to row ${targetRow}`);
 }
 
@@ -2218,32 +2243,24 @@ private async getVisibleRowIndex(targetRow: number): Promise<number> {
 }
 
 async handleTableField(
-  targetRow: number,
+  visibleIndex: number,
   fieldName: string,
   value: string
 ) {
-  // targetRow coming from Excel = 1-based
-  const visibleRowIndex =
-    await this.getVisibleRowIndex(targetRow + 1);
+  // const visibleRowIndex = await this.getVisibleRowIndex(targetRow + 1);
 
-  const cell = await this.getCell(
-    visibleRowIndex,
-    fieldName
-  );
+  const cell = await this.getCell(visibleIndex,fieldName);
   await cell.scrollIntoViewIfNeeded();
-  await cell.dblclick();
+  await cell.click();
   const input = cell.locator('input').first();
   try {
-    logger.info(
-      `TABLE INPUT → Row ${targetRow + 1}, ${fieldName}`
-    );
+    logger.info(`TABLE INPUT → Row ${visibleIndex + 1}, ${fieldName}`);
     await input.fill('');
     await input.fill(value);
-    await this.page.waitForTimeout(200);
+    // await input.press('Enter');
+    // await this.waitForUiToStabilize();
   } catch (e) {
-    logger.warn(
-      `TABLE INPUT failed → Row ${targetRow + 1}, ${fieldName}`
-    );
+    logger.warn(`TABLE INPUT failed → Row ${visibleIndex + 1}, ${fieldName}`);
   }
 }
 
@@ -2352,62 +2369,145 @@ async executeDynamicDataNOld(rowsData: any[]) {
   }
 }
 
+// async executeDynamicDataN(rowsData: any[]) {
+
+//   logger.info(`Executing dynamic data for ${rowsData.length} rows`);
+//   const viewType = await this.detectViewType();
+//   logger.info(`VIEW TYPE DETECTED → ${viewType}`);
+//   for (let i = 0; i < rowsData.length; i++) {
+//     const row = rowsData[i];
+//     for (const field in row) {
+//       const rawValue = row[field];
+//       if (!rawValue) continue;
+//       const value = rawValue.toString().trim();
+//       try {
+//         // =========================
+//         // VALIDATION MODE
+//         // =========================
+//         if (value.startsWith("^")) {
+//           const expectedValue = value.replace("^", "").trim();
+//           let actualValue = "";
+//           if (viewType === "FORM") {
+//             actualValue = await this.getFormFieldValue(field);
+//           } else {
+//             actualValue = await this.getFieldValue(i, field);
+//           }
+//           expect(
+//             actualValue,
+//             `Validation Failed → ${field}`
+//           ).toBe(expectedValue);
+//           logger.info(
+//             `VALIDATED → ${field}: ${actualValue}`
+//           );
+
+//           continue;
+//         }
+
+//         // =========================
+//         // INPUT MODE
+//         // =========================
+
+//         if (viewType === "FORM") {
+//           await this.setFormFieldValue(field, value);
+//         } else {
+//           await this.handleTableField(i, field, value);
+//         }
+
+//         logger.info(`INPUT → ${field} = ${value}`);
+
+//       } catch (err) {
+//         logger.error(`Failed field ${field}: ${err}`);
+//         logger.error(String(err));
+//         throw err;
+
+//       }
+//     }
+//   }
+// }
+
+async waitForFieldValue(
+  field: string,
+  expectedValue: string,
+  rowIndex: number,
+  viewType: string,
+  timeout = 5000
+): Promise<string> {
+
+  const start = Date.now();
+  let actualValue = "";
+  while (Date.now() - start < timeout) {
+    if (viewType === "FORM") {
+      actualValue = await this.getFormFieldValue(field);
+    } else {
+      actualValue = await this.getFieldValue(rowIndex, field);
+    }
+    actualValue = (actualValue || "").toString().trim();
+    if (actualValue === expectedValue) {
+      return actualValue;
+    }
+    // small wait before retry
+    await this.page.waitForTimeout(300);
+  }
+  throw new Error(
+    `Timeout waiting for field "${field}". Expected: "${expectedValue}", Got: "${actualValue}"`
+  );
+}
+
+
 async executeDynamicDataN(rowsData: any[]) {
 
   logger.info(`Executing dynamic data for ${rowsData.length} rows`);
   const viewType = await this.detectViewType();
-  logger.info(`VIEW TYPE DETECTED → ${viewType}`);
   for (let i = 0; i < rowsData.length; i++) {
     const row = rowsData[i];
+    const validations: { field: string; expected: string }[] = [];
+    let visibleIndex = i;
+    if (viewType === "TABLE") {
+      const visibleRows = await this.locators.tableRows.count();
+      if (i >= visibleRows - 1) {
+        await this.scrollTableToRow(i + 1);
+        await this.page.waitForTimeout(150);
+        visibleIndex = visibleRows - 1;
+      } else {
+        visibleIndex = i;
+      }
+    }
+
+    // FIRST PASS → INPUT ONLY
     for (const field in row) {
       const rawValue = row[field];
       if (!rawValue) continue;
       const value = rawValue.toString().trim();
+      //  Collect validations for later
+      if (value.startsWith("^")) {
+        validations.push({field,expected: value.replace("^", "").trim()});
+        continue;
+      }
       try {
-        // =========================
-        // VALIDATION MODE
-        // =========================
-        if (value.startsWith("^")) {
-          const expectedValue = value.replace("^", "").trim();
-          let actualValue = "";
-          if (viewType === "FORM") {
-            actualValue = await this.getFormFieldValue(field);
-          } else {
-            actualValue = await this.getFieldValue(i, field);
-          }
-          expect(
-            actualValue,
-            `Validation Failed → ${field}`
-          ).toBe(expectedValue);
-          logger.info(
-            `VALIDATED → ${field}: ${actualValue}`
-          );
-
-          continue;
-        }
-
-        // =========================
-        // INPUT MODE
-        // =========================
-
         if (viewType === "FORM") {
           await this.setFormFieldValue(field, value);
         } else {
-          await this.handleTableField(i, field, value);
+          await this.handleTableField(visibleIndex, field, value);
         }
-
         logger.info(`INPUT → ${field} = ${value}`);
-
       } catch (err) {
         logger.error(`Failed field ${field}: ${err}`);
-        logger.error(String(err));
         throw err;
-
+      }
+    }
+    // ✅ SECOND PASS → VALIDATION
+    for (const v of validations) {
+      try {
+        const actualValue = await this.waitForFieldValue(v.field, v.expected, i, viewType );
+        expect(actualValue, `Validation Failed → ${v.field}`).toBe(v.expected);
+        logger.info(`VALIDATED → ${v.field}: ${actualValue}`);
+      } catch (err) {
+        logger.error(`Validation failed for ${v.field}: ${err}`);
+        throw err;
       }
     }
   }
 }
-
 
 /**
  * Validates "Add Roles" data against Excel-driven expected input by matching BP records
@@ -2682,6 +2782,23 @@ async selectFromValueHelpDialog(value: string) {
   await this.locators.closeDialogButton.click();
 }
 
+async waitForUiToStabilize(timeout = 4000) {
+  let lastHtml = await this.page.content();
+  const start = Date.now();
+
+  while (Date.now() - start < timeout) {
+    await this.page.waitForTimeout(200);
+
+    const currentHtml = await this.page.content();
+
+    if (currentHtml === lastHtml) {
+      return; // ✅ UI stabilized
+    }
+
+    lastHtml = currentHtml;
+  }
+}
+
 // async setFormFieldValue(fieldName: string, value: string) {
 //   const meta = await this.getFormFieldMeta(fieldName);
 //   // VALUE HELP
@@ -2736,9 +2853,11 @@ async setFormFieldValue(fieldName: string, value: string) {
     await meta.input.click(); 
     await meta.input.fill('');
     await meta.input.fill(value);
+    // await this.page.waitForTimeout(100);
     // await meta.input.type(value, { delay: 50 });
     // await meta.input.press('Enter');
-    await this.page.waitForTimeout(100);
+    // await this.waitForUiToStabilize();
+    // await this.page.waitForTimeout(100);
     // If input worked → exit
     // const entered = await meta.input.inputValue();
     // if (entered?.trim()) return;
@@ -2899,13 +3018,14 @@ async deleteRecords(recordIndexes: number[]) {
     logger.info('No records to delete');
     return;
   }
-  const pendingDeletes = [...recordIndexes].sort((a, b) => a - b);
+  const pendingDeletes = [...recordIndexes].sort((a, b) => b - a);
   logger.info(`Deleting records: ${pendingDeletes.join(', ')}`);
   const visibleLimit = 10;
   for (const recordNo of pendingDeletes) {
     logger.info(`Selecting row ${recordNo}`);
     await this.scrollTableToRow(recordNo);
-    const visibleIndex =(recordNo - 1) % visibleLimit;
+    const visibleRows = await this.locators.tableRows.count();
+    const visibleIndex = recordNo > visibleRows ? visibleRows - 1    : recordNo - 1
     const checkbox =this.locators.tableRowCheckbox(visibleIndex);
     await checkbox.waitFor({state: 'visible',timeout: 8000});
     await checkbox.click({ force: true });

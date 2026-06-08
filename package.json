@@ -5,7 +5,7 @@
 
   "publish": {
     "provider": "github",
-    "owner": "Tejavathi96",
+    "owner": "Maextro-Bsx",
     "repo": "Maextro_Test_Agent_Releases"
   },
 
@@ -103,10 +103,10 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/Tejavathi96/Maextro_Automation.git"
+    "url": "git+https://github.com/Maextro-Bsx/Maextro_Automation.git"
   },
   "bugs": {
-    "url": "https://github.com/Tejavathi96/Maextro_Automation/issues"
+    "url": "https://github.com/Maextro-Bsx/Maextro_Automation/issues"
   },
-  "homepage": "https://github.com/Tejavathi96/Maextro_Automation#readme"
+  "homepage": "https://github.com/Maextro-Bsx/Maextro_Automation#readme"
 }

@@ -60,7 +60,7 @@ autoUpdater.on('checking-for-update', () => {
 
 autoUpdater.on('update-available', async () => {
 
-  const url = 'https://github.com/Tejavathi96/Maextro_Test_Agent_Releases/releases/latest';
+  const url = 'https://github.com/Maextro-Bsx/Maextro_Test_Agent_Releases/releases/latest';
 
   const result = await dialog.showMessageBox(mainWindow, {
     type: 'info',

@@ -21,7 +21,8 @@ export class TemplateRecorder {
     record: number = 1,
     appearance: number = 1,
     mandatory: boolean = false,
-    step: string = "Step 0"
+    step: string = "Step 0" ,
+    isReadonly: boolean = false
   ) {
     if (!this.currentView) return;
       console.log("CAPTURE →", this.currentViewCode, field, value, step);
@@ -36,7 +37,8 @@ export class TemplateRecorder {
       value,
       mode,
       mandatory,
-      step
+      step ,
+      isReadonly
     });
   }
 }

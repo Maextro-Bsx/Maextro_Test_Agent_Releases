@@ -93,12 +93,16 @@ export class BrowserRecorder {
       const appearance = RecorderStorage.getAppearance(viewCode);
 
       TemplateRecorder.setCurrentView(cleanView, viewCode);
-
-      const finalRecord = RecorderStorage.getFinalRecordNumber(viewCode,appearance,payload.record);
+      const rowSignature = payload.view + "|" + payload.record;
+      
+      const finalRecord = RecorderStorage.getFinalRecordNumber(
+        viewCode,
+        appearance,
+        payload.record
+      );
 
       const finalValue = payload.mode === "VALIDATION" ? payload.value.startsWith("^") ? payload.value
             : `^${payload.value}` : payload.value;
-
       // ✅ Unique key prevents duplicate capture
       const captureKey = [
         viewCode,
@@ -131,7 +135,8 @@ export class BrowserRecorder {
         finalRecord,
         appearance,
         payload.mandatory,
-        payload.step
+        payload.step,
+        payload.isReadonly
       );
     });
 
@@ -155,8 +160,20 @@ export class BrowserRecorder {
 
       const updated = await tracker.waitForStatusProgressIncrement();
 
-      await tracker.detectNextViewFlow(beforeView, updated);
+      await page.evaluate(() => {
+        (window as any).captureAllFields?.();
+      });
 
+      const result =await tracker.detectNextViewFlow(beforeView, updated);
+      if (result.isSameView) {
+      Logger.tracker("Re-capturing MultiOrg view");
+
+      await page.waitForTimeout(500);
+
+      await page.evaluate(() => {
+        (window as any).captureAllFields?.();
+      });
+    }
       const nextView = await tracker.getCurrentViewName();
       currentViewFromTracker = nextView;
 
@@ -253,10 +270,30 @@ export class BrowserRecorder {
     await appFrame.locator("body").evaluate(browserDomScript);
     await appFrame.locator("body").evaluate(() => {
       console.log("Recorder injected");
-      
       const utils = (window as any).BrowserDomUtils;
-      console.log("Utils available:", !!utils);
+      (window as any).__LAST_TOUCHED_FIELD__ = null;
+      (window as any).__LAST_TOUCHED_TIME__ = 0;
 
+      (window as any).__USER_TYPED_FIELDS__ ||= new Set();
+      const trackUserTouch = (event: any) => {
+        const el = event.target as HTMLInputElement;
+        if (!el) return;
+        const utils = (window as any).BrowserDomUtils;
+        if (!utils) return;
+        const field = utils.getFieldLabel(el);
+        if (!field) return;
+        (window as any).__LAST_TOUCHED_FIELD__ = field;
+        (window as any).__LAST_TOUCHED_TIME__ = Date.now();
+        if (event.type === "input") {
+          (window as any).__USER_TYPED_FIELDS__.add(field);
+        }
+      };
+
+      document.addEventListener("input", trackUserTouch);
+      document.addEventListener("change", trackUserTouch);
+      document.addEventListener("click", trackUserTouch);
+
+      console.log("Utils available:", !!utils);
       if (!utils) return;
       (window as any).__CAPTURE_ENABLED__ = true;
       (window as any).__TASK_READY__ = true;
@@ -329,9 +366,48 @@ export class BrowserRecorder {
 
       const captureAllFields = async () => {
         if (!(window as any).__CAPTURE_ENABLED__) return;
-        const inputs = document.querySelectorAll(
-          "input, textarea, select"
+        // const inputs = document.querySelectorAll(
+        //   "input, textarea, select"
+        // );
+        const nodes = Array.from(
+          document.querySelectorAll("input, textarea, select")
         );
+
+        const mapped = nodes.map((el) => {
+          // ✅ get full field container (label + input)
+          const container =
+            el.closest(".sapUiFormCLElement") || el;
+
+          const rect = (container as HTMLElement).getBoundingClientRect();
+
+          return {
+            el,
+            top: Math.round(rect.top),
+            left: Math.round(rect.left),
+            isTable: !!el.closest("table"),   // ✅ ADD THIS LINE
+          };
+        });
+
+
+      // ✅ SINGLE SORT HANDLING BOTH CASES
+      const inputs = mapped
+        .sort((a, b) => {
+          if (a.isTable && b.isTable) {
+            // ✅ TABLE → row-wise
+            if (Math.abs(a.top - b.top) < 20) {
+              return a.left - b.left;
+            }
+            return a.top - b.top;
+          } else {
+            // ✅ FORM → column-wise (YOUR REQUIREMENT)
+            if (Math.abs(a.left - b.left) < 20) {
+              return a.top - b.top;
+            }
+            return a.left - b.left;
+          }
+        })
+        .map((item) => item.el);
+
         console.log("Capturing fields, total found →", inputs.length);
         const step = utils.getStep();
         const viewName = utils.getViewName();
@@ -387,18 +463,79 @@ export class BrowserRecorder {
 
           const value = (el.value || "").trim();
 
-          if (!value && !utils.isValidationField(el)) continue;
+                    
+          const isReadonly =
+            el.hasAttribute("readonly") ||
+            el.hasAttribute("disabled") ||                  
+            !!el.closest(".sapMInputBaseReadonly") ||
+            !!el.closest(".sapMInputBaseDisabled") ||       
+            el.getAttribute("tabindex") === "-1";             
+
+          if (!value && !isReadonly) {
+            await (window as any).captureField({
+              view: viewName,
+              record: utils.getRecord(el),
+              field,
+              value: "",
+              mode: "INPUT",
+              isReadonly: false,
+              mandatory: el.closest("table")
+                ? utils.isTableMandatoryField(el)
+                : utils.isMandatoryField(el),
+              step: utils.getStep(),
+            });
+
+            continue;
+          }
+          const hasValue = !!value;
+          let isUserInput = false;
+
+          const isTableField = !!el.closest("table");
+          const typedFields = (window as any).__USER_TYPED_FIELDS__ || new Set();
+          const lastField = (window as any).__LAST_TOUCHED_FIELD__;
+          const lastTime = (window as any).__LAST_TOUCHED_TIME__ || 0;
+          const isRecentlyTouched = Date.now() - lastTime < 2500;
+
+          if (isTableField) {
+            if (typedFields.has(field)) {
+              isUserInput = true;
+            }
+          }
+          else {
+            if (hasValue && isRecentlyTouched) {
+              isUserInput = true;
+            }
+          }
+
+          let finalMode: "INPUT" | "VALIDATION";
+
+          if (isReadonly) {
+            finalMode = "VALIDATION";
+          }
+          else if (isUserInput) {
+            finalMode = "INPUT";
+          }
+          else if (!hasValue) {
+            finalMode = "INPUT";
+          }
+          else {
+            finalMode = "VALIDATION";
+          }
+
           await (window as any).captureField({
             view: viewName,
             record: utils.getRecord(el),
             field,
             value,
-            mode: utils.isValidationField(el)
-              ? "VALIDATION"
-              : "INPUT",
-            mandatory: el.closest("table")? utils.isTableMandatoryField(el): utils.isMandatoryField(el),
+            mode: finalMode,
+            isReadonly: isReadonly,  
+            mandatory: el.closest("table")
+              ? utils.isTableMandatoryField(el)
+              : utils.isMandatoryField(el),
             step: utils.getStep(),
           });
+
+
         }
       };
 
